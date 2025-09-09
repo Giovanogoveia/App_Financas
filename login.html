@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .card {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.15);
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+      animation: fadeIn .5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h2 { margin-bottom: 1.5rem; color: #333; }
+    .form-group { margin-bottom: 1rem; text-align: left; }
+    .form-group label { font-size: .9rem; color: #555; display: block; margin-bottom: .3rem; }
+    .form-group input {
+      width: 100%; padding: .7rem;
+      border: 1px solid #ccc; border-radius: 8px;
+      font-size: 1rem; transition: border .3s;
+    }
+    .form-group input:focus { border-color: #007bff; outline: none; }
+    .btn-login {
+      width: 100%; padding: .8rem; margin-top: 1rem;
+      border: none; border-radius: 25px;
+      background: #007bff; color: #fff;
+      font-size: 1rem; font-weight: bold;
+      cursor: pointer; transition: background .3s;
+    }
+    .btn-login:hover { background: #0056b3; }
+    .msg { margin-top: 1rem; font-size: .9rem; }
+    .msg.erro { color: #dc3545; }
+    .msg.sucesso { color: #28a745; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email"><i class="fa fa-envelope"></i> E-mail</label>
+        <input type="email" id="email" placeholder="Digite seu e-mail">
+      </div>
+      <div class="form-group">
+        <label for="senha"><i class="fa fa-lock"></i> Senha</label>
+        <input type="password" id="senha" placeholder="Digite sua senha">
+      </div>
+      <button type="submit" class="btn-login">Entrar</button>
+    </form>
+    <p class="msg" id="mensagem"></p>
+  </div>
+
+  <script>
+    // ===== CONFIG SUPABASE =====
+    const supabaseUrl = "https://dylziaqkyavkfwjepqkp.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM";
+
+    async function loginUsuario(email, senha) {
+      try {
+        const res = await fetch(`${supabaseUrl}/rest/v1/usuarios?email=eq.${encodeURIComponent(email)}&senha=eq.${encodeURIComponent(senha)}`, {
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            Accept: "application/json"
+          }
+        });
+
+        if (!res.ok) throw new Error("Falha na requisição.");
+        const data = await res.json();
+        return data.length > 0 ? data[0] : null;
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
+    }
+
+    function exibirMensagem(msg, tipo="") {
+      const el = document.getElementById("mensagem");
+      el.textContent = msg;
+      el.className = "msg " + tipo;
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const senha = document.getElementById("senha").value.trim();
+
+      if (!email || !senha) {
+        exibirMensagem("Preencha todos os campos!", "erro");
+        return;
+      }
+
+      const usuario = await loginUsuario(email, senha);
+
+      if (!usuario) {
+        exibirMensagem("E-mail ou senha inválidos!", "erro");
+      } else {
+        exibirMensagem("Login realizado com sucesso!", "sucesso");
+        localStorage.setItem("usuarioLogado", JSON.stringify(usuario));
+        setTimeout(() => {
+          window.location.href = "index.html"; // redireciona para o painel
+        }, 1200);
+      }
+    });
+  </script>
+</body>
+</html>
