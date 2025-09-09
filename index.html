@@ -13,229 +13,114 @@
       background: linear-gradient(to bottom, #e6f0ff 20%, #ffffff 100%);
     }
 
-    .app-container {
-      max-width: 800px;
-      margin: auto;
-      padding: 1rem;
-    }
+    .app-container { max-width: 800px; margin: auto; padding: 1rem; }
 
     /* Header */
     .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      position: relative; /* p/ dropdown */
+      display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 1rem;
     }
+    .user-info { display: flex; align-items: center; gap: .5rem; }
+    .avatar-top { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; object-fit: cover; }
+    .menu { font-size: 1.5rem; cursor: pointer; padding:.25rem; border-radius:8px; }
+    .menu:active { transform: scale(.98); }
 
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+    /* Dropdown (menu simples) */
+    .sidebar {
+      position: absolute; top: calc(100% + 8px); right: 0; width: 220px;
+      background:#fff; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,.15);
+      padding:12px; display:none; z-index:500;
     }
-
-    .avatar-top {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-    }
-
-    .menu {
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
+    .sidebar.open { display:block; }
+    .sidebar h3 { margin:0 0 8px; font-size:1rem; color:#007bff; }
+    .sidebar ul { list-style:none; margin:0; padding:0; }
+    .sidebar ul li { padding:10px; cursor:pointer; border-radius:8px; display:flex; align-items:center; gap:.6rem; transition:background .2s; }
+    .sidebar ul li i { width:18px; text-align:center; }
+    .sidebar ul li:hover { background:#f1f5f9; }
 
     /* Saldo */
-    .saldo {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
+    .saldo { text-align:center; margin-bottom:1rem; }
+    .saldo p { margin:0; color:#666; }
+    .saldo h1 { color:#0044cc; font-size:2.2rem; font-weight:bold; margin:.2rem 0; }
 
-    .saldo p {
-      margin: 0;
-      color: #666;
-    }
-
-    .saldo h1 {
-      color: #0044cc;
-      font-size: 2.2rem;
-      font-weight: bold;
-      margin: 0.2rem 0;
-    }
-
-    /* Atalhos Nav */
-    .atalhos {
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      margin: 1.5rem 0;
-    }
-
-    .atalho {
-      text-align: center;
-    }
-
+    /* Atalhos (ícones clicáveis) */
+    .atalhos { display:flex; justify-content:center; gap:2rem; margin:1.5rem 0; }
+    .atalho { text-align:center; cursor:pointer; }
     .atalho .icon {
-      width: 65px;
-      height: 65px;
-      border-radius: 50%;
-      background: #f1f5f9;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 1.5rem;
-      margin: auto;
-      color: #007bff;
+      width:65px; height:65px; border-radius:50%;
+      background:#f1f5f9; color:#007bff; font-size:1.5rem;
+      display:flex; align-items:center; justify-content:center;
+      margin:auto; transition:all .2s;
+    }
+    .atalho span { font-size:.9rem; color:#333; margin-top:.4rem; display:block; }
+    .atalho.active .icon {
+      background:#007bff; color:#fff; transform:scale(1.1);
+      box-shadow:0 0 10px rgba(0,123,255,.5);
     }
 
-    .atalho span {
-      font-size: 0.9rem;
+    /* Balão de mensagem (começa invisível) */
+    #descricao-atalho {
+      display:none;
+      margin: 1rem auto;
+      max-width: 640px;
+      font-size: .95rem;
       color: #333;
-      margin-top: 0.4rem;
-      display: block;
+      background: #f9f9f9;
+      padding: 14px 18px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border-left: 5px solid #007bff;
+      position: relative;
+      text-align: left;
+    }
+    #descricao-atalho::before {
+      content:"";
+      position:absolute;
+      top:-10px; left:20px;
+      border-width:0 10px 10px 10px;
+      border-style:solid;
+      border-color:transparent transparent #f9f9f9 transparent;
+      filter: drop-shadow(0 -2px 2px rgba(0,0,0,.1));
     }
 
     /* Summary cards */
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .summary-card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 1rem;
-      text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    .summary-card .icon {
-      font-size: 1.4rem;
-      margin-bottom: 0.3rem;
-    }
-
-    .summary-card .label {
-      font-size: 0.9rem;
-      color: #666;
-    }
-
-    .summary-card .value {
-      font-weight: bold;
-      font-size: 1.1rem;
-      margin-top: 0.3rem;
-    }
+    .summary-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin-bottom:1rem; }
+    .summary-card { background:#fff; border-radius:12px; padding:1rem; text-align:center; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
+    .summary-card .icon { font-size:1.4rem; margin-bottom:.3rem; }
+    .summary-card .label { font-size:.9rem; color:#666; }
+    .summary-card .value { font-weight:bold; font-size:1.1rem; margin-top:.3rem; }
 
     /* Botão principal */
     #add-button {
-      display: block;
-      margin: 20px auto;
-      padding: 12px 20px;
-      background: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 25px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s ease;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      display:block; margin:20px auto; padding:12px 20px;
+      background:#007bff; color:#fff; border:none; border-radius:25px;
+      font-size:16px; font-weight:bold; cursor:pointer; transition:background .3s;
+      box-shadow:0 4px 10px rgba(0,0,0,.15);
     }
-    #add-button:hover { background: #0056b3; }
+    #add-button:hover { background:#0056b3; }
 
-    /* Cards de ativos */
-    #card-container {
-      margin-top: 1rem;
-      display: grid;
-      gap: 1rem;
-    }
-
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 1rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      position: relative;
-    }
-
-    .delete-btn {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: transparent;
-      border: none;
-      font-size: 18px;
-      color: #444;
-      cursor: pointer;
-    }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: .6rem;
-    }
-
-    .avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: #f1f5f9;
-      display:flex;align-items:center;justify-content:center;
-      font-weight:700;color:#007bff;
-      overflow:hidden;
-      border:2px solid #fff;
-      box-shadow: 0 1px 3px rgba(0,0,0,.08);
-      font-size: 1.1rem;
-    }
+    /* Cards */
+    #card-container { margin-top:1rem; display:grid; gap:1rem; }
+    .card { background:#fff; border-radius:16px; padding:1rem; box-shadow:0 4px 10px rgba(0,0,0,0.1); position:relative; }
+    .delete-btn { position:absolute; top:8px; right:8px; background:transparent; border:none; font-size:18px; color:#444; cursor:pointer; }
+    .card-header { display:flex; align-items:center; gap:10px; margin-bottom:.6rem; cursor:pointer; }
+    .avatar { width:48px; height:48px; border-radius:50%; background:#f1f5f9; display:flex; align-items:center; justify-content:center; font-weight:700; color:#007bff; overflow:hidden; border:2px solid #fff; box-shadow:0 1px 3px rgba(0,0,0,.08); font-size:1.1rem; }
     .avatar img { width:100%; height:100%; object-fit:cover; }
-
-    .name { font-weight: 700; font-size: 1.05rem; }
-
-    .kvs { margin-top: .4rem; }
-    .pill { font-weight: 700; }
-    .pos { color: #22c55e; }
-    .neg { color: #ef4444; }
+    .name { font-weight:700; font-size:1.05rem; }
+    .kvs { margin-top:.4rem; }
+    .pill { font-weight:700; }
+    .pos { color:#22c55e; }
+    .neg { color:#ef4444; }
 
     /* Modal */
-    .modal {
-      position: fixed;
-      top: 0; left: 0; bottom: 0; right: 0;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 100;
-    }
-    .modal.open { display: flex; }
-
-    .modal-content {
-      background: white;
-      border-radius: 16px;
-      padding: 2rem;
-      width: 320px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-      text-align: left;
-    }
-    .modal-content h2 { margin: 0 0 .8rem; color:#007bff; }
-    .modal-content input {
-      width: 100%;
-      padding: 0.5rem;
-      margin: 0.4rem 0;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    .modal-content button {
-      margin-top: 1rem;
-      width: 100%;
-      padding: 0.6rem;
-      border: none;
-      border-radius: 8px;
-      background: #007bff;
-      color: #fff;
-      font-weight: bold;
-      cursor: pointer;
-    }
+    .modal { position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; justify-content:center; align-items:center; z-index:100; }
+    .modal.open { display:flex; }
+    .modal-content { background:#fff; border-radius:16px; padding:2rem; width:320px; box-shadow:0 10px 25px rgba(0,0,0,.25); text-align:left; }
+    .modal-content h2 { margin:0 0 .8rem; color:#007bff; }
+    .modal-content input { width:100%; padding:.5rem; margin:.4rem 0; border-radius:8px; border:1px solid #ccc; }
+    .modal-content button { margin-top:1rem; width:100%; padding:.6rem; border:none; border-radius:8px; background:#007bff; color:#fff; font-weight:bold; cursor:pointer; }
+    .helper { font-size:.85rem; color:#666; margin-top:.5rem; }
   </style>
 </head>
 <body>
@@ -243,10 +128,33 @@
     <!-- Header -->
     <header class="header">
       <div class="user-info">
-        <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" class="avatar-top" alt="user">
+        <img
+          id="user-avatar"
+          src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
+          class="avatar-top"
+          alt="user"
+          title="Clique para trocar a imagem"
+          onclick="alterarAvatarTopo()"
+        />
+        <input type="file" id="file-avatar-topo" accept="image/*" style="display:none" onchange="handleAvatarTopo(event)"/>
         <span>Olá, Investidor</span>
       </div>
-      <div class="menu"><i class="fas fa-bars"></i></div>
+
+      <div class="menu" title="Menu" onclick="toggleSidebar(event)">
+        <i class="fas fa-bars"></i>
+      </div>
+
+      <!-- Sidebar Menu -->
+      <div id="sidebar" class="sidebar">
+        <h3>Menu</h3>
+        <ul>
+          <li onclick="irParaPerfil()"><i class="fa-regular fa-user"></i> Perfil</li>
+          <li onclick="abrirConfiguracoes()"><i class="fa-solid fa-gear"></i> Configurações</li>
+          <li onclick="abrirRelatorios()"><i class="fa-solid fa-chart-column"></i> Relatórios</li>
+          <li onclick="abrirAjuda()"><i class="fa-regular fa-circle-question"></i> Ajuda</li>
+          <li onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Sair</li>
+        </ul>
+      </div>
     </header>
 
     <!-- Saldo -->
@@ -255,13 +163,28 @@
       <h1 id="patrimonioTotal">R$ 0,00</h1>
     </section>
 
-    <!-- Nav Atalhos -->
+    <!-- Atalhos -->
     <section class="atalhos">
-      <div class="atalho"><div class="icon"><i class="fas fa-coins"></i></div><span>Renda Fixa</span></div>
-      <div class="atalho"><div class="icon"><i class="fas fa-chart-line"></i></div><span>Ações</span></div>
-      <div class="atalho"><div class="icon"><i class="fab fa-bitcoin"></i></div><span>Cripto</span></div>
-      <div class="atalho"><div class="icon"><i class="fas fa-piggy-bank"></i></div><span>Poupança</span></div>
+      <div class="atalho" onclick="mostrarDescricao('renda', event)">
+        <div class="icon"><i class="fas fa-coins"></i></div>
+        <span>Renda Fixa</span>
+      </div>
+      <div class="atalho" onclick="mostrarDescricao('acoes', event)">
+        <div class="icon"><i class="fas fa-chart-line"></i></div>
+        <span>Ações</span>
+      </div>
+      <div class="atalho" onclick="mostrarDescricao('cripto', event)">
+        <div class="icon"><i class="fab fa-bitcoin"></i></div>
+        <span>Cripto</span>
+      </div>
+      <div class="atalho" onclick="mostrarDescricao('poupanca', event)">
+        <div class="icon"><i class="fas fa-piggy-bank"></i></div>
+        <span>Poupança</span>
+      </div>
     </section>
+
+    <!-- Balão de mensagem (invisível até clicar) -->
+    <div id="descricao-atalho"></div>
 
     <!-- Resumo -->
     <div class="summary-grid">
@@ -270,19 +193,16 @@
         <div class="label">Total Investido</div>
         <div id="total-aplicado" class="value">R$ 0,00</div>
       </div>
-
       <div class="summary-card card-atual">
         <div class="icon">💼</div>
         <div class="label">Valor Atual</div>
         <div id="total-atual" class="value">R$ 0,00</div>
       </div>
-
       <div class="summary-card card-lucro">
         <div class="icon">📈</div>
         <div class="label">Lucro / Prejuízo</div>
         <div id="lucro" class="value">R$ 0,00</div>
       </div>
-
       <div class="summary-card card-rendimento">
         <div class="icon">📊</div>
         <div class="label">% Rendimento</div>
@@ -290,7 +210,7 @@
       </div>
     </div>
 
-    <!-- Botão centralizado -->
+    <!-- Botão -->
     <button id="add-button" onclick="abrirModal()">+ Adicionar Ativo</button>
 
     <!-- Lista de Cards -->
@@ -299,13 +219,15 @@
 
   <!-- Modal -->
   <div class="modal" id="modal">
-    <div class="modal-content">
+    <div class="modal-content" role="dialog" aria-modal="true">
       <h2 id="modal-title">Novo Ativo</h2>
       <input type="text" id="input-nome" placeholder="Nome do ativo (ex: Neon, PagSeguro)" />
-      <input type="number" id="input-aplicado" placeholder="Valor aplicado" />
-      <input type="number" id="input-atual" placeholder="Valor atual" />
+      <input type="number" id="input-aplicado" placeholder="Valor aplicado" step="0.01" />
+      <input type="number" id="input-atual" placeholder="Valor atual" step="0.01" />
       <input type="text" id="input-icon" placeholder="URL do ícone (opcional)" />
+      <input type="file" id="input-file" accept="image/*" />
       <button onclick="salvarAlteracoes()">Salvar</button>
+      <div class="helper">Dica: se não informar ícone, tento buscar o logo automaticamente (Clearbit) pelo nome.</div>
     </div>
   </div>
 
@@ -316,25 +238,13 @@
     const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
     const PCT = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 });
 
-    // Mapeia nomes → domínios para tentar logo automático (Clearbit)
     const domainByName = {
-      'neon': 'neon.com.br',
-      'nubank': 'nubank.com.br',
-      'pagseguro': 'pagseguro.com.br',
-      'pagbank': 'pagbank.com.br',
-      'mercado pago': 'mercadopago.com',
-      'mercadopago': 'mercadopago.com',
-      'itau': 'itau.com.br',
-      'bradesco': 'bradesco.com.br',
-      'santander': 'santander.com.br',
-      'banco do brasil': 'bb.com.br',
-      'bb': 'bb.com.br',
-      'caixa': 'caixa.gov.br',
-      'inter': 'inter.co',
-      'pagseguro uol': 'pagseguro.uol.com.br'
+      'neon':'neon.com.br','nubank':'nubank.com.br','pagseguro':'pagseguro.com.br','pagbank':'pagbank.com.br',
+      'mercado pago':'mercadopago.com','mercadopago':'mercadopago.com','itau':'itau.com.br','bradesco':'bradesco.com.br',
+      'santander':'santander.com.br','banco do brasil':'bb.com.br','bb':'bb.com.br','caixa':'caixa.gov.br','inter':'inter.co',
+      'pagseguro uol':'pagseguro.uol.com.br'
     };
 
-    // ======== ESTADO ========
     let bancoEditando = null;
     let todos = [];
 
@@ -343,13 +253,8 @@
       if (icone_url && icone_url.trim()) return icone_url.trim();
       if (!nome) return null;
       const key = nome.toLowerCase().trim();
-      // procura por match direto ou parcial
       let domain = domainByName[key];
-      if (!domain) {
-        for (const k in domainByName) {
-          if (key.includes(k)) { domain = domainByName[k]; break; }
-        }
-      }
+      if (!domain) for (const k in domainByName) if (key.includes(k)) { domain = domainByName[k]; break; }
       return domain ? `https://logo.clearbit.com/${domain}` : null;
     }
 
@@ -360,29 +265,74 @@
         : (nome ? nome.charAt(0).toUpperCase() : '?');
     }
 
-    // ======== RENDER ========
-    function renderCard({ id, nome, valor_aplicado, valor_atual, icone_url }) {
-      const dif = valor_atual - valor_aplicado;
-      const rend = valor_aplicado > 0 ? (dif / valor_aplicado) * 100 : 0;
-      const pos = dif >= 0;
+    function lerImagemBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
 
+    // ======== PERFIL (avatar topo) na tabela BANCOS ========
+    async function carregarPerfil() {
+      try {
+        const res = await fetch(`${supabaseUrl}/rest/v1/bancos?select=avatar_topo&nome=eq.__perfil__&limit=1`, {
+          headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}`, Accept: 'application/json' }
+        });
+        if (!res.ok) throw new Error('Falha ao carregar perfil');
+        const rows = await res.json();
+        if (rows && rows.length && rows[0].avatar_topo) document.getElementById('user-avatar').src = rows[0].avatar_topo;
+      } catch (e) { console.warn('Perfil não carregado:', e.message || e); }
+    }
+
+    async function salvarAvatarPerfil(base64) {
+      let res = await fetch(`${supabaseUrl}/rest/v1/bancos?nome=eq.__perfil__`, {
+        method: 'PATCH',
+        headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}`, 'Content-Type': 'application/json', Prefer: 'return=representation' },
+        body: JSON.stringify({ avatar_topo: base64 })
+      });
+      if (res.status === 204 || res.status === 404) {
+        res = await fetch(`${supabaseUrl}/rest/v1/bancos`, {
+          method: 'POST',
+          headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}`, 'Content-Type': 'application/json', Prefer: 'return=representation' },
+          body: JSON.stringify({ nome: '__perfil__', valor_aplicado: 0, valor_atual: 0, icone_url: null, avatar_topo: base64 })
+        });
+      }
+      if (!res.ok) throw new Error(await res.text() || 'Falha ao salvar avatar_topo');
+    }
+
+    function alterarAvatarTopo() { document.getElementById('file-avatar-topo').click(); }
+    async function handleAvatarTopo(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        const base64 = await lerImagemBase64(file);
+        document.getElementById('user-avatar').src = base64;
+        await salvarAvatarPerfil(base64);
+      } catch (e) { console.error(e); alert('Não foi possível atualizar o avatar.'); }
+      finally { event.target.value = ''; }
+    }
+
+    // ======== RENDER / RESUMO ========
+    function renderCard({ id, nome, valor_aplicado, valor_atual, icone_url }) {
+      const dif = (valor_atual || 0) - (valor_aplicado || 0);
+      const rend = (valor_aplicado || 0) > 0 ? (dif / valor_aplicado) * 100 : 0;
+      const pos = dif >= 0;
       return `
         <div class="card">
           <button class="delete-btn" onclick="excluirBanco(${id})" title="Excluir">×</button>
-
-          <div class="card-header" onclick="abrirModal(${id}, '${nome?.replace(/'/g,"\\'")}', ${valor_aplicado}, ${valor_atual}, '${(icone_url||'').replace(/'/g,"\\'")}')">
+          <div class="card-header" onclick="abrirModal(${id}, '${(nome||'').replace(/'/g, "\\'")}', ${valor_aplicado||0}, ${valor_atual||0}, '${(icone_url||'').replace(/'/g, "\\'")}')">
             <div class="avatar">${avatarHTML(nome, icone_url)}</div>
             <div class="name">${nome || '-'}</div>
           </div>
-
           <div class="kvs">
-            <p>Aplicado: <strong>${BRL.format(valor_aplicado)}</strong></p>
-            <p>Atual: <strong>${BRL.format(valor_atual)}</strong></p>
+            <p>Aplicado: <strong>${BRL.format(valor_aplicado||0)}</strong></p>
+            <p>Atual: <strong>${BRL.format(valor_atual||0)}</strong></p>
             <p>Diferença: <span class="pill ${pos ? 'pos' : 'neg'}">${BRL.format(dif)}</span></p>
             <p>Rendimento: <strong>${PCT.format(rend)}%</strong></p>
           </div>
-        </div>
-      `;
+        </div>`;
     }
 
     function atualizarResumo(lista) {
@@ -390,7 +340,6 @@
       const totalAtual = lista.reduce((s, x) => s + (x.valor_atual||0), 0);
       const lucro = totalAtual - totalAplicado;
       const rendimento = totalAplicado > 0 ? (lucro / totalAplicado) * 100 : 0;
-
       document.getElementById('total-aplicado').innerText = BRL.format(totalAplicado);
       document.getElementById('total-atual').innerText = BRL.format(totalAtual);
       document.getElementById('lucro').innerText = BRL.format(lucro);
@@ -398,25 +347,22 @@
       document.getElementById('patrimonioTotal').innerText = BRL.format(totalAtual);
     }
 
+    function setLoadingCards() { document.getElementById('card-container').innerHTML = '<div class="card">Carregando...</div>'; }
+
     // ======== CRUD ========
     async function carregarTodosOsCards() {
-      const res = await fetch(`${supabaseUrl}/rest/v1/bancos?select=*`, {
-        headers: {
-          apikey: supabaseKey,
-          Authorization: `Bearer ${supabaseKey}`,
-          Accept: "application/json"
-        }
-      });
+      try {
+        const res = await fetch(`${supabaseUrl}/rest/v1/bancos?select=*&nome=neq.__perfil__`, {
+          headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}`, Accept: 'application/json' }
+        });
+        if (!res.ok) throw new Error('Falha ao carregar');
+        todos = await res.json();
+      } catch (e) { console.error(e); todos = []; }
 
-      todos = await res.json();
       const container = document.getElementById('card-container');
+      if (!todos || !todos.length) { container.innerHTML = '<div class="card">Nenhum ativo encontrado.</div>'; atualizarResumo([]); return; }
 
-      if (!todos || !todos.length) {
-        container.innerHTML = '<div class="card">Nenhum ativo encontrado.</div>';
-        atualizarResumo([]);
-        return;
-      }
-
+      todos.sort((a, b) => (a.nome||'').localeCompare(b.nome||''));
       container.innerHTML = todos.map(renderCard).join('');
       atualizarResumo(todos);
     }
@@ -428,71 +374,98 @@
       document.getElementById('input-aplicado').value = aplicado || '';
       document.getElementById('input-atual').value = atual || '';
       document.getElementById('input-icon').value = icon || '';
+      document.getElementById('input-file').value = '';
       document.getElementById('modal').classList.add('open');
+      setTimeout(() => document.getElementById('input-nome').focus(), 0);
     }
 
-    function fecharModal() {
-      document.getElementById('modal').classList.remove('open');
-    }
+    function fecharModal() { document.getElementById('modal').classList.remove('open'); }
 
     async function salvarAlteracoes() {
       const nome = document.getElementById('input-nome').value.trim();
-      const aplicado = parseFloat(document.getElementById('input-aplicado').value);
-      const atual = parseFloat(document.getElementById('input-atual').value);
-      const icone = document.getElementById('input-icon').value.trim();
+      const aplicado = parseFloat(document.getElementById('input-aplicado').value.replace(',', '.')) || 0;
+      const atual = parseFloat(document.getElementById('input-atual').value.replace(',', '.')) || 0;
+      let icone = document.getElementById('input-icon').value.trim();
 
-      if (!nome || isNaN(aplicado) || isNaN(atual)) {
-        alert('Preencha nome, aplicado e atual corretamente.');
-        return;
+      if (!nome) { alert('Informe o nome do ativo.'); return; }
+
+      const fileInput = document.getElementById('input-file');
+      if (fileInput.files.length > 0) {
+        try { icone = await lerImagemBase64(fileInput.files[0]); }
+        catch { alert('Não foi possível ler a imagem selecionada.'); }
       }
 
-      const body = { nome, valor_aplicado: aplicado, valor_atual: atual, icone_url: icone || null };
+      const payload = { nome, valor_aplicado: aplicado, valor_atual: atual, icone_url: icone || null };
 
-      const url = bancoEditando
-        ? `${supabaseUrl}/rest/v1/bancos?id=eq.${bancoEditando}`
-        : `${supabaseUrl}/rest/v1/bancos`;
-
-      const method = bancoEditando ? 'PATCH' : 'POST';
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          apikey: supabaseKey,
-          Authorization: `Bearer ${supabaseKey}`,
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-      });
-
-      if (response.ok) {
+      setLoadingCards();
+      try {
+        let res;
+        if (bancoEditando == null) {
+          res = await fetch(`${supabaseUrl}/rest/v1/bancos`, {
+            method: 'POST',
+            headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}`, 'Content-Type': 'application/json', Prefer: 'return=representation' },
+            body: JSON.stringify(payload)
+          });
+        } else {
+          res = await fetch(`${supabaseUrl}/rest/v1/bancos?id=eq.${bancoEditando}`, {
+            method: 'PATCH',
+            headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}`, 'Content-Type': 'application/json', Prefer: 'return=representation' },
+            body: JSON.stringify(payload)
+          });
+        }
+        if (!res.ok) throw new Error(await res.text() || 'Erro ao salvar');
         fecharModal();
-        carregarTodosOsCards();
-      } else {
-        alert('Erro ao salvar');
-      }
+        await carregarTodosOsCards();
+      } catch (err) { console.error(err); alert('Erro ao salvar: ' + (err.message || err)); await carregarTodosOsCards(); }
     }
 
     async function excluirBanco(id) {
-      if (!confirm('Tem certeza que deseja excluir este ativo?')) return;
-
-      const response = await fetch(`${supabaseUrl}/rest/v1/bancos?id=eq.${id}`, {
-        method: 'DELETE',
-        headers: {
-          apikey: supabaseKey,
-          Authorization: `Bearer ${supabaseKey}`
-        }
-      });
-
-      if (response.ok) {
-        carregarTodosOsCards();
-      } else {
-        alert('Erro ao excluir');
-      }
+      if (!confirm('Excluir este ativo?')) return;
+      setLoadingCards();
+      try {
+        const res = await fetch(`${supabaseUrl}/rest/v1/bancos?id=eq.${id}`, {
+          method: 'DELETE',
+          headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` }
+        });
+        if (!res.ok) throw new Error('Falha ao excluir');
+        await carregarTodosOsCards();
+      } catch (e) { console.error(e); alert('Erro ao excluir.'); await carregarTodosOsCards(); }
     }
 
-    // init
-    carregarTodosOsCards();
+    // ======== Dropdown: abrir/fechar e fechar ao clicar fora ========
+    function toggleSidebar(e) {
+      e.stopPropagation();
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+      const sidebar = document.getElementById('sidebar');
+      const menuBtn = document.querySelector('.menu');
+      if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+        sidebar.classList.remove('open');
+      }
+    });
+
+    // ======== DESCRIÇÃO DOS ATALHOS (cor + balão) ========
+    const descricoes = {
+      renda: "💰 <strong>Renda Fixa</strong>: investimentos mais seguros (CDB, Tesouro Direto, debêntures). Rentabilidade definida na aplicação.",
+      acoes: "📈 <strong>Ações</strong>: participação em empresas. Você vira sócio e pode ganhar com valorização e dividendos.",
+      cripto: "₿ <strong>Cripto</strong>: moedas digitais (Bitcoin, Ethereum). Alta volatilidade e potencial de grandes ganhos.",
+      poupanca: "🐷 <strong>Poupança</strong>: liquidez diária e garantia do FGC, porém rendimento mais baixo."
+    };
+
+    function mostrarDescricao(tipo, ev) {
+      document.querySelectorAll('.atalho').forEach(a => a.classList.remove('active'));
+      ev.currentTarget.classList.add('active');
+
+      const balao = document.getElementById('descricao-atalho');
+      balao.innerHTML = descricoes[tipo];
+      balao.style.display = 'block'; // faz aparecer
+    }
+
+    // ======== INIT ========
+    document.addEventListener('DOMContentLoaded', async () => {
+      await Promise.all([carregarPerfil(), carregarTodosOsCards()]);
+    });
   </script>
 </body>
 </html>
