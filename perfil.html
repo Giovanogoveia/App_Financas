@@ -2,16 +2,250 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Perfil</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Perfil do Usuário</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .card {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.15);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      animation: fadeIn .5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+
+    /* Avatar */
+    .avatar-upload {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    .avatar-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      overflow: hidden;
+      margin: 0 auto 1rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,.1);
+    }
+    .avatar-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .avatar-upload input {
+      display: none;
+    }
+    .upload-btn {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      padding: .6rem 1rem;
+      border-radius: 20px;
+      font-size: .9rem;
+      cursor: pointer;
+      transition: background .3s;
+    }
+    .upload-btn:hover {
+      background: #0056b3;
+    }
+
+    /* Form */
+    .form-group {
+      text-align: left;
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: .3rem;
+      font-size: .9rem;
+      color: #555;
+    }
+    .form-group input {
+      width: 100%;
+      padding: .7rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border .3s;
+    }
+    .form-group input:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    /* Botão salvar */
+    .btn-save {
+      display: block;
+      width: 100%;
+      padding: .8rem;
+      border: none;
+      border-radius: 25px;
+      background: #28a745;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background .3s;
+      margin-top: 1rem;
+    }
+    .btn-save:hover {
+      background: #1e7e34;
+    }
+
+    .mensagem {
+      margin-top: 1rem;
+      padding: .8rem;
+      border-radius: 8px;
+      font-size: .9rem;
+      display: none;
+    }
+    .mensagem.sucesso {
+      background: #d4edda;
+      color: #155724;
+    }
+    .mensagem.erro {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    a.voltar {
+      display: inline-block;
+      margin-top: 1rem;
+      color: #007bff;
+      text-decoration: none;
+    }
+    a.voltar:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-  <header>
+  <div class="card">
     <h2>Perfil do Usuário</h2>
-    <a href="index.html">Voltar</a>
-  </header>
-  <main>
-    <p>Aqui você poderá editar suas informações pessoais.</p>
-  </main>
+
+    <!-- Avatar -->
+    <div class="avatar-upload">
+      <div class="avatar-preview" id="avatarPreview">
+        <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Avatar">
+      </div>
+      <label class="upload-btn" for="avatarInput">
+        <i class="fa fa-camera"></i> Alterar Foto
+      </label>
+      <input type="file" id="avatarInput" accept="image/*">
+    </div>
+
+    <!-- Formulário -->
+    <form id="perfilForm">
+      <div class="form-group">
+        <label for="nome"><i class="fa fa-user"></i> Nome</label>
+        <input type="text" id="nome" placeholder="Digite seu nome">
+      </div>
+      <div class="form-group">
+        <label for="email"><i class="fa fa-envelope"></i> E-mail</label>
+        <input type="email" id="email" placeholder="Digite seu e-mail">
+      </div>
+      <div class="form-group">
+        <label for="telefone"><i class="fa fa-phone"></i> Telefone</label>
+        <input type="tel" id="telefone" placeholder="(00) 00000-0000">
+      </div>
+      <div class="form-group">
+        <label for="senha"><i class="fa fa-lock"></i> Senha</label>
+        <input type="password" id="senha" placeholder="Digite sua senha">
+      </div>
+
+      <button type="submit" class="btn-save">Salvar Alterações</button>
+    </form>
+
+    <div id="mensagem" class="mensagem"></div>
+    <a href="index.html" class="voltar">← Voltar</a>
+  </div>
+
+  <script>
+    const supabaseUrl = "https://dylziaqkyavkfwjepqkp.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM";
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Preview do avatar
+    document.getElementById("avatarInput").addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          document.querySelector("#avatarPreview img").src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Formulário de envio
+    document.getElementById("perfilForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const nome = document.getElementById("nome").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const telefone = document.getElementById("telefone").value.trim();
+      const senha = document.getElementById("senha").value.trim();
+      const avatar = document.querySelector("#avatarPreview img").src;
+
+      const mensagem = document.getElementById("mensagem");
+
+      if (!nome || !email || !telefone || !senha) {
+        exibirMensagem("Preencha todos os campos!", "erro");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("usuarios")
+        .insert([{ nome, email, telefone, senha, avatar }]);
+
+      if (error) {
+        console.error(error);
+        exibirMensagem("Erro ao salvar: " + error.message, "erro");
+      } else {
+        exibirMensagem("Perfil salvo com sucesso!", "sucesso");
+        limparCampos();
+      }
+    });
+
+    function exibirMensagem(texto, tipo) {
+      const mensagem = document.getElementById("mensagem");
+      mensagem.textContent = texto;
+      mensagem.className = "mensagem " + tipo;
+      mensagem.style.display = "block";
+      setTimeout(() => { mensagem.style.display = "none"; }, 4000);
+    }
+
+    function limparCampos() {
+      document.getElementById("perfilForm").reset();
+      document.querySelector("#avatarPreview img").src = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+    }
+  </script>
 </body>
 </html>
+
