@@ -12,12 +12,11 @@
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(to bottom, #e6f0ff 20%, #ffffff 100%);
     }
-
     .app-container { max-width: 800px; margin: auto; padding: 1rem; }
 
     /* Header */
     .header {
-      position: relative; /* p/ dropdown */
+      position: relative;
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 1rem;
     }
@@ -26,7 +25,7 @@
     .menu { font-size: 1.5rem; cursor: pointer; padding:.25rem; border-radius:8px; }
     .menu:active { transform: scale(.98); }
 
-    /* Dropdown (menu simples) */
+    /* Sidebar */
     .sidebar {
       position: absolute; top: calc(100% + 8px); right: 0; width: 220px;
       background:#fff; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,.15);
@@ -35,16 +34,20 @@
     .sidebar.open { display:block; }
     .sidebar h3 { margin:0 0 8px; font-size:1rem; color:#007bff; }
     .sidebar ul { list-style:none; margin:0; padding:0; }
-    .sidebar ul li { padding:10px; cursor:pointer; border-radius:8px; display:flex; align-items:center; gap:.6rem; transition:background .2s; }
-    .sidebar ul li i { width:18px; text-align:center; }
-    .sidebar ul li:hover { background:#f1f5f9; }
+    .sidebar ul li { padding:0; }
+    .sidebar ul li a{
+      display:flex; align-items:center; gap:.6rem;
+      padding:10px; border-radius:8px; text-decoration:none; color:inherit;
+    }
+    .sidebar ul li a i{ width:18px; text-align:center; }
+    .sidebar ul li a:hover{ background:#f1f5f9; }
 
     /* Saldo */
     .saldo { text-align:center; margin-bottom:1rem; }
     .saldo p { margin:0; color:#666; }
     .saldo h1 { color:#0044cc; font-size:2.2rem; font-weight:bold; margin:.2rem 0; }
 
-    /* Atalhos (ícones clicáveis) */
+    /* Atalhos */
     .atalhos { display:flex; justify-content:center; gap:2rem; margin:1.5rem 0; }
     .atalho { text-align:center; cursor:pointer; }
     .atalho .icon {
@@ -59,7 +62,7 @@
       box-shadow:0 0 10px rgba(0,123,255,.5);
     }
 
-    /* Balão de mensagem (começa invisível) */
+    /* Balão */
     #descricao-atalho {
       display:none;
       margin: 1rem auto;
@@ -84,14 +87,14 @@
       filter: drop-shadow(0 -2px 2px rgba(0,0,0,.1));
     }
 
-    /* Summary cards */
+    /* Summary */
     .summary-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin-bottom:1rem; }
     .summary-card { background:#fff; border-radius:12px; padding:1rem; text-align:center; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
     .summary-card .icon { font-size:1.4rem; margin-bottom:.3rem; }
     .summary-card .label { font-size:.9rem; color:#666; }
     .summary-card .value { font-weight:bold; font-size:1.1rem; margin-top:.3rem; }
 
-    /* Botão principal */
+    /* Botão */
     #add-button {
       display:block; margin:20px auto; padding:12px 20px;
       background:#007bff; color:#fff; border:none; border-radius:25px;
@@ -128,31 +131,28 @@
     <!-- Header -->
     <header class="header">
       <div class="user-info">
-        <img
-          id="user-avatar"
+        <img id="user-avatar"
           src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
           class="avatar-top"
           alt="user"
           title="Clique para trocar a imagem"
-          onclick="alterarAvatarTopo()"
-        />
+          onclick="alterarAvatarTopo()" />
         <input type="file" id="file-avatar-topo" accept="image/*" style="display:none" onchange="handleAvatarTopo(event)"/>
         <span>Olá, Investidor</span>
       </div>
-
       <div class="menu" title="Menu" onclick="toggleSidebar(event)">
         <i class="fas fa-bars"></i>
       </div>
 
-      <!-- Sidebar Menu -->
+      <!-- Sidebar -->
       <div id="sidebar" class="sidebar">
         <h3>Menu</h3>
         <ul>
-          <li onclick="irParaPerfil()"><i class="fa-regular fa-user"></i> Perfil</li>
-          <li onclick="abrirConfiguracoes()"><i class="fa-solid fa-gear"></i> Configurações</li>
-          <li onclick="abrirRelatorios()"><i class="fa-solid fa-chart-column"></i> Relatórios</li>
-          <li onclick="abrirAjuda()"><i class="fa-regular fa-circle-question"></i> Ajuda</li>
-          <li onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Sair</li>
+          <li><a class="menu-link" href="perfil.html"><i class="fa-regular fa-user"></i> Perfil</a></li>
+          <li><a class="menu-link" href="configuracoes.html"><i class="fa-solid fa-gear"></i> Configurações</a></li>
+          <li><a class="menu-link" href="relatorios.html"><i class="fa-solid fa-chart-column"></i> Relatórios</a></li>
+          <li><a class="menu-link" href="ajuda.html"><i class="fa-regular fa-circle-question"></i> Ajuda</a></li>
+          <li><a class="menu-link" href="logout.html"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
         </ul>
       </div>
     </header>
@@ -183,7 +183,7 @@
       </div>
     </section>
 
-    <!-- Balão de mensagem (invisível até clicar) -->
+    <!-- Balão -->
     <div id="descricao-atalho"></div>
 
     <!-- Resumo -->
@@ -213,7 +213,7 @@
     <!-- Botão -->
     <button id="add-button" onclick="abrirModal()">+ Adicionar Ativo</button>
 
-    <!-- Lista de Cards -->
+    <!-- Cards -->
     <div id="card-container" class="grid">Carregando...</div>
   </div>
 
@@ -221,251 +221,151 @@
   <div class="modal" id="modal">
     <div class="modal-content" role="dialog" aria-modal="true">
       <h2 id="modal-title">Novo Ativo</h2>
-      <input type="text" id="input-nome" placeholder="Nome do ativo (ex: Neon, PagSeguro)" />
+      <input type="text" id="input-nome" placeholder="Nome do ativo" />
       <input type="number" id="input-aplicado" placeholder="Valor aplicado" step="0.01" />
       <input type="number" id="input-atual" placeholder="Valor atual" step="0.01" />
       <input type="text" id="input-icon" placeholder="URL do ícone (opcional)" />
       <input type="file" id="input-file" accept="image/*" />
       <button onclick="salvarAlteracoes()">Salvar</button>
-      <div class="helper">Dica: se não informar ícone, tento buscar o logo automaticamente (Clearbit) pelo nome.</div>
+      <div class="helper">Dica: se não informar ícone, tento buscar o logo automaticamente (Clearbit).</div>
     </div>
   </div>
 
   <script>
-    // ======== CONFIG ========
+    // CONFIG
     const supabaseUrl = 'https://dylziaqkyavkfwjepqkp.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM';
     const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
     const PCT = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 });
 
-    const domainByName = {
-      'neon':'neon.com.br','nubank':'nubank.com.br','pagseguro':'pagseguro.com.br','pagbank':'pagbank.com.br',
-      'mercado pago':'mercadopago.com','mercadopago':'mercadopago.com','itau':'itau.com.br','bradesco':'bradesco.com.br',
-      'santander':'santander.com.br','banco do brasil':'bb.com.br','bb':'bb.com.br','caixa':'caixa.gov.br','inter':'inter.co',
-      'pagseguro uol':'pagseguro.uol.com.br'
-    };
+    const domainByName = { neon:'neon.com.br', nubank:'nubank.com.br', pagseguro:'pagseguro.com.br',
+      itau:'itau.com.br', bradesco:'bradesco.com.br', santander:'santander.com.br', inter:'inter.co' };
 
-    let bancoEditando = null;
-    let todos = [];
+    let bancoEditando = null, todos = [];
 
-    // ======== HELPERS ========
+    // Helpers
     function getLogo(nome, icone_url) {
-      if (icone_url && icone_url.trim()) return icone_url.trim();
+      if (icone_url) return icone_url;
       if (!nome) return null;
-      const key = nome.toLowerCase().trim();
+      const key = nome.toLowerCase();
       let domain = domainByName[key];
-      if (!domain) for (const k in domainByName) if (key.includes(k)) { domain = domainByName[k]; break; }
+      if (!domain) for (const k in domainByName) if (key.includes(k)) domain = domainByName[k];
       return domain ? `https://logo.clearbit.com/${domain}` : null;
     }
-
     function avatarHTML(nome, icone_url) {
       const logo = getLogo(nome, icone_url);
-      return logo
-        ? `<img src="${logo}" alt="${nome}" onerror="this.closest('.avatar').textContent='${(nome||'?').charAt(0).toUpperCase()}'; this.remove();">`
-        : (nome ? nome.charAt(0).toUpperCase() : '?');
+      return logo ? `<img src="${logo}" alt="${nome}" onerror="this.closest('.avatar').textContent='${(nome||'?')[0].toUpperCase()}'; this.remove();">`
+                  : (nome ? nome[0].toUpperCase() : '?');
     }
-
     function lerImagemBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
+      return new Promise((res, rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});
     }
 
-    // ======== PERFIL (avatar topo) na tabela BANCOS ========
+    // Perfil
     async function carregarPerfil() {
       try {
-        const res = await fetch(`${supabaseUrl}/rest/v1/bancos?select=avatar_topo&nome=eq.__perfil__&limit=1`, {
-          headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}`, Accept: 'application/json' }
-        });
-        if (!res.ok) throw new Error('Falha ao carregar perfil');
+        const res = await fetch(`${supabaseUrl}/rest/v1/bancos?select=avatar_topo&nome=eq.__perfil__&limit=1`,
+          { headers: { apikey:supabaseKey, Authorization:`Bearer ${supabaseKey}` } });
         const rows = await res.json();
-        if (rows && rows.length && rows[0].avatar_topo) document.getElementById('user-avatar').src = rows[0].avatar_topo;
-      } catch (e) { console.warn('Perfil não carregado:', e.message || e); }
+        if (rows?.length && rows[0].avatar_topo) document.getElementById('user-avatar').src = rows[0].avatar_topo;
+      } catch {}
     }
-
     async function salvarAvatarPerfil(base64) {
-      let res = await fetch(`${supabaseUrl}/rest/v1/bancos?nome=eq.__perfil__`, {
-        method: 'PATCH',
-        headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}`, 'Content-Type': 'application/json', Prefer: 'return=representation' },
-        body: JSON.stringify({ avatar_topo: base64 })
+      await fetch(`${supabaseUrl}/rest/v1/bancos?nome=eq.__perfil__`, {
+        method:'PATCH', headers:{apikey:supabaseKey,Authorization:`Bearer ${supabaseKey}`,'Content-Type':'application/json'},
+        body:JSON.stringify({avatar_topo:base64})
       });
-      if (res.status === 204 || res.status === 404) {
-        res = await fetch(`${supabaseUrl}/rest/v1/bancos`, {
-          method: 'POST',
-          headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}`, 'Content-Type': 'application/json', Prefer: 'return=representation' },
-          body: JSON.stringify({ nome: '__perfil__', valor_aplicado: 0, valor_atual: 0, icone_url: null, avatar_topo: base64 })
-        });
-      }
-      if (!res.ok) throw new Error(await res.text() || 'Falha ao salvar avatar_topo');
+    }
+    function alterarAvatarTopo(){ document.getElementById('file-avatar-topo').click(); }
+    async function handleAvatarTopo(e){
+      const f=e.target.files[0]; if(!f) return;
+      const base64=await lerImagemBase64(f);
+      document.getElementById('user-avatar').src=base64;
+      await salvarAvatarPerfil(base64);
+      e.target.value='';
     }
 
-    function alterarAvatarTopo() { document.getElementById('file-avatar-topo').click(); }
-    async function handleAvatarTopo(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      try {
-        const base64 = await lerImagemBase64(file);
-        document.getElementById('user-avatar').src = base64;
-        await salvarAvatarPerfil(base64);
-      } catch (e) { console.error(e); alert('Não foi possível atualizar o avatar.'); }
-      finally { event.target.value = ''; }
+    // Render
+    function renderCard({id,nome,valor_aplicado,valor_atual,icone_url}) {
+      const dif=(valor_atual||0)-(valor_aplicado||0);
+      const rend=(valor_aplicado||0)>0?(dif/valor_aplicado)*100:0;
+      return `<div class="card">
+        <button class="delete-btn" onclick="excluirBanco(${id})">×</button>
+        <div class="card-header" onclick="abrirModal(${id},'${nome}',${valor_aplicado||0},${valor_atual||0},'${icone_url||''}')">
+          <div class="avatar">${avatarHTML(nome,icone_url)}</div>
+          <div class="name">${nome||'-'}</div>
+        </div>
+        <div class="kvs">
+          <p>Aplicado: <strong>${BRL.format(valor_aplicado||0)}</strong></p>
+          <p>Atual: <strong>${BRL.format(valor_atual||0)}</strong></p>
+          <p>Diferença: <span class="pill ${dif>=0?'pos':'neg'}">${BRL.format(dif)}</span></p>
+          <p>Rendimento: <strong>${PCT.format(rend)}%</strong></p>
+        </div></div>`;
     }
-
-    // ======== RENDER / RESUMO ========
-    function renderCard({ id, nome, valor_aplicado, valor_atual, icone_url }) {
-      const dif = (valor_atual || 0) - (valor_aplicado || 0);
-      const rend = (valor_aplicado || 0) > 0 ? (dif / valor_aplicado) * 100 : 0;
-      const pos = dif >= 0;
-      return `
-        <div class="card">
-          <button class="delete-btn" onclick="excluirBanco(${id})" title="Excluir">×</button>
-          <div class="card-header" onclick="abrirModal(${id}, '${(nome||'').replace(/'/g, "\\'")}', ${valor_aplicado||0}, ${valor_atual||0}, '${(icone_url||'').replace(/'/g, "\\'")}')">
-            <div class="avatar">${avatarHTML(nome, icone_url)}</div>
-            <div class="name">${nome || '-'}</div>
-          </div>
-          <div class="kvs">
-            <p>Aplicado: <strong>${BRL.format(valor_aplicado||0)}</strong></p>
-            <p>Atual: <strong>${BRL.format(valor_atual||0)}</strong></p>
-            <p>Diferença: <span class="pill ${pos ? 'pos' : 'neg'}">${BRL.format(dif)}</span></p>
-            <p>Rendimento: <strong>${PCT.format(rend)}%</strong></p>
-          </div>
-        </div>`;
-    }
-
     function atualizarResumo(lista) {
-      const totalAplicado = lista.reduce((s, x) => s + (x.valor_aplicado||0), 0);
-      const totalAtual = lista.reduce((s, x) => s + (x.valor_atual||0), 0);
-      const lucro = totalAtual - totalAplicado;
-      const rendimento = totalAplicado > 0 ? (lucro / totalAplicado) * 100 : 0;
-      document.getElementById('total-aplicado').innerText = BRL.format(totalAplicado);
-      document.getElementById('total-atual').innerText = BRL.format(totalAtual);
-      document.getElementById('lucro').innerText = BRL.format(lucro);
-      document.getElementById('rendimento').innerText = PCT.format(rendimento) + '%';
-      document.getElementById('patrimonioTotal').innerText = BRL.format(totalAtual);
+      const tA=lista.reduce((s,x)=>s+(x.valor_aplicado||0),0);
+      const tB=lista.reduce((s,x)=>s+(x.valor_atual||0),0);
+      const lucro=tB-tA, r=tA?(lucro/tA*100):0;
+      document.getElementById('total-aplicado').innerText=BRL.format(tA);
+      document.getElementById('total-atual').innerText=BRL.format(tB);
+      document.getElementById('lucro').innerText=BRL.format(lucro);
+      document.getElementById('rendimento').innerText=PCT.format(r)+'%';
+      document.getElementById('patrimonioTotal').innerText=BRL.format(tB);
     }
 
-    function setLoadingCards() { document.getElementById('card-container').innerHTML = '<div class="card">Carregando...</div>'; }
-
-    // ======== CRUD ========
+    // CRUD
     async function carregarTodosOsCards() {
-      try {
-        const res = await fetch(`${supabaseUrl}/rest/v1/bancos?select=*&nome=neq.__perfil__`, {
-          headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}`, Accept: 'application/json' }
-        });
-        if (!res.ok) throw new Error('Falha ao carregar');
-        todos = await res.json();
-      } catch (e) { console.error(e); todos = []; }
-
-      const container = document.getElementById('card-container');
-      if (!todos || !todos.length) { container.innerHTML = '<div class="card">Nenhum ativo encontrado.</div>'; atualizarResumo([]); return; }
-
-      todos.sort((a, b) => (a.nome||'').localeCompare(b.nome||''));
-      container.innerHTML = todos.map(renderCard).join('');
-      atualizarResumo(todos);
+      const res = await fetch(`${supabaseUrl}/rest/v1/bancos?select=*&nome=neq.__perfil__`,
+        { headers:{apikey:supabaseKey,Authorization:`Bearer ${supabaseKey}`} });
+      todos=await res.json();
+      const c=document.getElementById('card-container');
+      if(!todos.length){c.innerHTML='<div class="card">Nenhum ativo encontrado.</div>';atualizarResumo([]);return;}
+      c.innerHTML=todos.map(renderCard).join(''); atualizarResumo(todos);
     }
-
-    function abrirModal(id = null, nome = '', aplicado = '', atual = '', icon = '') {
-      bancoEditando = id;
-      document.getElementById('modal-title').innerText = id ? 'Editar Ativo' : 'Novo Ativo';
-      document.getElementById('input-nome').value = nome || '';
-      document.getElementById('input-aplicado').value = aplicado || '';
-      document.getElementById('input-atual').value = atual || '';
-      document.getElementById('input-icon').value = icon || '';
-      document.getElementById('input-file').value = '';
+    function abrirModal(id=null,nome='',aplicado='',atual='',icon=''){
+      bancoEditando=id;
+      document.getElementById('modal-title').innerText=id?'Editar Ativo':'Novo Ativo';
+      document.getElementById('input-nome').value=nome;
+      document.getElementById('input-aplicado').value=aplicado;
+      document.getElementById('input-atual').value=atual;
+      document.getElementById('input-icon').value=icon;
+      document.getElementById('input-file').value='';
       document.getElementById('modal').classList.add('open');
-      setTimeout(() => document.getElementById('input-nome').focus(), 0);
     }
-
-    function fecharModal() { document.getElementById('modal').classList.remove('open'); }
-
-    async function salvarAlteracoes() {
-      const nome = document.getElementById('input-nome').value.trim();
-      const aplicado = parseFloat(document.getElementById('input-aplicado').value.replace(',', '.')) || 0;
-      const atual = parseFloat(document.getElementById('input-atual').value.replace(',', '.')) || 0;
-      let icone = document.getElementById('input-icon').value.trim();
-
-      if (!nome) { alert('Informe o nome do ativo.'); return; }
-
-      const fileInput = document.getElementById('input-file');
-      if (fileInput.files.length > 0) {
-        try { icone = await lerImagemBase64(fileInput.files[0]); }
-        catch { alert('Não foi possível ler a imagem selecionada.'); }
+    function fecharModal(){document.getElementById('modal').classList.remove('open');}
+    async function salvarAlteracoes(){
+      const nome=document.getElementById('input-nome').value.trim();
+      const aplicado=parseFloat(document.getElementById('input-aplicado').value)||0;
+      const atual=parseFloat(document.getElementById('input-atual').value)||0;
+      let icone=document.getElementById('input-icon').value.trim();
+      if(!nome){alert('Informe o nome do ativo');return;}
+      const file=document.getElementById('input-file').files[0];
+      if(file) icone=await lerImagemBase64(file);
+      const payload={nome,valor_aplicado:aplicado,valor_atual:atual,icone_url:icone||null};
+      if(bancoEditando==null){
+        await fetch(`${supabaseUrl}/rest/v1/bancos`,{method:'POST',headers:{apikey:supabaseKey,Authorization:`Bearer ${supabaseKey}`,'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      } else {
+        await fetch(`${supabaseUrl}/rest/v1/bancos?id=eq.${bancoEditando}`,{method:'PATCH',headers:{apikey:supabaseKey,Authorization:`Bearer ${supabaseKey}`,'Content-Type':'application/json'},body:JSON.stringify(payload)});
       }
-
-      const payload = { nome, valor_aplicado: aplicado, valor_atual: atual, icone_url: icone || null };
-
-      setLoadingCards();
-      try {
-        let res;
-        if (bancoEditando == null) {
-          res = await fetch(`${supabaseUrl}/rest/v1/bancos`, {
-            method: 'POST',
-            headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}`, 'Content-Type': 'application/json', Prefer: 'return=representation' },
-            body: JSON.stringify(payload)
-          });
-        } else {
-          res = await fetch(`${supabaseUrl}/rest/v1/bancos?id=eq.${bancoEditando}`, {
-            method: 'PATCH',
-            headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}`, 'Content-Type': 'application/json', Prefer: 'return=representation' },
-            body: JSON.stringify(payload)
-          });
-        }
-        if (!res.ok) throw new Error(await res.text() || 'Erro ao salvar');
-        fecharModal();
-        await carregarTodosOsCards();
-      } catch (err) { console.error(err); alert('Erro ao salvar: ' + (err.message || err)); await carregarTodosOsCards(); }
+      fecharModal(); carregarTodosOsCards();
+    }
+    async function excluirBanco(id){
+      if(!confirm('Excluir este ativo?'))return;
+      await fetch(`${supabaseUrl}/rest/v1/bancos?id=eq.${id}`,{method:'DELETE',headers:{apikey:supabaseKey,Authorization:`Bearer ${supabaseKey}`}});
+      carregarTodosOsCards();
     }
 
-    async function excluirBanco(id) {
-      if (!confirm('Excluir este ativo?')) return;
-      setLoadingCards();
-      try {
-        const res = await fetch(`${supabaseUrl}/rest/v1/bancos?id=eq.${id}`, {
-          method: 'DELETE',
-          headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` }
-        });
-        if (!res.ok) throw new Error('Falha ao excluir');
-        await carregarTodosOsCards();
-      } catch (e) { console.error(e); alert('Erro ao excluir.'); await carregarTodosOsCards(); }
-    }
+    // Sidebar toggle
+    function toggleSidebar(e){e.stopPropagation();document.getElementById('sidebar').classList.toggle('open');}
+    document.addEventListener('click',e=>{const s=document.getElementById('sidebar');const b=document.querySelector('.menu');if(!s.contains(e.target)&&!b.contains(e.target))s.classList.remove('open');});
+    document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.menu-link').forEach(a=>a.addEventListener('click',()=>document.getElementById('sidebar').classList.remove('open')));});
 
-    // ======== Dropdown: abrir/fechar e fechar ao clicar fora ========
-    function toggleSidebar(e) {
-      e.stopPropagation();
-      document.getElementById('sidebar').classList.toggle('open');
-    }
-    document.addEventListener('click', function(e) {
-      const sidebar = document.getElementById('sidebar');
-      const menuBtn = document.querySelector('.menu');
-      if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
-        sidebar.classList.remove('open');
-      }
-    });
+    // Atalhos
+    const descricoes={renda:"💰 <b>Renda Fixa</b>: investimentos seguros.",acoes:"📈 <b>Ações</b>: participação em empresas.",cripto:"₿ <b>Cripto</b>: moedas digitais.",poupanca:"🐷 <b>Poupança</b>: liquidez diária, baixo rendimento."};
+    function mostrarDescricao(tipo,ev){document.querySelectorAll('.atalho').forEach(a=>a.classList.remove('active'));ev.currentTarget.classList.add('active');const b=document.getElementById('descricao-atalho');b.innerHTML=descricoes[tipo];b.style.display='block';}
 
-    // ======== DESCRIÇÃO DOS ATALHOS (cor + balão) ========
-    const descricoes = {
-      renda: "💰 <strong>Renda Fixa</strong>: investimentos mais seguros (CDB, Tesouro Direto, debêntures). Rentabilidade definida na aplicação.",
-      acoes: "📈 <strong>Ações</strong>: participação em empresas. Você vira sócio e pode ganhar com valorização e dividendos.",
-      cripto: "₿ <strong>Cripto</strong>: moedas digitais (Bitcoin, Ethereum). Alta volatilidade e potencial de grandes ganhos.",
-      poupanca: "🐷 <strong>Poupança</strong>: liquidez diária e garantia do FGC, porém rendimento mais baixo."
-    };
-
-    function mostrarDescricao(tipo, ev) {
-      document.querySelectorAll('.atalho').forEach(a => a.classList.remove('active'));
-      ev.currentTarget.classList.add('active');
-
-      const balao = document.getElementById('descricao-atalho');
-      balao.innerHTML = descricoes[tipo];
-      balao.style.display = 'block'; // faz aparecer
-    }
-
-    // ======== INIT ========
-    document.addEventListener('DOMContentLoaded', async () => {
-      await Promise.all([carregarPerfil(), carregarTodosOsCards()]);
-    });
+    // Init
+    document.addEventListener('DOMContentLoaded',()=>{carregarPerfil();carregarTodosOsCards();});
   </script>
 </body>
 </html>
