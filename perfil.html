@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Perfil do Usuário</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Ícones -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <style>
@@ -235,7 +234,41 @@
         return;
       }
 
-      const { data, error } = await supabase
+      // Verificar e-mail duplicado
+      const { data: emailExiste } = await supabase
+        .from("usuarios")
+        .select("id")
+        .eq("email", email);
+
+      if (emailExiste.length > 0) {
+        exibirMensagem("Este e-mail já está cadastrado!", "erro");
+        return;
+      }
+
+      // Verificar telefone duplicado
+      const { data: telefoneExiste } = await supabase
+        .from("usuarios")
+        .select("id")
+        .eq("telefone", telefone);
+
+      if (telefoneExiste.length > 0) {
+        exibirMensagem("Este telefone já está cadastrado!", "erro");
+        return;
+      }
+
+      // Verificar senha duplicada
+      const { data: senhaExiste } = await supabase
+        .from("usuarios")
+        .select("id")
+        .eq("senha", senha);
+
+      if (senhaExiste.length > 0) {
+        exibirMensagem("Esta senha já está em uso. Escolha outra!", "erro");
+        return;
+      }
+
+      // Inserir no Supabase
+      const { error } = await supabase
         .from("usuarios")
         .insert([{ nome, email, telefone, senha, avatar }]);
 
