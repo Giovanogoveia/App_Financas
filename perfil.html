@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <style>
-    /* [estilos mantidos iguais ao original] */
     body {
       margin: 0;
       font-family: "Segoe UI", sans-serif;
@@ -132,6 +131,13 @@
       color: #721c24;
     }
 
+    #dataHoraInfo {
+      margin-top: 1rem;
+      font-size: .9rem;
+      color: #333;
+      display: none;
+    }
+
     a.voltar {
       display: inline-block;
       margin-top: 1rem;
@@ -185,6 +191,11 @@
     </form>
 
     <div id="mensagem" class="mensagem"></div>
+
+    <div id="dataHoraInfo">
+      <i class="fa fa-clock"></i> Última atualização: <span id="dataHoraTexto"></span>
+    </div>
+
     <a href="index.html" class="voltar">← Voltar</a>
   </div>
 
@@ -242,7 +253,21 @@
       mensagem.textContent = texto;
       mensagem.className = "mensagem " + tipo;
       mensagem.style.display = "block";
-      setTimeout(() => { mensagem.style.display = "none"; }, 4000);
+
+      const agoraUtc = new Date();
+      const dataBrasilia = agoraUtc.toLocaleString("pt-BR", {
+        timeZone: "America/Sao_Paulo",
+        hour12: false
+      });
+
+      const dataHoraInfo = document.getElementById("dataHoraInfo");
+      const dataHoraTexto = document.getElementById("dataHoraTexto");
+      dataHoraTexto.textContent = dataBrasilia;
+      dataHoraInfo.style.display = "block";
+
+      setTimeout(() => {
+        mensagem.style.display = "none";
+      }, 4000);
     }
 
     function limparCampos() {
