@@ -4,74 +4,176 @@
   <meta charset="UTF-8">
   <title>Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Ícones -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     body {
       margin: 0;
       font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      background: #e0e5ec;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      height: 100vh;
     }
+
     .card {
-      background: #fff;
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0,0,0,.15);
+      background: #e0e5ec;
+      padding: 2.5rem 2rem;
+      border-radius: 20px;
+      box-shadow: 9px 9px 16px #b8bec7,
+                  -9px -9px 16px #ffffff;
       width: 100%;
-      max-width: 380px;
+      max-width: 360px;
       text-align: center;
-      animation: fadeIn .5s ease;
+      animation: fadeIn .6s ease;
     }
+
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
+      from { opacity: 0; transform: translateY(-15px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    h2 { margin-bottom: 1.5rem; color: #333; }
-    .form-group { margin-bottom: 1rem; text-align: left; }
-    .form-group label { font-size: .9rem; color: #555; display: block; margin-bottom: .3rem; }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1rem;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #e0e5ec;
+      box-shadow: inset 6px 6px 10px #b8bec7,
+                  inset -6px -6px 10px #ffffff;
+    }
+    .logo i {
+      font-size: 2rem;
+      color: #1da1f2;
+    }
+
+    h2 {
+      margin-bottom: 1.5rem;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .form-group i {
+      position: absolute;
+      left: 12px;
+      color: #666;
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
     .form-group input {
-      width: 100%; padding: .7rem;
-      border: 1px solid #ccc; border-radius: 8px;
-      font-size: 1rem; transition: border .3s;
+      width: 100%;
+      height: 45px;
+      padding: 0 1rem 0 2.5rem; /* espaço para ícone */
+      border: none;
+      border-radius: 12px;
+      background: #e0e5ec;
+      font-size: 0.95rem;
+      color: #333;
+      box-shadow: inset 3px 3px 6px #b8bec7,
+                  inset -3px -3px 6px #ffffff;
+      display: flex;
+      align-items: center;
     }
-    .form-group input:focus { border-color: #007bff; outline: none; }
+
+    .form-group input::placeholder {
+      color: #999;
+      font-size: 0.9rem;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      box-shadow: inset 2px 2px 5px #b8bec7,
+                  inset -2px -2px 5px #ffffff,
+                  0 0 5px rgba(29,161,242,0.6);
+    }
+
     .btn-login {
-      width: 100%; padding: .8rem; margin-top: 1rem;
-      border: none; border-radius: 25px;
-      background: #007bff; color: #fff;
-      font-size: 1rem; font-weight: bold;
-      cursor: pointer; transition: background .3s;
+      width: 100%;
+      padding: 0.9rem;
+      border: none;
+      border-radius: 12px;
+      background: #1da1f2;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: .8rem;
+      box-shadow: 5px 5px 10px #b8bec7,
+                  -5px -5px 10px #ffffff;
+      transition: all 0.2s ease-in-out;
     }
-    .btn-login:hover { background: #0056b3; }
-    .msg { margin-top: 1rem; font-size: .9rem; }
+
+    .btn-login:hover {
+      background: #0d8ddb;
+      transform: translateY(-2px);
+    }
+
+    .btn-login:active {
+      box-shadow: inset 4px 4px 8px #b8bec7,
+                  inset -4px -4px 8px #ffffff;
+      transform: translateY(1px);
+    }
+
+    .msg {
+      margin-top: 1rem;
+      font-size: .9rem;
+      min-height: 20px;
+    }
     .msg.erro { color: #dc3545; }
     .msg.sucesso { color: #28a745; }
+
+    .extra {
+      margin-top: 1rem;
+      font-size: .85rem;
+    }
+    .extra a {
+      color: #1da1f2;
+      text-decoration: none;
+    }
+    .extra a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
   <div class="card">
+    <div class="logo"><i class="fa fa-user"></i></div>
     <h2>Login</h2>
+
     <form id="loginForm">
       <div class="form-group">
-        <label for="email"><i class="fa fa-envelope"></i> E-mail</label>
+        <i class="fa fa-envelope"></i>
         <input type="email" id="email" placeholder="Digite seu e-mail">
       </div>
       <div class="form-group">
-        <label for="senha"><i class="fa fa-lock"></i> Senha</label>
+        <i class="fa fa-lock"></i>
         <input type="password" id="senha" placeholder="Digite sua senha">
       </div>
       <button type="submit" class="btn-login">Entrar</button>
     </form>
+
     <p class="msg" id="mensagem"></p>
+
+    <div class="extra">
+      <a href="perfil.html">Criar conta</a>
+    </div>
   </div>
 
   <script>
-    // ===== CONFIG SUPABASE =====
     const supabaseUrl = "https://dylziaqkyavkfwjepqkp.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM"; // sua anon key do Supabase
 
     async function loginUsuario(email, senha) {
       try {
@@ -82,7 +184,6 @@
             Accept: "application/json"
           }
         });
-
         if (!res.ok) throw new Error("Falha na requisição.");
         const data = await res.json();
         return data.length > 0 ? data[0] : null;
@@ -116,7 +217,7 @@
         exibirMensagem("Login realizado com sucesso!", "sucesso");
         localStorage.setItem("usuarioLogado", JSON.stringify(usuario));
         setTimeout(() => {
-          window.location.href = "index.html"; // redireciona para o painel
+          window.location.href = "index.html";
         }, 1200);
       }
     });
