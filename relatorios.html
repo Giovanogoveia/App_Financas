@@ -2,16 +2,264 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Relatorio</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Relatório</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f4f7fb;
+      color: #333;
+    }
+
+    /* ===== Header Moderno ===== */
+    header {
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: white;
+      padding: 18px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
+    }
+    header .left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header h2 {
+      margin: 0;
+      font-size: 1.6rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    header h2 i {
+      font-size: 1.4rem;
+    }
+    header a {
+      text-decoration: none;
+      background: white;
+      color: #007bff;
+      font-weight: 600;
+      padding: 8px 20px;
+      border-radius: 50px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      transition: 0.2s;
+    }
+    header a:hover {
+      background: #f0f0f0;
+      transform: scale(1.05);
+    }
+
+    main {
+      padding: 30px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    h3 {
+      margin-top: 40px;
+      margin-bottom: 12px;
+      color: #007bff;
+    }
+
+    .filtro {
+      margin-bottom: 12px;
+    }
+    .filtro input {
+      width: 100%;
+      max-width: 300px;
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+
+    .table-wrapper {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+    }
+
+    thead {
+      background: #007bff;
+      color: white;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s;
+    }
+
+    tbody tr:hover {
+      background: #f9faff;
+    }
+
+    td {
+      font-size: 0.95rem;
+    }
+  </style>
+  <!-- Ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+  <!-- Cabeçalho -->
   <header>
-    <h2>Relatorio</h2>
-    <a href="index.html">Voltar</a>
+    <div class="left">
+      <i class="fa-solid fa-chart-column"></i>
+      <h2>Relatório</h2>
+    </div>
+    <a href="index.html"><i class="fa-solid fa-arrow-left"></i> Voltar</a>
   </header>
+
   <main>
-    <p>Aqui você poderá alterar preferências e opções da conta.</p>
+    <!-- Usuários -->
+    <h3>👤 Usuários</h3>
+    <div class="filtro">
+      <input type="text" id="filtro-usuarios" placeholder="Filtrar usuários...">
+    </div>
+    <div class="table-wrapper">
+      <table id="tabela-usuarios">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="3">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Aplicações -->
+    <h3>💼 Minhas Aplicações</h3>
+    <div class="filtro">
+      <input type="text" id="filtro-aplicacoes" placeholder="Filtrar aplicações...">
+    </div>
+    <div class="table-wrapper">
+      <table id="tabela-aplicacoes">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Valor Aplicado</th>
+            <th>Valor Atual</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="4">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
   </main>
+
+  <script>
+    const supabaseUrl = 'https://dylziaqkyavkfwjepqkp.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM';
+    const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    let usuarios = [];
+    let aplicacoes = [];
+
+    async function carregarUsuarios() {
+      const res = await fetch(`${supabaseUrl}/rest/v1/usuarios?select=*`, {
+        headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` }
+      });
+      usuarios = await res.json();
+      renderUsuarios();
+    }
+
+    function renderUsuarios(filtro = "") {
+      const corpo = document.querySelector("#tabela-usuarios tbody");
+      corpo.innerHTML = "";
+      let dados = usuarios;
+
+      if (filtro) {
+        filtro = filtro.toLowerCase();
+        dados = usuarios.filter(u =>
+          (u.nome && u.nome.toLowerCase().includes(filtro)) ||
+          (u.email && u.email.toLowerCase().includes(filtro))
+        );
+      }
+
+      if (!dados.length) {
+        corpo.innerHTML = "<tr><td colspan='3'>Nenhum usuário encontrado.</td></tr>";
+        return;
+      }
+
+      dados.forEach(u => {
+        corpo.innerHTML += `<tr>
+          <td>${u.id}</td>
+          <td>${u.nome}</td>
+          <td>${u.email}</td>
+        </tr>`;
+      });
+    }
+
+    async function carregarAplicacoes() {
+      const res = await fetch(`${supabaseUrl}/rest/v1/bancos?select=*`, {
+        headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` }
+      });
+      aplicacoes = await res.json();
+      renderAplicacoes();
+    }
+
+    function renderAplicacoes(filtro = "") {
+      const corpo = document.querySelector("#tabela-aplicacoes tbody");
+      corpo.innerHTML = "";
+      let dados = aplicacoes;
+
+      if (filtro) {
+        filtro = filtro.toLowerCase();
+        dados = aplicacoes.filter(a =>
+          (a.nome && a.nome.toLowerCase().includes(filtro))
+        );
+      }
+
+      if (!dados.length) {
+        corpo.innerHTML = "<tr><td colspan='4'>Nenhuma aplicação encontrada.</td></tr>";
+        return;
+      }
+
+      dados.forEach(a => {
+        corpo.innerHTML += `<tr>
+          <td>${a.id}</td>
+          <td>${a.nome}</td>
+          <td>${BRL.format(a.valor_aplicado || 0)}</td>
+          <td>${BRL.format(a.valor_atual || 0)}</td>
+        </tr>`;
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      carregarUsuarios();
+      carregarAplicacoes();
+
+      document.getElementById("filtro-usuarios").addEventListener("input", e => {
+        renderUsuarios(e.target.value);
+      });
+
+      document.getElementById("filtro-aplicacoes").addEventListener("input", e => {
+        renderAplicacoes(e.target.value);
+      });
+    });
+  </script>
 </body>
 </html>
