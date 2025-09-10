@@ -12,7 +12,12 @@
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(to bottom, #e6f0ff 20%, #ffffff 100%);
     }
-    .app-container { max-width: 800px; margin: auto; padding: 1rem; }
+    .app-container { 
+      max-width: 800px; 
+      margin: auto; 
+      padding: 1rem; 
+      padding-bottom: 80px; /* espaço para a navbar */
+    }
 
     /* Header */
     .header {
@@ -124,6 +129,47 @@
     .modal-content input { width:100%; padding:.5rem; margin:.4rem 0; border-radius:8px; border:1px solid #ccc; }
     .modal-content button { margin-top:1rem; width:100%; padding:.6rem; border:none; border-radius:8px; background:#007bff; color:#fff; font-weight:bold; cursor:pointer; }
     .helper { font-size:.85rem; color:#666; margin-top:.5rem; }
+
+    /* Barra de navegação inferior */
+    .navbar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #fff;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #ddd;
+      padding: .5rem 0;
+      z-index: 1000;
+    }
+    .navbar a {
+      text-decoration: none;
+      color: #666;
+      font-size: .85rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .navbar a i {
+      font-size: 1.3rem;
+      margin-bottom: 4px;
+    }
+    .navbar a.active {
+      color: #007bff;
+      font-weight: bold;
+    }
+    .navbar .pix-btn {
+      background: #007bff;
+      color: #fff;
+      font-size: 1.5rem;
+      width: 58px; height: 58px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: -30px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
   </style>
 </head>
 <body>
@@ -216,6 +262,29 @@
     <!-- Cards -->
     <div id="card-container" class="grid">Carregando...</div>
   </div>
+
+  <!-- Barra de navegação -->
+  <nav class="navbar">
+    <a href="#" class="active">
+      <i class="fas fa-home"></i>
+      <span>Início</span>
+    </a>
+    <a href="#">
+      <i class="fas fa-list"></i>
+      <span>Atividade</span>
+    </a>
+    <a href="#" class="pix-btn">
+      <i class="fas fa-qrcode"></i>
+    </a>
+    <a href="#">
+      <i class="fas fa-ticket-alt"></i>
+      <span>Benefícios</span>
+    </a>
+    <a href="#">
+      <i class="fas fa-bars"></i>
+      <span>Mais</span>
+    </a>
+  </nav>
 
   <!-- Modal -->
   <div class="modal" id="modal">
@@ -364,8 +433,16 @@
     const descricoes={renda:"💰 <b>Renda Fixa</b>: investimentos seguros.",acoes:"📈 <b>Ações</b>: participação em empresas.",cripto:"₿ <b>Cripto</b>: moedas digitais.",poupanca:"🐷 <b>Poupança</b>: liquidez diária, baixo rendimento."};
     function mostrarDescricao(tipo,ev){document.querySelectorAll('.atalho').forEach(a=>a.classList.remove('active'));ev.currentTarget.classList.add('active');const b=document.getElementById('descricao-atalho');b.innerHTML=descricoes[tipo];b.style.display='block';}
 
-    // Init
-    document.addEventListener('DOMContentLoaded',()=>{carregarPerfil();carregarTodosOsCards();});
+    // Navbar - ativar item selecionado
+    document.addEventListener('DOMContentLoaded',()=>{
+      carregarPerfil();carregarTodosOsCards();
+      document.querySelectorAll('.navbar a').forEach(link=>{
+        link.addEventListener('click',function(){
+          document.querySelectorAll('.navbar a').forEach(l=>l.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+    });
   </script>
 </body>
 </html>
