@@ -1,0 +1,30 @@
+<!-- redefinir-senha.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Redefinir Senha</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <h2>Redefinir sua senha</h2>
+  <input type="password" id="novaSenha" placeholder="Digite a nova senha" />
+  <button onclick="atualizarSenha()">Atualizar Senha</button>
+  <div id="mensagem"></div>
+
+  <script>
+    const supabase = window.supabase.createClient(
+      'https://SEU_PROJETO.supabase.co',
+      'SUA_CHAVE_PUBLICA'
+    );
+
+    async function atualizarSenha() {
+      const novaSenha = document.getElementById('novaSenha').value;
+      const { error } = await supabase.auth.updateUser({ password: novaSenha });
+
+      document.getElementById('mensagem').textContent = 
+        error ? `Erro: ${error.message}` : 'Senha atualizada com sucesso!';
+    }
+  </script>
+</body>
+</html>
