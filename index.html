@@ -355,21 +355,37 @@
     }
 
     // Render
-    function renderCard({id,nome,valor_aplicado,valor_atual,icone_url}) {
-      const dif=(valor_atual||0)-(valor_aplicado||0);
-      const rend=(valor_aplicado||0)>0?(dif/valor_aplicado)*100:0;
-      return `<div class="card">
-        <button class="delete-btn" onclick="excluirBanco(${id})">×</button>
-        <div class="card-header" onclick="abrirModal(${id},'${nome}',${valor_aplicado||0},${valor_atual||0},'${icone_url||''}')">
-          <div class="avatar">${avatarHTML(nome,icone_url)}</div>
-          <div class="name">${nome||'-'}</div>
-        </div>
-        <div class="kvs">
-          <p>Aplicado: <strong>${BRL.format(valor_aplicado||0)}</strong></p>
-          <p>Atual: <strong>${BRL.format(valor_atual||0)}</strong></p>
-          <p>Diferença: <span class="pill ${dif>=0?'pos':'neg'}">${BRL.format(dif)}</span></p>
-          <p>Rendimento: <strong>${PCT.format(rend)}%</strong></p>
-        </div></div>`;
+  
+function renderCard({id, nome, valor_aplicado, valor_atual, icone_url, ultima_atualizacao}) {
+  const dif = (valor_atual || 0) - (valor_aplicado || 0);
+  const rend = (valor_aplicado || 0) > 0 ? (dif / valor_aplicado) * 100 : 0;
+  const dataTexto = ultima_atualizacao
+    ? new Date(ultima_atualizacao).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "Atualização desconhecida";
+
+  return `<div class="card">
+    <button class="delete-btn" onclick="excluirBanco(${id})">&times;</button>
+    <div class="card-header" onclick="abrirModal(${id},'${nome}',${valor_aplicado || 0},${valor_atual || 0},'${icone_url || ''}')">
+      <div class="avatar">${avatarHTML(nome, icone_url)}</div>
+      <div class="name">${nome || '-'}</div>
+    </div>
+    <div class="kvs">
+      <p>Aplicado: <strong>${BRL.format(valor_aplicado || 0)}</strong></p>
+      <p>Atual: <strong>${BRL.format(valor_atual || 0)}</strong></p>
+      <p>Diferença: <span class="pill ${dif >= 0 ? 'pos' : 'neg'}">${BRL.format(dif)}</span></p>
+      <p>Rendimento: <strong>${PCT.format(rend)}%</strong></p>
+      <p style="text-align: right; font-size: 0.8rem; color: #888; margin-top: 8px;">
+        Última atualização: ${dataTexto}
+      </p>
+    </div>
+  </div>`;
+
     }
     function atualizarResumo(lista) {
       const tA=lista.reduce((s,x)=>s+(x.valor_aplicado||0),0);
