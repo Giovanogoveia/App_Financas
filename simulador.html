@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Simulador de Investimento</title>
+  <title>Calculadora Financeira</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     body {
@@ -27,19 +27,15 @@
       max-width: 600px;
       margin: auto;
     }
-    h2 {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
     label {
-      display: block;
-      margin-bottom: .4rem;
       font-weight: 600;
+      margin-top: 1rem;
+      display: block;
     }
-    input {
+    input, select {
       width: 100%;
       padding: .6rem;
-      margin-bottom: 1rem;
+      margin-top: .3rem;
       border-radius: 8px;
       border: 1px solid #ccc;
       font-size: 1rem;
@@ -54,7 +50,7 @@
       border-radius: 10px;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 10px;
+      margin-top: 20px;
     }
     button:hover {
       background: #0056b3;
@@ -82,54 +78,68 @@
 </head>
 <body>
   <header>
-    <i class="fas fa-calculator"></i> Simulador de Investimento
+    <i class="fas fa-calculator"></i> Calculadora Financeira
   </header>
 
   <div class="container">
-    <h2>Faça uma simulação rápida</h2>
-    
-    <label for="valor">Valor Investido (R$)</label>
-    <input type="number" id="valor" placeholder="Ex: 1000" />
+    <label for="tipo">Tipo de cálculo:</label>
+    <select id="tipo">
+      <option value="composto">Juros Compostos</option>
+      <option value="simples">Juros Simples</option>
+    </select>
 
-    <label for="rendimento">Rendimento Anual (%)</label>
-    <input type="number" id="rendimento" placeholder="Ex: 10" />
+    <label for="principal">Valor Inicial (R$):</label>
+    <input type="number" id="principal" placeholder="Ex: 1000">
 
-    <label for="anos">Tempo (em anos)</label>
-    <input type="number" id="anos" placeholder="Ex: 5" />
+    <label for="taxa">Taxa de Juros (% ao mês):</label>
+    <input type="number" id="taxa" placeholder="Ex: 1.5">
 
-    <button onclick="simular()">Calcular</button>
+    <label for="tempo">Período (meses):</label>
+    <input type="number" id="tempo" placeholder="Ex: 12">
 
-    <div class="resultado" id="resultado" style="display:none;"></div>
+    <button onclick="calcular()">Calcular</button>
 
-    <a class="voltar" href="index.html"><i class="fas fa-arrow-left"></i> Voltar para o início</a>
+    <div id="resultado" class="resultado" style="display: none;"></div>
+
+    <a href="index.html" class="voltar"><i class="fas fa-arrow-left"></i> Voltar para o início</a>
   </div>
 
   <script>
-    function simular() {
-      const valor = parseFloat(document.getElementById("valor").value);
-      const rendimento = parseFloat(document.getElementById("rendimento").value);
-      const anos = parseFloat(document.getElementById("anos").value);
+    function calcular() {
+      const tipo = document.getElementById('tipo').value;
+      const principal = parseFloat(document.getElementById('principal').value);
+      const taxa = parseFloat(document.getElementById('taxa').value);
+      const tempo = parseInt(document.getElementById('tempo').value);
+      const resultadoEl = document.getElementById('resultado');
 
-      if (!valor || !rendimento || !anos) {
+      if (!principal || !taxa || !tempo) {
         alert("Preencha todos os campos.");
         return;
       }
 
-      const montante = valor * Math.pow((1 + rendimento / 100), anos);
-      const lucro = montante - valor;
+      let montante = 0;
+      let juros = 0;
 
-      const formatter = new Intl.NumberFormat("pt-BR", {
+      if (tipo === 'composto') {
+        montante = principal * Math.pow(1 + taxa / 100, tempo);
+        juros = montante - principal;
+      } else {
+        juros = principal * (taxa / 100) * tempo;
+        montante = principal + juros;
+      }
+
+      const BRL = new Intl.NumberFormat("pt-BR", {
         style: "currency",
         currency: "BRL"
       });
 
-      const resultado = document.getElementById("resultado");
-      resultado.innerHTML = `
-        <p><strong>Valor Futuro:</strong> ${formatter.format(montante)}</p>
-        <p><strong>Lucro Total:</strong> ${formatter.format(lucro)}</p>
-        <p><strong>Período:</strong> ${anos} ano(s)</p>
+      resultadoEl.innerHTML = `
+        <p><strong>Montante Final:</strong> ${BRL.format(montante)}</p>
+        <p><strong>Total em Juros:</strong> ${BRL.format(juros)}</p>
+        <p><strong>Duração:</strong> ${tempo} mês(es)</p>
+        <p><strong>Tipo de Juros:</strong> ${tipo === 'composto' ? 'Compostos' : 'Simples'}</p>
       `;
-      resultado.style.display = "block";
+      resultadoEl.style.display = 'block';
     }
   </script>
 </body>
