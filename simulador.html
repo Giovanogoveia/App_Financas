@@ -5,67 +5,156 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Calculadora Financeira</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #f0f4f8;
+      background: #e5e5e5;
       color: #333;
     }
-    header {
-      background: #007bff;
-      color: white;
-      padding: 1rem;
+
+    /* HEADER MODERNO COM GLOW */
+    .header-glow {
+      background: linear-gradient(135deg, #1f3b8b, #00bcd4);
+      padding: 3rem 1rem 2rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      color: #fff;
       text-align: center;
-      font-size: 1.3rem;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      position: relative;
+      overflow: hidden;
     }
-    .container {
-      padding: 2rem 1rem;
-      max-width: 600px;
+
+    .header-content {
+      max-width: 800px;
       margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
     }
+
+    .icon-box {
+      font-size: 3rem;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 1rem;
+      border-radius: 50%;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+      animation: pulseIcon 2.5s infinite;
+    }
+
+    .text-box .linha1 {
+      font-size: 1rem;
+      font-weight: 300;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #e0f7fa;
+    }
+
+    .text-box .linha2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-top: 0.3rem;
+      color: #ffffff;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    @keyframes pulseIcon {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(255,255,255,0.2);
+      }
+      50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 25px rgba(255,255,255,0.3);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .text-box .linha2 {
+        font-size: 1.8rem;
+      }
+    }
+
+    /* CONTAINER */
+    .container {
+      max-width: 600px;
+      margin: 3rem auto;
+      background: #fff;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
     label {
       font-weight: 600;
       margin-top: 1rem;
       display: block;
+      color: #333;
     }
+
     input, select {
       width: 100%;
-      padding: .6rem;
-      margin-top: .3rem;
-      border-radius: 8px;
+      padding: 0.7rem;
+      margin-top: 0.3rem;
+      border-radius: 10px;
       border: 1px solid #ccc;
       font-size: 1rem;
     }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0,123,255,0.2);
+    }
+
     button {
       width: 100%;
-      padding: .8rem;
+      padding: 1rem;
       background: #007bff;
       color: white;
       border: none;
       font-size: 1rem;
-      border-radius: 10px;
+      border-radius: 12px;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 20px;
+      margin-top: 25px;
+      transition: all 0.3s ease;
     }
+
     button:hover {
       background: #0056b3;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0,123,255,0.3);
     }
+
     .resultado {
       margin-top: 2rem;
-      background: white;
+      background: #f9f9f9;
       border-radius: 12px;
-      padding: 1.2rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      color: #333;
     }
+
     .resultado p {
-      font-size: 1.05rem;
-      margin: .4rem 0;
+      font-size: 1.1rem;
+      margin: .7rem 0;
     }
+
+    .resultado i {
+      color: #007bff;
+      margin-right: 8px;
+    }
+
+    canvas {
+      margin-top: 2rem;
+      width: 100%;
+    }
+
     .voltar {
       display: block;
       text-align: center;
@@ -74,13 +163,28 @@
       color: #007bff;
       font-weight: bold;
     }
+
+    .voltar:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <i class="fas fa-calculator"></i> Calculadora Financeira
+
+  <!-- HEADER MODERNO -->
+  <header class="header-glow">
+    <div class="header-content">
+      <div class="icon-box">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <div class="text-box">
+        <span class="linha1">Sua Jornada Financeira Começa Aqui</span>
+        <h1 class="linha2">Calculadora Financeira</h1>
+      </div>
+    </div>
   </header>
 
+  <!-- CONTEÚDO PRINCIPAL -->
   <div class="container">
     <label for="tipo">Tipo de cálculo:</label>
     <select id="tipo">
@@ -99,18 +203,25 @@
 
     <button onclick="calcular()">Calcular</button>
 
-    <div id="resultado" class="resultado" style="display: none;"></div>
+    <div id="resultado" class="resultado" style="display: none;">
+      <div id="valores"></div>
+      <canvas id="grafico"></canvas>
+    </div>
 
     <a href="index.html" class="voltar"><i class="fas fa-arrow-left"></i> Voltar para o início</a>
   </div>
 
+  <!-- SCRIPT DE CÁLCULO + GRÁFICO -->
   <script>
+    let chartInstance = null;
+
     function calcular() {
       const tipo = document.getElementById('tipo').value;
       const principal = parseFloat(document.getElementById('principal').value);
       const taxa = parseFloat(document.getElementById('taxa').value);
       const tempo = parseInt(document.getElementById('tempo').value);
       const resultadoEl = document.getElementById('resultado');
+      const valoresEl = document.getElementById('valores');
 
       if (!principal || !taxa || !tempo) {
         alert("Preencha todos os campos.");
@@ -133,14 +244,54 @@
         currency: "BRL"
       });
 
-      resultadoEl.innerHTML = `
-        <p><strong>Montante Final:</strong> ${BRL.format(montante)}</p>
-        <p><strong>Total em Juros:</strong> ${BRL.format(juros)}</p>
-        <p><strong>Duração:</strong> ${tempo} mês(es)</p>
-        <p><strong>Tipo de Juros:</strong> ${tipo === 'composto' ? 'Compostos' : 'Simples'}</p>
+      valoresEl.innerHTML = `
+        <p><i class="fas fa-sack-dollar"></i><strong>Montante Final:</strong> ${BRL.format(montante)}</p>
+        <p><i class="fas fa-coins"></i><strong>Juros Gerados:</strong> ${BRL.format(juros)}</p>
+        <p><i class="fas fa-calendar-alt"></i><strong>Duração:</strong> ${tempo} mês(es)</p>
+        <p><i class="fas fa-percent"></i><strong>Tipo de Juros:</strong> ${tipo === 'composto' ? 'Compostos' : 'Simples'}</p>
       `;
+
       resultadoEl.style.display = 'block';
+
+      const ctx = document.getElementById('grafico').getContext('2d');
+
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Valor Inicial', 'Juros Gerados'],
+          datasets: [{
+            label: 'R$',
+            data: [principal, juros],
+            backgroundColor: ['#007bff', '#00bcd4'],
+            borderRadius: 12
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (context) => `R$ ${context.raw.toFixed(2)}`
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: (val) => `R$ ${val}`
+              }
+            }
+          }
+        }
+      });
     }
   </script>
 </body>
 </html>
+
