@@ -2,90 +2,448 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Relatório de Investimentos</title>
+  <title>Gerenciador de Investimentos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- FontAwesome para ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    body { font-family: Arial; padding: 20px; max-width: 600px; margin: auto; background:#f2f2f2; }
-    input, textarea { width: 100%; margin-bottom: 10px; padding: 10px; border-radius: 6px; border: 1px solid #ccc; }
-    button { padding: 10px 20px; border: none; border-radius: 6px; background: #007bff; color: #fff; cursor: pointer; }
-    h2 { color: #007bff; }
-    .card { background: #fff; padding: 15px; margin-top: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,.1); }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #e6f0ff 20%, #ffffff 100%);
+    }
+    .app-container { 
+      max-width: 800px; 
+      margin: auto; 
+      padding: 1rem; 
+      padding-bottom: 80px; /* espaço para a navbar */
+    }
+
+    /* Header */
+    .header {
+      position: relative;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1rem;
+    }
+    .user-info { display: flex; align-items: center; gap: .5rem; }
+    .avatar-top { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; object-fit: cover; }
+    .menu { font-size: 1.5rem; cursor: pointer; padding:.25rem; border-radius:8px; }
+    .menu:active { transform: scale(.98); }
+
+    /* Sidebar */
+    .sidebar {
+      position: absolute; top: calc(100% + 8px); right: 0; width: 220px;
+      background:#fff; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,.15);
+      padding:12px; display:none; z-index:500;
+    }
+    .sidebar.open { display:block; }
+    .sidebar h3 { margin:0 0 8px; font-size:1rem; color:#007bff; }
+    .sidebar ul { list-style:none; margin:0; padding:0; }
+    .sidebar ul li { padding:0; }
+    .sidebar ul li a{
+      display:flex; align-items:center; gap:.6rem;
+      padding:10px; border-radius:8px; text-decoration:none; color:inherit;
+    }
+    .sidebar ul li a i{ width:18px; text-align:center; }
+    .sidebar ul li a:hover{ background:#f1f5f9; }
+
+    /* Saldo */
+    .saldo { text-align:center; margin-bottom:1rem; }
+    .saldo p { margin:0; color:#666; }
+    .saldo h1 { color:#0044cc; font-size:2.2rem; font-weight:bold; margin:.2rem 0; }
+
+    /* Atalhos */
+    .atalhos { display:flex; justify-content:center; gap:2rem; margin:1.5rem 0; }
+    .atalho { text-align:center; cursor:pointer; }
+    .atalho .icon {
+      width:65px; height:65px; border-radius:50%;
+      background:#f1f5f9; color:#007bff; font-size:1.5rem;
+      display:flex; align-items:center; justify-content:center;
+      margin:auto; transition:all .2s;
+    }
+    .atalho span { font-size:.9rem; color:#333; margin-top:.4rem; display:block; }
+    .atalho.active .icon {
+      background:#007bff; color:#fff; transform:scale(1.1);
+      box-shadow:0 0 10px rgba(0,123,255,.5);
+    }
+
+    /* Balão */
+    #descricao-atalho {
+      display:none;
+      margin: 1rem auto;
+      max-width: 640px;
+      font-size: .95rem;
+      color: #333;
+      background: #f9f9f9;
+      padding: 14px 18px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border-left: 5px solid #007bff;
+      position: relative;
+      text-align: left;
+    }
+    #descricao-atalho::before {
+      content:"";
+      position:absolute;
+      top:-10px; left:20px;
+      border-width:0 10px 10px 10px;
+      border-style:solid;
+      border-color:transparent transparent #f9f9f9 transparent;
+      filter: drop-shadow(0 -2px 2px rgba(0,0,0,.1));
+    }
+
+    /* Summary */
+    .summary-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin-bottom:1rem; }
+    .summary-card { background:#fff; border-radius:12px; padding:1rem; text-align:center; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
+    .summary-card .icon { font-size:1.4rem; margin-bottom:.3rem; }
+    .summary-card .label { font-size:.9rem; color:#666; }
+    .summary-card .value { font-weight:bold; font-size:1.1rem; margin-top:.3rem; }
+
+    /* Botão */
+    #add-button {
+      display:block; margin:20px auto; padding:12px 20px;
+      background:#007bff; color:#fff; border:none; border-radius:25px;
+      font-size:16px; font-weight:bold; cursor:pointer; transition:background .3s;
+      box-shadow:0 4px 10px rgba(0,0,0,.15);
+    }
+    #add-button:hover { background:#0056b3; }
+
+    /* Cards */
+    #card-container { margin-top:1rem; display:grid; gap:1rem; }
+    .card { background:#fff; border-radius:16px; padding:1rem; box-shadow:0 4px 10px rgba(0,0,0,0.1); position:relative; }
+    .delete-btn { position:absolute; top:8px; right:8px; background:transparent; border:none; font-size:18px; color:#444; cursor:pointer; }
+    .card-header { display:flex; align-items:center; gap:10px; margin-bottom:.6rem; cursor:pointer; }
+    .avatar { width:48px; height:48px; border-radius:50%; background:#f1f5f9; display:flex; align-items:center; justify-content:center; font-weight:700; color:#007bff; overflow:hidden; border:2px solid #fff; box-shadow:0 1px 3px rgba(0,0,0,.08); font-size:1.1rem; }
+    .avatar img { width:100%; height:100%; object-fit:cover; }
+    .name { font-weight:700; font-size:1.05rem; }
+    .kvs { margin-top:.4rem; }
+    .pill { font-weight:700; }
+    .pos { color:#22c55e; }
+    .neg { color:#ef4444; }
+
+    /* Modal */
+    .modal { position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; justify-content:center; align-items:center; z-index:100; }
+    .modal.open { display:flex; }
+    .modal-content { background:#fff; border-radius:16px; padding:2rem; width:320px; box-shadow:0 10px 25px rgba(0,0,0,.25); text-align:left; }
+    .modal-content h2 { margin:0 0 .8rem; color:#007bff; }
+    .modal-content input { width:100%; padding:.5rem; margin:.4rem 0; border-radius:8px; border:1px solid #ccc; }
+    .modal-content button { margin-top:1rem; width:100%; padding:.6rem; border:none; border-radius:8px; background:#007bff; color:#fff; font-weight:bold; cursor:pointer; }
+    .helper { font-size:.85rem; color:#666; margin-top:.5rem; }
+
+    /* Barra de navegação inferior */
+    .navbar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #fff;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #ddd;
+      padding: .5rem 0;
+      z-index: 1000;
+    }
+    .navbar a {
+      text-decoration: none;
+      color: #666;
+      font-size: .85rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .navbar a i {
+      font-size: 1.3rem;
+      margin-bottom: 4px;
+    }
+    .navbar a.active {
+      color: #007bff;
+      font-weight: bold;
+    }
+    .navbar .pix-btn {
+      background: #007bff;
+      color: #fff;
+      font-size: 1.5rem;
+      width: 58px; height: 58px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: -30px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
   </style>
 </head>
 <body>
-  <h2>Enviar Relatório de Investimentos</h2>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="user-info">
+        <img id="user-avatar"
+          src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
+          class="avatar-top"
+          alt="user"
+          title="Clique para trocar a imagem"
+          onclick="alterarAvatarTopo()" />
+        <input type="file" id="file-avatar-topo" accept="image/*" style="display:none" onchange="handleAvatarTopo(event)"/>
+        <span>Olá, Investidor</span>
+      </div>
+      <div class="menu" title="Menu" onclick="toggleSidebar(event)">
+        <i class="fas fa-bars"></i>
+      </div>
 
-  <input type="email" id="email-dest" placeholder="E-mail do destinatário" required>
-  <input type="text" id="email-assunto" placeholder="Assunto" value="Relatório Financeiro Atualizado">
-  <textarea id="email-mensagem" placeholder="Mensagem opcional"></textarea>
-  <button onclick="enviarEmailComRelatorio()">Enviar E-mail com Resumo</button>
+      <!-- Sidebar -->
+      <div id="sidebar" class="sidebar">
+        <h3>Menu</h3>
+        <ul>
+          <li><a class="menu-link" href="perfil.html"><i class="fa-regular fa-user"></i> Perfil</a></li>
+          <li><a class="menu-link" href="configuracoes.html"><i class="fa-solid fa-gear"></i> Configurações</a></li>
+          <li><a class="menu-link" href="relatorios.html"><i class="fa-solid fa-chart-column"></i> Relatórios</a></li>
+          <li><a class="menu-link" href="login.html"><i class="fa-regular fa-circle-question"></i> Login</a></li>
+          <li><a class="menu-link" href="logout.html"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+        </ul>
+      </div>
+    </header>
 
-  <div id="status" style="margin-top:10px;"></div>
+    <!-- Saldo -->
+    <section class="saldo">
+      <p>Patrimônio Total</p>
+      <h1 id="patrimonioTotal">R$ 0,00</h1>
+    </section>
 
-  <div class="card">
-    <h3>Resumo Atual</h3>
-    <p><strong>Total Investido:</strong> <span id="total-aplicado">R$ 0,00</span></p>
-    <p><strong>Valor Atual:</strong> <span id="total-atual">R$ 0,00</span></p>
-    <p><strong>Lucro / Prejuízo:</strong> <span id="lucro">R$ 0,00</span></p>
-    <p><strong>% Rendimento:</strong> <span id="rendimento">0%</span></p>
+    <!-- Atalhos -->
+    <section class="atalhos">
+      <div class="atalho" onclick="mostrarDescricao('renda', event)">
+        <div class="icon"><i class="fas fa-coins"></i></div>
+        <span>Renda Fixa</span>
+      </div>
+      <div class="atalho" onclick="mostrarDescricao('acoes', event)">
+        <div class="icon"><i class="fas fa-chart-line"></i></div>
+        <span>Ações</span>
+      </div>
+      <div class="atalho" onclick="mostrarDescricao('cripto', event)">
+        <div class="icon"><i class="fab fa-bitcoin"></i></div>
+        <span>Cripto</span>
+      </div>
+      <div class="atalho" onclick="mostrarDescricao('poupanca', event)">
+        <div class="icon"><i class="fas fa-piggy-bank"></i></div>
+        <span>Poupança</span>
+      </div>
+    </section>
+
+    <!-- Balão -->
+    <div id="descricao-atalho"></div>
+
+    <!-- Resumo -->
+    <div class="summary-grid">
+      <div class="summary-card card-investido">
+        <div class="icon">💰</div>
+        <div class="label">Total Investido</div>
+        <div id="total-aplicado" class="value">R$ 0,00</div>
+      </div>
+      <div class="summary-card card-atual">
+        <div class="icon">💼</div>
+        <div class="label">Valor Atual</div>
+        <div id="total-atual" class="value">R$ 0,00</div>
+      </div>
+      <div class="summary-card card-lucro">
+        <div class="icon">📈</div>
+        <div class="label">Lucro / Prejuízo</div>
+        <div id="lucro" class="value">R$ 0,00</div>
+      </div>
+      <div class="summary-card card-rendimento">
+        <div class="icon">📊</div>
+        <div class="label">% Rendimento</div>
+        <div id="rendimento" class="value">0%</div>
+      </div>
+    </div>
+
+    <!-- Botão -->
+    <button id="add-button" onclick="abrirModal()">+ Adicionar Ativo</button>
+
+    <!-- Cards -->
+    <div id="card-container" class="grid">Carregando...</div>
+  </div>
+
+  <!-- Barra de navegação -->
+  <nav class="navbar">
+    <a href="#" class="active">
+      <i class="fas fa-home"></i>
+      <span>Início</span>
+    </a>
+    <a href="#">
+      <i class="fas fa-list"></i>
+      <span>Atividade</span>
+    </a>
+    <a href="#" class="pix-btn">
+      <i class="fas fa-qrcode"></i>
+    </a>
+    <a href="#">
+      <i class="fas fa-ticket-alt"></i>
+      <span>Benefícios</span>
+    </a>
+    <a href="#">
+      <i class="fas fa-bars"></i>
+      <span>Mais</span>
+    </a>
+  </nav>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content" role="dialog" aria-modal="true">
+      <h2 id="modal-title">Novo Ativo</h2>
+      <input type="text" id="input-nome" placeholder="Nome do ativo" />
+      <input type="number" id="input-aplicado" placeholder="Valor aplicado" step="0.01" />
+      <input type="number" id="input-atual" placeholder="Valor atual" step="0.01" />
+      <input type="text" id="input-icon" placeholder="URL do ícone (opcional)" />
+      <input type="file" id="input-file" accept="image/*" />
+      <button onclick="salvarAlteracoes()">Salvar</button>
+      <div class="helper">Dica: se não informar ícone, tento buscar o logo automaticamente (Clearbit).</div>
+    </div>
   </div>
 
   <script>
+    // CONFIG
+    const supabaseUrl = 'https://dylziaqkyavkfwjepqkp.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM';
     const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
     const PCT = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 });
 
-    let resumoAtual = {
-      aplicado: 10000,
-      atual: 12000
-    };
+    const domainByName = { neon:'neon.com.br', nubank:'nubank.com.br', pagseguro:'pagseguro.com.br',
+      itau:'itau.com.br', bradesco:'bradesco.com.br', santander:'santander.com.br', inter:'inter.co' };
 
-    function atualizarResumo() {
-      const lucro = resumoAtual.atual - resumoAtual.aplicado;
-      const rendimento = resumoAtual.aplicado ? (lucro / resumoAtual.aplicado) * 100 : 0;
-      document.getElementById('total-aplicado').innerText = BRL.format(resumoAtual.aplicado);
-      document.getElementById('total-atual').innerText = BRL.format(resumoAtual.atual);
-      document.getElementById('lucro').innerText = BRL.format(lucro);
-      document.getElementById('rendimento').innerText = PCT.format(rendimento) + '%';
+    let bancoEditando = null, todos = [];
+
+    // Helpers
+    function getLogo(nome, icone_url) {
+      if (icone_url) return icone_url;
+      if (!nome) return null;
+      const key = nome.toLowerCase();
+      let domain = domainByName[key];
+      if (!domain) for (const k in domainByName) if (key.includes(k)) domain = domainByName[k];
+      return domain ? `https://logo.clearbit.com/${domain}` : null;
+    }
+    function avatarHTML(nome, icone_url) {
+      const logo = getLogo(nome, icone_url);
+      return logo ? `<img src="${logo}" alt="${nome}" onerror="this.closest('.avatar').textContent='${(nome||'?')[0].toUpperCase()}'; this.remove();">`
+                  : (nome ? nome[0].toUpperCase() : '?');
+    }
+    function lerImagemBase64(file) {
+      return new Promise((res, rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});
     }
 
-    async function enviarEmailComRelatorio() {
-      const to = document.getElementById("email-dest").value;
-      const subject = document.getElementById("email-assunto").value;
-      const textoLivre = document.getElementById("email-mensagem").value;
-      const statusBox = document.getElementById("status");
-
-      const lucro = resumoAtual.atual - resumoAtual.aplicado;
-      const rendimento = resumoAtual.aplicado ? (lucro / resumoAtual.aplicado) * 100 : 0;
-
-      const textoFinal = `Resumo do seu relatório:\n\n` +
-        `Total Investido: ${BRL.format(resumoAtual.aplicado)}\n` +
-        `Valor Atual: ${BRL.format(resumoAtual.atual)}\n` +
-        `Lucro / Prejuízo: ${BRL.format(lucro)}\n` +
-        `Rendimento: ${PCT.format(rendimento)}%\n\n` +
-        textoLivre;
-
-      statusBox.innerText = "Enviando...";
-
+    // Perfil
+    async function carregarPerfil() {
       try {
-        const response = await fetch('https://dylziaqkyavkfwjepqkp.functions.supabase.co/send-email-smtp', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM'
-          },
-          body: JSON.stringify({ to, subject, text: textoFinal })
-        });
-
-        if (!response.ok) throw new Error(await response.text());
-        statusBox.innerText = "E-mail enviado com sucesso!";
-      } catch (err) {
-        statusBox.innerText = "Erro ao enviar: " + err.message;
-      }
+        const res = await fetch(`${supabaseUrl}/rest/v1/bancos?select=avatar_topo&nome=eq.__perfil__&limit=1`,
+          { headers: { apikey:supabaseKey, Authorization:`Bearer ${supabaseKey}` } });
+        const rows = await res.json();
+        if (rows?.length && rows[0].avatar_topo) document.getElementById('user-avatar').src = rows[0].avatar_topo;
+      } catch {}
+    }
+    async function salvarAvatarPerfil(base64) {
+      await fetch(`${supabaseUrl}/rest/v1/bancos?nome=eq.__perfil__`, {
+        method:'PATCH', headers:{apikey:supabaseKey,Authorization:`Bearer ${supabaseKey}`,'Content-Type':'application/json'},
+        body:JSON.stringify({avatar_topo:base64})
+      });
+    }
+    function alterarAvatarTopo(){ document.getElementById('file-avatar-topo').click(); }
+    async function handleAvatarTopo(e){
+      const f=e.target.files[0]; if(!f) return;
+      const base64=await lerImagemBase64(f);
+      document.getElementById('user-avatar').src=base64;
+      await salvarAvatarPerfil(base64);
+      e.target.value='';
     }
 
-    atualizarResumo();
+    // Render
+    function renderCard({id,nome,valor_aplicado,valor_atual,icone_url}) {
+      const dif=(valor_atual||0)-(valor_aplicado||0);
+      const rend=(valor_aplicado||0)>0?(dif/valor_aplicado)*100:0;
+      return `<div class="card">
+        <button class="delete-btn" onclick="excluirBanco(${id})">×</button>
+        <div class="card-header" onclick="abrirModal(${id},'${nome}',${valor_aplicado||0},${valor_atual||0},'${icone_url||''}')">
+          <div class="avatar">${avatarHTML(nome,icone_url)}</div>
+          <div class="name">${nome||'-'}</div>
+        </div>
+        <div class="kvs">
+          <p>Aplicado: <strong>${BRL.format(valor_aplicado||0)}</strong></p>
+          <p>Atual: <strong>${BRL.format(valor_atual||0)}</strong></p>
+          <p>Diferença: <span class="pill ${dif>=0?'pos':'neg'}">${BRL.format(dif)}</span></p>
+          <p>Rendimento: <strong>${PCT.format(rend)}%</strong></p>
+        </div></div>`;
+    }
+    function atualizarResumo(lista) {
+      const tA=lista.reduce((s,x)=>s+(x.valor_aplicado||0),0);
+      const tB=lista.reduce((s,x)=>s+(x.valor_atual||0),0);
+      const lucro=tB-tA, r=tA?(lucro/tA*100):0;
+      document.getElementById('total-aplicado').innerText=BRL.format(tA);
+      document.getElementById('total-atual').innerText=BRL.format(tB);
+      document.getElementById('lucro').innerText=BRL.format(lucro);
+      document.getElementById('rendimento').innerText=PCT.format(r)+'%';
+      document.getElementById('patrimonioTotal').innerText=BRL.format(tB);
+    }
+
+    // CRUD
+    async function carregarTodosOsCards() {
+      const res = await fetch(`${supabaseUrl}/rest/v1/bancos?select=*&nome=neq.__perfil__`,
+        { headers:{apikey:supabaseKey,Authorization:`Bearer ${supabaseKey}`} });
+      todos=await res.json();
+      const c=document.getElementById('card-container');
+      if(!todos.length){c.innerHTML='<div class="card">Nenhum ativo encontrado.</div>';atualizarResumo([]);return;}
+      c.innerHTML=todos.map(renderCard).join(''); atualizarResumo(todos);
+    }
+    function abrirModal(id=null,nome='',aplicado='',atual='',icon=''){
+      bancoEditando=id;
+      document.getElementById('modal-title').innerText=id?'Editar Ativo':'Novo Ativo';
+      document.getElementById('input-nome').value=nome;
+      document.getElementById('input-aplicado').value=aplicado;
+      document.getElementById('input-atual').value=atual;
+      document.getElementById('input-icon').value=icon;
+      document.getElementById('input-file').value='';
+      document.getElementById('modal').classList.add('open');
+    }
+    function fecharModal(){document.getElementById('modal').classList.remove('open');}
+    async function salvarAlteracoes(){
+      const nome=document.getElementById('input-nome').value.trim();
+      const aplicado=parseFloat(document.getElementById('input-aplicado').value)||0;
+      const atual=parseFloat(document.getElementById('input-atual').value)||0;
+      let icone=document.getElementById('input-icon').value.trim();
+      if(!nome){alert('Informe o nome do ativo');return;}
+      const file=document.getElementById('input-file').files[0];
+      if(file) icone=await lerImagemBase64(file);
+      const payload={nome,valor_aplicado:aplicado,valor_atual:atual,icone_url:icone||null};
+      if(bancoEditando==null){
+        await fetch(`${supabaseUrl}/rest/v1/bancos`,{method:'POST',headers:{apikey:supabaseKey,Authorization:`Bearer ${supabaseKey}`,'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      } else {
+        await fetch(`${supabaseUrl}/rest/v1/bancos?id=eq.${bancoEditando}`,{method:'PATCH',headers:{apikey:supabaseKey,Authorization:`Bearer ${supabaseKey}`,'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      }
+      fecharModal(); carregarTodosOsCards();
+    }
+    async function excluirBanco(id){
+      if(!confirm('Excluir este ativo?'))return;
+      await fetch(`${supabaseUrl}/rest/v1/bancos?id=eq.${id}`,{method:'DELETE',headers:{apikey:supabaseKey,Authorization:`Bearer ${supabaseKey}`}});
+      carregarTodosOsCards();
+    }
+
+    // Sidebar toggle
+    function toggleSidebar(e){e.stopPropagation();document.getElementById('sidebar').classList.toggle('open');}
+    document.addEventListener('click',e=>{const s=document.getElementById('sidebar');const b=document.querySelector('.menu');if(!s.contains(e.target)&&!b.contains(e.target))s.classList.remove('open');});
+    document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.menu-link').forEach(a=>a.addEventListener('click',()=>document.getElementById('sidebar').classList.remove('open')));});
+
+    // Atalhos
+    const descricoes={renda:"💰 <b>Renda Fixa</b>: investimentos seguros.",acoes:"📈 <b>Ações</b>: participação em empresas.",cripto:"₿ <b>Cripto</b>: moedas digitais.",poupanca:"🐷 <b>Poupança</b>: liquidez diária, baixo rendimento."};
+    function mostrarDescricao(tipo,ev){document.querySelectorAll('.atalho').forEach(a=>a.classList.remove('active'));ev.currentTarget.classList.add('active');const b=document.getElementById('descricao-atalho');b.innerHTML=descricoes[tipo];b.style.display='block';}
+
+    // Navbar - ativar item selecionado
+    document.addEventListener('DOMContentLoaded',()=>{
+      carregarPerfil();carregarTodosOsCards();
+      document.querySelectorAll('.navbar a').forEach(link=>{
+        link.addEventListener('click',function(){
+          document.querySelectorAll('.navbar a').forEach(l=>l.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+    });
   </script>
 </body>
 </html>
-
 
