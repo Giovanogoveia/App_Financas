@@ -11,7 +11,6 @@
       color: #333;
     }
 
-    /* ===== Header Moderno ===== */
     header {
       background: linear-gradient(135deg, #007bff, #0056b3);
       color: white;
@@ -23,11 +22,13 @@
       border-bottom-left-radius: 15px;
       border-bottom-right-radius: 15px;
     }
+
     header .left {
       display: flex;
       align-items: center;
       gap: 12px;
     }
+
     header h2 {
       margin: 0;
       font-size: 1.6rem;
@@ -36,9 +37,11 @@
       align-items: center;
       gap: 8px;
     }
+
     header h2 i {
       font-size: 1.4rem;
     }
+
     header a {
       text-decoration: none;
       background: white;
@@ -49,6 +52,7 @@
       box-shadow: 0 3px 6px rgba(0,0,0,0.1);
       transition: 0.2s;
     }
+
     header a:hover {
       background: #f0f0f0;
       transform: scale(1.05);
@@ -69,6 +73,7 @@
     .filtro {
       margin-bottom: 12px;
     }
+
     .filtro input {
       width: 100%;
       max-width: 300px;
@@ -114,11 +119,11 @@
       font-size: 0.95rem;
     }
   </style>
-  <!-- Ícones -->
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+
 <body>
-  <!-- Cabeçalho -->
   <header>
     <div class="left">
       <i class="fa-solid fa-chart-column"></i>
@@ -128,7 +133,6 @@
   </header>
 
   <main>
-    <!-- Usuários -->
     <h3>👤 Usuários</h3>
     <div class="filtro">
       <input type="text" id="filtro-usuarios" placeholder="Filtrar usuários...">
@@ -137,9 +141,9 @@
       <table id="tabela-usuarios">
         <thead>
           <tr>
-            <th>ID</th>
             <th>Nome</th>
             <th>Email</th>
+            <th>Data de Registro</th>
           </tr>
         </thead>
         <tbody>
@@ -148,7 +152,6 @@
       </table>
     </div>
 
-    <!-- Aplicações -->
     <h3>💼 Minhas Aplicações</h3>
     <div class="filtro">
       <input type="text" id="filtro-aplicacoes" placeholder="Filtrar aplicações...">
@@ -161,10 +164,11 @@
             <th>Nome</th>
             <th>Valor Aplicado</th>
             <th>Valor Atual</th>
+            <th>Última Atualização</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td colspan="4">Carregando...</td></tr>
+          <tr><td colspan="5">Carregando...</td></tr>
         </tbody>
       </table>
     </div>
@@ -199,16 +203,25 @@
         );
       }
 
+      dados.sort((a, b) => new Date(b.data_hora) - new Date(a.data_hora));
+
       if (!dados.length) {
         corpo.innerHTML = "<tr><td colspan='3'>Nenhum usuário encontrado.</td></tr>";
         return;
       }
 
       dados.forEach(u => {
+        const dataRegistro = u.data_hora
+          ? new Date(u.data_hora).toLocaleDateString('pt-BR', {
+              day: '2-digit', month: '2-digit', year: 'numeric',
+              hour: '2-digit', minute: '2-digit'
+            })
+          : 'N/A';
+
         corpo.innerHTML += `<tr>
-          <td>${u.id}</td>
           <td>${u.nome}</td>
           <td>${u.email}</td>
+          <td>${dataRegistro}</td>
         </tr>`;
       });
     }
@@ -233,17 +246,27 @@
         );
       }
 
+      dados.sort((a, b) => new Date(b.ultima_atualizacao) - new Date(a.ultima_atualizacao));
+
       if (!dados.length) {
-        corpo.innerHTML = "<tr><td colspan='4'>Nenhuma aplicação encontrada.</td></tr>";
+        corpo.innerHTML = "<tr><td colspan='5'>Nenhuma aplicação encontrada.</td></tr>";
         return;
       }
 
       dados.forEach(a => {
+        const dataAtualizacao = a.ultima_atualizacao
+          ? new Date(a.ultima_atualizacao).toLocaleDateString('pt-BR', {
+              day: '2-digit', month: '2-digit', year: 'numeric',
+              hour: '2-digit', minute: '2-digit'
+            })
+          : 'N/A';
+
         corpo.innerHTML += `<tr>
           <td>${a.id}</td>
           <td>${a.nome}</td>
           <td>${BRL.format(a.valor_aplicado || 0)}</td>
           <td>${BRL.format(a.valor_atual || 0)}</td>
+          <td>${dataAtualizacao}</td>
         </tr>`;
       });
     }
