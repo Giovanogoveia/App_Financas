@@ -170,9 +170,60 @@
       margin-top: -30px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
+    #mais-menu .mais-menu-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  max-width: 300px;
+  width: 90%;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#mais-menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  text-decoration: none;
+  color: #007bff;
+  font-weight: 500;
+}
+
+#mais-menu a i {
+  font-size: 1.2rem;
+  width: 24px;
+  text-align: center;
+}
+
+#mais-menu button {
+  padding: .6rem 1rem;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
   </style>
 </head>
 <body>
+<!-- Submenu do botão MAIS -->
+<div id="mais-menu" class="modal" onclick="fecharMaisMenu()">
+  <div class="modal-content mais-menu-content" onclick="event.stopPropagation()">
+    <h2>Mais Opções</h2>
+    <a href="simulador.html"><i class="fas fa-calculator"></i> Simulador</a>
+    <a href="dicas.html"><i class="fas fa-lightbulb"></i> Dicas</a>
+    <a href="historico.html"><i class="fas fa-clock"></i> Histórico</a>
+    <a href="importar.html"><i class="fas fa-file-upload"></i> Importar Dados</a>
+    <a href="suporte.html"><i class="fas fa-headset"></i> Suporte</a>
+    <button onclick="fecharMaisMenu()">Fechar</button>
+  </div>
+</div>
+
   <div class="app-container">
     <!-- Header -->
     <header class="header">
@@ -450,6 +501,24 @@ function renderCard({id, nome, valor_aplicado, valor_atual, icone_url, ultima_at
       await fetch(`${supabaseUrl}/rest/v1/bancos?id=eq.${id}`,{method:'DELETE',headers:{apikey:supabaseKey,Authorization:`Bearer ${supabaseKey}`}});
       carregarTodosOsCards();
     }
+    
+    // Abrir menu MAIS
+document.addEventListener('DOMContentLoaded', () => {
+  const links = document.querySelectorAll('.navbar a');
+  links[links.length - 1].addEventListener('click', function (e) {
+    e.preventDefault();
+    abrirMaisMenu();
+  });
+});
+
+function abrirMaisMenu() {
+  document.getElementById('mais-menu').classList.add('open');
+}
+
+function fecharMaisMenu() {
+  document.getElementById('mais-menu').classList.remove('open');
+}
+
 
     // Sidebar toggle
     function toggleSidebar(e){e.stopPropagation();document.getElementById('sidebar').classList.toggle('open');}
