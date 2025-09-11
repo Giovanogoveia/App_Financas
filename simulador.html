@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulador de Investimento</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      color: #333;
+    }
+    header {
+      background: #007bff;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.3rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .container {
+      padding: 2rem 1rem;
+      max-width: 600px;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      margin-bottom: .4rem;
+      font-weight: 600;
+    }
+    input {
+      width: 100%;
+      padding: .6rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    button {
+      width: 100%;
+      padding: .8rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      font-size: 1rem;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .resultado {
+      margin-top: 2rem;
+      background: white;
+      border-radius: 12px;
+      padding: 1.2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .resultado p {
+      font-size: 1.05rem;
+      margin: .4rem 0;
+    }
+    .voltar {
+      display: block;
+      text-align: center;
+      margin-top: 2rem;
+      text-decoration: none;
+      color: #007bff;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <i class="fas fa-calculator"></i> Simulador de Investimento
+  </header>
+
+  <div class="container">
+    <h2>Faça uma simulação rápida</h2>
+    
+    <label for="valor">Valor Investido (R$)</label>
+    <input type="number" id="valor" placeholder="Ex: 1000" />
+
+    <label for="rendimento">Rendimento Anual (%)</label>
+    <input type="number" id="rendimento" placeholder="Ex: 10" />
+
+    <label for="anos">Tempo (em anos)</label>
+    <input type="number" id="anos" placeholder="Ex: 5" />
+
+    <button onclick="simular()">Calcular</button>
+
+    <div class="resultado" id="resultado" style="display:none;"></div>
+
+    <a class="voltar" href="index.html"><i class="fas fa-arrow-left"></i> Voltar para o início</a>
+  </div>
+
+  <script>
+    function simular() {
+      const valor = parseFloat(document.getElementById("valor").value);
+      const rendimento = parseFloat(document.getElementById("rendimento").value);
+      const anos = parseFloat(document.getElementById("anos").value);
+
+      if (!valor || !rendimento || !anos) {
+        alert("Preencha todos os campos.");
+        return;
+      }
+
+      const montante = valor * Math.pow((1 + rendimento / 100), anos);
+      const lucro = montante - valor;
+
+      const formatter = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
+
+      const resultado = document.getElementById("resultado");
+      resultado.innerHTML = `
+        <p><strong>Valor Futuro:</strong> ${formatter.format(montante)}</p>
+        <p><strong>Lucro Total:</strong> ${formatter.format(lucro)}</p>
+        <p><strong>Período:</strong> ${anos} ano(s)</p>
+      `;
+      resultado.style.display = "block";
+    }
+  </script>
+</body>
+</html>
