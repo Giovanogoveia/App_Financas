@@ -1,4 +1,4 @@
-<!DOCTYPE html><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -223,6 +223,17 @@
     <button onclick="fecharMaisMenu()">Fechar</button>
   </div>
 </div>
+<!-- Tela de Login embutida -->
+<div id="tela-login" style="display:none; max-width:400px; margin:60px auto; background:#fff; padding:30px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
+  <h2 style="text-align:center;">🔐 Acesso Restrito</h2>
+  <input type="email" id="email" placeholder="Digite seu e-mail" style="width:100%; padding:10px; margin-bottom:10px;" />
+  <input type="password" id="senha" placeholder="Digite sua senha" style="width:100%; padding:10px; margin-bottom:20px;" />
+  <button onclick="fazerLogin()" style="width:100%; padding:10px; background:#007bff; color:white; border:none; border-radius:6px;">Entrar</button>
+  <p id="mensagem" style="margin-top: 1rem; text-align:center; color: red;"></p>
+</div>
+
+
+
 
   <div class="app-container">
     <!-- Header -->
@@ -355,6 +366,70 @@
     // CONFIG
     const supabaseUrl = 'https://dylziaqkyavkfwjepqkp.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM';
+    
+    // Tela de login
+document.addEventListener('DOMContentLoaded', () => {
+  const user = localStorage.getItem('usuarioLogado');
+  if (user) {
+    document.querySelector('.app-container').style.display = 'block';
+    document.querySelector('.navbar').style.display = 'flex';
+    document.getElementById('tela-login').style.display = 'none';
+  } else {
+    document.querySelector('.app-container').style.display = 'none';
+    document.querySelector('.navbar').style.display = 'none';
+    document.getElementById('modal').style.display = 'none';
+    document.getElementById('tela-login').style.display = 'block';
+  }
+
+  const sairLink = document.querySelector('a[href="logout.html"]');
+  if (sairLink) {
+    sairLink.href = "#";
+    sairLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      logout();
+    });
+  }
+});
+
+async function fazerLogin() {
+  const email = document.getElementById("email").value.trim();
+  const senha = document.getElementById("senha").value.trim();
+  const msg = document.getElementById("mensagem");
+
+  if (!email || !senha) {
+    msg.textContent = "Preencha todos os campos!";
+    return;
+  }
+
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/usuarios?email=eq.${encodeURIComponent(email)}&senha=eq.${encodeURIComponent(senha)}`, {
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+        Accept: "application/json"
+      }
+    });
+    const data = await res.json();
+
+    if (data.length > 0) {
+      localStorage.setItem("usuarioLogado", JSON.stringify(data[0]));
+      location.reload();
+    } else {
+      msg.textContent = "E-mail ou senha inválidos!";
+    }
+  } catch (err) {
+    console.error(err);
+    msg.textContent = "Erro ao conectar. Tente novamente.";
+  }
+}
+
+function logout() {
+  localStorage.removeItem("usuarioLogado");
+  location.reload();
+}
+
+    
+    
     const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
     const PCT = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 });
 
