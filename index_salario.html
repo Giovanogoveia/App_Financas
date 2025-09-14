@@ -1,1 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Receitas Financeiras</title>
+
+    <!-- Supabase e Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Fonte -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS externo -->
+    <link rel="stylesheet" href="css_salario.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">R$</div>
+                    <h1 class="logo-text">Minhas Receitas</h1>
+                </div>
+                <button class="nav-button" id="btn-nova-receita"><span>+ Nova Receita</span></button>
+                <div class="user-info" id="user-info">
+                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/35aa3235-f96d-4c67-8588-7501bc435e4e.png" 
+                         alt="Avatar do usuário" id="user-avatar" class="user-avatar" />
+                    <span id="user-welcome" class="user-welcome">Seja bem-vindo, João Silva</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Totais -->
+        <div class="totals-grid">
+            <div class="total-card">
+                <div class="total-card-header"><div class="total-card-icon">💰</div><h3>Salário Bruto Total</h3></div>
+                <div class="total-value currency" id="total-salario">R$ 0,00</div>
+            </div>
+            <div class="total-card">
+                <div class="total-card-header"><div class="total-card-icon">📉</div><h3>Descontos Totais</h3></div>
+                <div class="total-value currency" id="total-descontos">R$ 0,00</div>
+            </div>
+            <div class="total-card">
+                <div class="total-card-header"><div class="total-card-icon">💳</div><h3>Salário Líquido</h3></div>
+                <div class="total-value currency" id="total-liquido">R$ 0,00</div>
+            </div>
+        </div>
+
+        <!-- Formulário -->
+        <div class="form-container" id="form-container">
+            <div class="form-header">
+                <h2 class="form-title">Adicionar/Editar Receita</h2>
+                <button class="close-btn" id="close-form">×</button>
+            </div>
+            <form id="receita-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Mês/Ano</label>
+                        <input type="month" class="form-input" id="mes" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Salário Bruto (R$)</label>
+                        <input type="number" class="form-input" id="salario" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Descontos (R$)</label>
+                        <input type="number" class="form-input" id="descontos" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Descrição (opcional)</label>
+                        <input type="text" class="form-input" id="descricao">
+                    </div>
+                </div>
+                <button type="submit" class="form-submit">Salvar Receita</button>
+            </form>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="dashboard">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">Análise de Receitas</h2>
+                    <div class="chart-controls">
+                        <button class="chart-btn active" data-chart-type="bar">Barras</button>
+                        <button class="chart-btn" data-chart-type="line">Linhas</button>
+                        <button class="chart-btn" data-chart-type="pie">Pizza</button>
+                    </div>
+                </div>
+                <div class="chart-container"><canvas id="graficoSalario"></canvas></div>
+            </div>
+            <div class="dashboard-card">
+                <div class="card-header"><h2 class="card-title">Histórico de Receitas</h2></div>
+                <div class="table-container" id="tabela-container"><div class="loading"><div class="loading-spinner"></div></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificação -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Script externo -->
+    <script src="script.js"></script_salario>
+</body>
+</html>
 
