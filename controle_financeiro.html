@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Controle Financeiro</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+  :root{
+    --bg:#f4f6fb; --primary:#ffcc00; --secondary:#4f46e5;
+    --text:#222; --card:#fff; --radius:16px;
+    --shadow:0 4px 12px rgba(0,0,0,.10);
+    --gap:16px; --pad:20px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);font-family:"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);padding-bottom:70px}
+
+  main{padding:20px}
+  .grid{
+    max-width:600px;margin:0 auto;
+    display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);
+  }
+
+  /* CARD PADRÃO */
+  .card{
+    background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:var(--pad);
+    display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+    transition:.2s;margin:0;
+  }
+  .card:hover{transform:translateY(-3px)}
+  .card .icon{font-size:26px;margin-bottom:4px}
+  .card h2{font-size:14px;font-weight:600;color:#555}
+  .card .valor{font-size:22px;font-weight:800}
+  .sub{font-size:13px;color:#777}
+  .wide{grid-column:1 / -1;}
+
+  /* HERO CARD */
+  .hero-card{
+    flex-direction:row;
+    justify-content:space-between;
+    align-items:center;
+    text-align:center;
+    background:#eaf2ff;
+    position:relative;
+  }
+  .hero-card .left{display:flex;align-items:center;gap:8px}
+  .hero-card .avatar-img{
+    width:45px;height:45px;border-radius:50%;object-fit:cover;box-shadow:var(--shadow);
+  }
+  .hero-card .center{flex:1}
+  .hero-card .center h2{font-size:14px;color:#666;margin-bottom:4px}
+  .hero-card .destaque{font-size:26px;font-weight:800;color:#2563eb}
+  .hero-card .right{font-size:22px;cursor:pointer;padding:5px}
+  .hero-card .right:hover{opacity:0.7}
+
+  /* MENU DROPDOWN */
+  .dropdown{
+    position:absolute;
+    top:70px;
+    right:20px;
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+    padding:12px;
+    width:200px;
+    display:none;
+    flex-direction:column;
+    z-index:1000;
+  }
+  .dropdown.show{display:flex;animation:fadeIn .2s ease}
+  .dropdown h3{
+    font-size:16px;
+    color:#2563eb;
+    margin-bottom:10px;
+  }
+  .dropdown a{
+    text-decoration:none;
+    color:#111;
+    font-size:15px;
+    padding:8px 0;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    transition:.2s;
+  }
+  .dropdown a:hover{color:var(--secondary)}
+
+  @keyframes fadeIn{
+    from{opacity:0;transform:translateY(-10px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  .overlay{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:transparent;display:none;z-index:500;
+  }
+  .overlay.show{display:block}
+
+  /* Menu inferior */
+  nav{
+    position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ddd;
+    display:flex;justify-content:space-around;padding:10px 0;box-shadow:0 -2px 6px rgba(0,0,0,.05)
+  }
+  nav a{text-decoration:none;font-size:12px;display:flex;flex-direction:column;align-items:center;transition:.2s}
+  nav a span{font-size:20px;margin-bottom:4px}
+  nav a.active{color:var(--secondary)}
+  nav a:nth-child(1){color:#2563eb}
+  nav a:nth-child(2){color:#9333ea}
+  nav a:nth-child(3){color:#16a34a}
+  nav a:nth-child(4){color:#f97316}
+
+  @media (max-width:640px){ .grid{grid-template-columns:1fr} }
+
+
+  .despesas {
+  color: #dc2626; /* vermelho forte */
+  font-weight: 800;
+}
+
+.despesas-card {
+  border-left: 6px solid #dc2626; /* detalhe lateral opcional */
+}
+
+  .proventos {
+  color: #16a34a; /* verde */
+  font-weight: 800;
+}
+
+  .total {
+  color: #22c55e; /* verde claro elegante */
+  font-weight: 800;
+}
+.aplicacoes {
+  color: #2563eb; /* azul forte e moderno */
+  font-weight: 800;
+}
+
+
+
+
+
+</style>
+</head>
+<body>
+
+<main>
+  <div class="grid">
+    <!-- Card HERO -->
+    <div class="card wide hero-card">
+      <div class="left">
+        <img src="https://i.pravatar.cc/100" alt="Usuário" class="avatar-img">
+        <span>Olá, Investidor</span>
+      </div>
+      <div class="center">
+        <h2>Patrimônio Total</h2>
+        <div class="valor destaque" id="patrimonio">R$ 0,00</div>
+      </div>
+      <div class="right" onclick="toggleDropdown()"><i class="fa-solid fa-bars"></i></div>
+
+      <!-- Dropdown -->
+      <div class="dropdown" id="dropdownMenu">
+        <h3>Menu</h3>
+        <a href="#"><i class="fa-solid fa-user"></i> Perfil</a>
+        <a href="#"><i class="fa-solid fa-gear"></i> Configurações</a>
+        <a href="#"><i class="fa-solid fa-chart-bar"></i> Relatórios</a>
+        <a href="#"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+        <a href="#"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
+      </div>
+    </div>
+
+    <!-- Saldo -->
+    <div class="card">
+      <div class="icon"><i class="fa-solid fa-landmark" style="color:#2563eb"></i></div>
+      <h2>Saldo em 31/12</h2>
+      <div class="valor">R$ 145.000,00</div>
+    </div>
+
+
+    <!-- Proventos Recebidos (dinâmico) -->
+<div class="card">
+  <div class="icon"><i class="fa-solid fa-sack-dollar" style="color:#16a34a"></i></div>
+  <h2>Proventos Recebidos</h2>
+  <div class="valor proventos" id="proventos">R$ 0,00</div>
+  <div class="sub">Salário - descontos</div>
+</div>
+
+<!-- Total (Saldo + Proventos) -->
+<div class="card">
+  <div class="icon"><i class="fa-solid fa-square-plus" style="color:#22c55e"></i></div>
+  <h2>Total (Saldo + Proventos)</h2>
+  <div class="valor total" id="total">R$ 0,00</div>
+  <div class="sub">Saldo + Proventos</div>
+</div>
+
+
+
+<div class="card">
+  <div class="icon"><i class="fa-solid fa-chart-column" style="color:#2563eb"></i></div>
+  <h2>Aplicações</h2>
+  <div class="valor aplicacoes" id="aplicacoes">R$ 0,00</div>
+</div>
+
+
+
+
+<div class="card">
+  <div class="icon"><i class="fa-solid fa-landmark" style="color:#dc2626"></i></div>
+  <h2>Despesas / Saídas Financeiras</h2>
+  <div class="valor despesas" id="despesas">R$ 0,00</div>
+</div>
+
+
+
+
+
+    <!-- Histórico -->
+    <div class="card wide">
+      <div class="icon"><i class="fa-solid fa-clock-rotate-left" style="color:#6b7280"></i></div>
+      <h2>Histórico de Aplicações</h2>
+      <div class="sub">
+        <p>10/01 - Aporte CDB - R$ 2.000</p>
+        <p>15/02 - Tesouro Selic - R$ 1.500</p>
+        <p>20/03 - Resgate Ações - R$ 800</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- overlay -->
+<div class="overlay" id="overlay" onclick="toggleDropdown()"></div>
+
+<nav>
+  <a href="#" class="active"><span><i class="fa-solid fa-house"></i></span>Início</a>
+  <a href="#"><span><i class="fa-solid fa-chart-line"></i></span>Invest.</a>
+  <a href="#"><span><i class="fa-solid fa-piggy-bank"></i></span>Proventos</a>
+  <a href="#"><span><i class="fa-solid fa-user"></i></span>Perfil</a>
+</nav>
+
+<script>
+  // Config Supabase
+  const SUPABASE_URL = "https://dylziaqkyavkfwjepqkp.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM";
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // Função para formatar valores em R$
+  function formatarMoeda(valor) {
+    return valor.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+  }
+
+  // Buscar Proventos (salário - descontos)
+  async function carregarProventos() {
+    let { data, error } = await supabase
+      .from("receitas")
+      .select("salario, descontos");
+
+    if (error) {
+      console.error("Erro ao buscar proventos:", error);
+      return 0;
+    }
+
+    let totalProventos = data.reduce((acc, row) => acc + (row.salario - row.descontos), 0);
+
+    // Atualiza o card
+    document.getElementById("proventos").textContent = formatarMoeda(totalProventos);
+
+    return totalProventos;
+  }
+
+  // Buscar Aplicações (soma da coluna valor_atual)
+  async function carregarAplicacoes() {
+    let { data, error } = await supabase
+      .from("bancos")
+      .select("valor_atual");
+
+    if (error) {
+      console.error("Erro ao buscar aplicações:", error);
+      return 0;
+    }
+
+    let totalAplicacoes = data.reduce((acc, row) => acc + row.valor_atual, 0);
+
+    // Atualiza o card
+    document.getElementById("aplicacoes").textContent = formatarMoeda(totalAplicacoes);
+
+    return totalAplicacoes;
+  }
+
+  // Atualizar dashboard
+  async function atualizarDashboard() {
+    const saldoFixo = 145000; // Saldo inicial em 31/12
+
+    const proventos = await carregarProventos();
+    const aplicacoes = await carregarAplicacoes();
+
+    // Saldo + Proventos
+    const saldoComProventos = saldoFixo + proventos;
+    document.getElementById("total").textContent = formatarMoeda(saldoComProventos);
+
+    // Patrimônio total = aplicações
+    document.getElementById("patrimonio").textContent = formatarMoeda(aplicacoes);
+
+    // Despesas = (saldo + proventos) - aplicações
+    const despesas = saldoComProventos - aplicacoes;
+    document.getElementById("despesas").textContent = formatarMoeda(despesas);
+  }
+
+  // Rodar ao abrir
+  atualizarDashboard();
+</script>
+
+
+</body>
+</html>
