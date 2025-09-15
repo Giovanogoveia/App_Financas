@@ -2,187 +2,284 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Cadastro de Despesas</title>
+  <title>App de Despesas Pessoais</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
-      font-family: "Segoe UI", sans-serif;
-      background: #eef2f7;
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f6f9;
+    }
+
+    main {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      padding: 30px;
+      flex-direction: column;
+      gap: 20px;
     }
 
-    .container {
-      width: 100%;
-      max-width: 450px;
-    }
-
-    form {
-      background: #fff;
-      padding: 25px 30px;
-      border-radius: 15px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
     }
 
     h2 {
+      margin-top: 0;
       text-align: center;
-      margin-bottom: 20px;
-      font-size: 22px;
       color: #333;
     }
 
     label {
-      display: block;
-      margin-top: 12px;
       font-size: 14px;
-      color: #444;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     input, select, button {
       width: 100%;
-      padding: 12px;
+      padding: 10px;
       margin-top: 6px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
       font-size: 14px;
-      background: #f9f9f9;
-      transition: all 0.2s;
-    }
-
-    input:focus, select:focus {
-      outline: none;
-      border-color: #007bff;
-      background: #fff;
-      box-shadow: 0 0 4px rgba(0,123,255,0.3);
     }
 
     button {
-      margin-top: 20px;
-      background: linear-gradient(135deg, #007bff, #0056d6);
+      background: linear-gradient(90deg, #007bff, #0056b3);
       color: white;
-      border: none;
       font-weight: bold;
       cursor: pointer;
+      border: none;
+      transition: 0.3s;
     }
 
     button:hover {
-      background: linear-gradient(135deg, #0056d6, #003c99);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      opacity: 0.9;
+    }
+
+    .muted {
+      font-size: 13px;
+      color: #666;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    #graficoContainer {
+      text-align: center;
+    }
+
+    #graficoContainer canvas {
+      max-width: 600px;
+      max-height: 400px;
+      margin: auto;
+    }
+
+    @media (max-width: 600px) {
+      #graficoContainer canvas {
+        max-width: 100%;
+        max-height: 300px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <main>
     <!-- Formulário de despesas -->
-    <form id="formDespesas">
+    <section class="card">
       <h2>Adicionar Despesa</h2>
-      <label for="data">Data:</label>
-      <input type="date" id="data" required>
+      <form id="formDespesas">
+        <label>Data:</label>
+        <input type="date" id="data" required>
 
-      <label for="tipo">Tipo de Despesa:</label>
-      <select id="tipo" required></select>
+        <label>Categoria de Despesa:</label>
+        <select id="categoria" required></select>
 
-      <label for="valor">Valor (R$):</label>
-      <input type="number" id="valor" step="0.01" required>
+        <label>Valor (R$):</label>
+        <input type="number" id="valor" step="0.01" required>
 
-      <label for="obs">Observação:</label>
-      <input type="text" id="obs">
+        <label>Observação:</label>
+        <input type="text" id="obs">
 
-      <label for="pago">Pago:</label>
-      <select id="pago">
-        <option value="Sim">Sim</option>
-        <option value="Não">Não</option>
+        <label>Pago:</label>
+        <select id="pago">
+          <option value="true">Sim</option>
+          <option value="false">Não</option>
+        </select>
+
+        <button type="submit">➕ Adicionar Despesa</button>
+      </form>
+    </section>
+
+    <!-- Formulário de categorias -->
+    <section class="card">
+      <h2>Adicionar Categoria</h2>
+      <form id="formCategorias">
+        <label>Nome da Categoria:</label>
+        <input type="text" id="nomeCategoria" required>
+        <button type="submit">➕ Adicionar Categoria</button>
+      </form>
+    </section>
+
+    <!-- Relatório -->
+    <section class="card">
+      <h2>Relatório</h2>
+      <label>Escolher Categoria:</label>
+      <select id="relatorioCategoria"></select>
+      <button id="btnRelatorio">📊 Ver Gastos</button>
+      <div id="resultadoRelatorio" class="muted"></div>
+    </section>
+
+    <!-- Gráfico -->
+    <section id="graficoContainer" class="card">
+      <h2>Distribuição de Gastos por Categoria</h2>
+
+      <label for="tipoGrafico">Tipo de Gráfico:</label>
+      <select id="tipoGrafico">
+        <option value="pie">Pizza</option>
+        <option value="doughnut">Rosca</option>
+        <option value="bar">Barra</option>
       </select>
 
-      <button type="submit">➕ Adicionar Despesa</button>
-    </form>
-
-    <!-- Formulário de tipos de despesas -->
-    <form id="formTipo">
-      <h2>Adicionar Tipo de Despesa</h2>
-      <label for="novoTipo">Nome do Tipo:</label>
-      <input type="text" id="novoTipo" required>
-      <button type="submit">➕ Adicionar Tipo</button>
-    </form>
-  </div>
+      <div>
+        <canvas id="graficoGastos"></canvas>
+      </div>
+      <div class="muted">Dica: passe o mouse/touch para ver os valores.</div>
+    </section>
+  </main>
 
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
     const SUPABASE_URL = "https://dylziaqkyavkfwjepqkp.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM";
-
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM"; // coloque sua chave anon aqui
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const formDespesas = document.getElementById("formDespesas");
-    const formTipo = document.getElementById("formTipo");
-    const tipoSelect = document.getElementById("tipo");
+    const formCategorias = document.getElementById("formCategorias");
+    const categoriaSelect = document.getElementById("categoria");
+    const relatorioCategoria = document.getElementById("relatorioCategoria");
+    const resultadoRelatorio = document.getElementById("resultadoRelatorio");
+    const graficoContainer = document.getElementById("graficoContainer");
+    let chart;
 
-    // carregar tipos
-    async function carregarTipos() {
-      const { data, error } = await supabase
-        .from("tipo_despesas")
-        .select("*")
-        .order("nome", { ascending: true });
+    const BRL = (v) => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 
-      if (error) {
-        console.error("Erro ao carregar tipos:", error.message);
-        return;
-      }
-
-      tipoSelect.innerHTML = '<option value="">Selecione...</option>';
-      data.forEach(t => {
-        const option = document.createElement("option");
-        option.value = t.id;  // salva o ID
-        option.textContent = t.nome;
-        tipoSelect.appendChild(option);
+    // Carregar categorias
+    async function carregarCategorias() {
+      const { data, error } = await supabase.from("categorias_despesas_pessoais").select("*");
+      if (error) { console.error(error); return; }
+      categoriaSelect.innerHTML = "";
+      relatorioCategoria.innerHTML = "<option value=''>Selecione...</option>";
+      data.forEach(c => {
+        categoriaSelect.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
+        relatorioCategoria.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
       });
     }
 
-    // adicionar tipo
-    formTipo.addEventListener("submit", async (e) => {
+    // Adicionar categoria
+    formCategorias.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const nome = document.getElementById("novoTipo").value;
-
-      const { error } = await supabase.from("tipo_despesas").insert([{ nome }]);
-      if (error) {
-        alert("Erro ao adicionar tipo: " + error.message);
-        return;
-      }
-
-      formTipo.reset();
-      carregarTipos();
+      const nome = document.getElementById("nomeCategoria").value;
+      const { error } = await supabase.from("categorias_despesas_pessoais").insert([{ nome }]);
+      if (error) return alert("Erro: " + error.message);
+      formCategorias.reset();
+      carregarCategorias();
     });
 
-    // adicionar despesa
+    // Adicionar despesa
     formDespesas.addEventListener("submit", async (e) => {
       e.preventDefault();
-
-      const data = document.getElementById("data").value;
-      const tipo_id = document.getElementById("tipo").value;
-      const valor = document.getElementById("valor").value;
-      const obs = document.getElementById("obs").value;
-      const pago = document.getElementById("pago").value === "Sim";
-
-      const { error } = await supabase
-        .from("despesas")
-        .insert([{ data, tipo_id, valor, obs, pago }]);
-
-      if (error) {
-        alert("Erro ao salvar despesa: " + error.message);
-        return;
-      }
-
+      const despesa = {
+        data: document.getElementById("data").value,
+        valor: parseFloat(document.getElementById("valor").value),
+        obs: document.getElementById("obs").value,
+        pago: document.getElementById("pago").value === "true",
+        tipo_id: parseInt(document.getElementById("categoria").value)
+      };
+      const { error } = await supabase.from("despesas_pessoais").insert([despesa]);
+      if (error) return alert("Erro: " + error.message);
       formDespesas.reset();
-      alert("Despesa cadastrada com sucesso!");
+      montarGraficoGeral();
+      alert("Despesa adicionada!");
     });
 
-    carregarTipos();
+    // Relatório
+    document.getElementById("btnRelatorio").addEventListener("click", async () => {
+      const idCat = relatorioCategoria.value;
+      if (!idCat) return alert("Selecione uma categoria!");
+      const { data, error } = await supabase
+        .from("despesas_pessoais")
+        .select("valor, tipo_id, categorias_despesas_pessoais ( nome )")
+        .eq("tipo_id", idCat);
+      if (error) { console.error(error); return; }
+      const total = data.reduce((s,d) => s + d.valor, 0);
+      const nome = data[0]?.categorias_despesas_pessoais?.nome || "Categoria";
+      resultadoRelatorio.textContent = `Categoria: ${nome} | Total: ${BRL(total)}`;
+    });
+
+    // Montar gráfico geral
+    async function montarGraficoGeral() {
+      const { data, error } = await supabase
+        .from("despesas_pessoais")
+        .select("valor, categorias_despesas_pessoais ( nome )");
+      if (error) { console.error(error); return; }
+
+      const dataset = {};
+      data.forEach(d => {
+        const nome = d.categorias_despesas_pessoais?.nome || "Outros";
+        dataset[nome] = (dataset[nome] || 0) + d.valor;
+      });
+
+      renderizarGrafico(dataset);
+    }
+
+    function renderizarGrafico(dataset) {
+      const labels = Object.keys(dataset);
+      const values = Object.values(dataset);
+
+      const ctx = document.getElementById("graficoGastos").getContext("2d");
+      if (chart) chart.destroy();
+
+      const tipoSelecionado = document.getElementById("tipoGrafico").value;
+
+      chart = new Chart(ctx, {
+        type: tipoSelecionado,
+        data: {
+          labels,
+          datasets: [{
+            data: values,
+            backgroundColor: [
+              "#0b6bff","#28a745","#ffc107","#dc3545","#20c997",
+              "#6f42c1","#17a2b8","#fd7e14","#6610f2","#4c6fff"
+            ],
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            tooltip: {
+              callbacks: { label: (ctx) => `${ctx.label}: ${BRL(ctx.parsed)}` }
+            },
+            legend: { position: "bottom" }
+          },
+          scales: tipoSelecionado === "bar" ? {
+            y: { beginAtZero: true, ticks: { callback: (v) => BRL(v) } }
+          } : {}
+        }
+      });
+    }
+
+    document.getElementById("tipoGrafico").addEventListener("change", montarGraficoGeral);
+
+    carregarCategorias();
+    montarGraficoGeral(); // agora o gráfico aparece por padrão
   </script>
 </body>
 </html>
+
