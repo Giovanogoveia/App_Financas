@@ -4,21 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ExpenseWise - Controle de Despesas Pessoais</title>
-  <meta name="description" content="App moderno para controle de despesas pessoais com gráficos e relatórios">
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
   <style>
     /* ===== DESIGN SYSTEM ===== */
     :root {
-      /* Colors HSL */
       --primary: 234 89% 74%;
       --primary-dark: 234 89% 64%;
-      --secondary: 240 4.8% 95.9%;
       --accent: 142 71% 45%;
       --destructive: 0 84% 60%;
 
@@ -30,799 +26,508 @@
       --text-primary: 0 0% 98%;
       --text-secondary: 240 5% 64.9%;
       --text-muted: 240 3.8% 46.1%;
-
       --border: 240 3.7% 15.9%;
       --border-light: 240 5% 26%;
 
-      /* Gradients */
       --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-dark)));
       --gradient-surface: linear-gradient(145deg, hsl(var(--surface)), hsl(var(--background-light)));
-
-      /* Shadows */
-      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-      --shadow-glow: 0 0 30px hsl(var(--primary) / 0.3);
-
-      /* Spacing */
-      --spacing-xs: 0.5rem;
-      --spacing-sm: 0.75rem;
-      --spacing-md: 1rem;
-      --spacing-lg: 1.5rem;
-      --spacing-xl: 2rem;
-      --spacing-2xl: 3rem;
-
-      /* Border radius */
-      --radius-sm: 0.375rem;
-      --radius-md: 0.5rem;
-      --radius-lg: 0.75rem;
-      --radius-xl: 1rem;
-
-      /* Typography */
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-
-      /* Transitions */
-      --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-      --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    /* ===== RESET & BASE ===== */
-    *, *::before, *::after {
-      box-sizing: border-box;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
     }
 
     body {
-      font-family: var(--font-sans);
+      font-family: 'Inter', sans-serif;
       background: hsl(var(--background));
       color: hsl(var(--text-primary));
-      line-height: 1.6;
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      margin: 0;
     }
 
-    /* ===== LAYOUT ===== */
+    /* Header */
     .header {
       background: var(--gradient-primary);
-      padding: var(--spacing-lg) var(--spacing-md);
+      padding: 1rem;
       text-align: center;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      box-shadow: var(--shadow-lg);
-      backdrop-filter: blur(10px);
     }
+    .header h1 { color: white; display: flex; justify-content: center; gap: .5rem; }
 
-    .header h1 {
-      font-size: clamp(1.5rem, 4vw, 2rem);
-      font-weight: 700;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: var(--spacing-sm);
-    }
-
+    /* Layout */
     .main {
       max-width: 1400px;
       margin: 0 auto;
-      padding: var(--spacing-xl) var(--spacing-md);
+      padding: 2rem 1rem;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: var(--spacing-xl);
+      gap: 2rem;
     }
 
-    /* ===== CARDS ===== */
+    /* Card */
     .card {
       background: var(--gradient-surface);
       border: 1px solid hsl(var(--border));
-      border-radius: var(--radius-xl);
-      padding: var(--spacing-xl);
-      box-shadow: var(--shadow-md);
-      transition: all var(--transition-normal);
-      position: relative;
-      overflow: hidden;
+      border-radius: .75rem;
+      padding: 1.5rem;
     }
+    .card-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; display: flex; gap: .5rem; }
 
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: var(--gradient-primary);
-    }
-
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg), var(--shadow-glow);
-      border-color: hsl(var(--primary) / 0.3);
-    }
-
-    .card-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: hsl(var(--text-primary));
-      margin-bottom: var(--spacing-lg);
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-sm);
-    }
-
-    /* ===== FORMS ===== */
-    .form {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-md);
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-xs);
-    }
-
-    .label {
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: hsl(var(--text-secondary));
-    }
-
+    /* Inputs */
+    .form { display: flex; flex-direction: column; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: .25rem; }
+    .label { font-size: .875rem; color: hsl(var(--text-secondary)); }
     .input, .select {
-      padding: var(--spacing-sm) var(--spacing-md);
+      padding: .5rem;
       border: 1px solid hsl(var(--border));
-      border-radius: var(--radius-md);
+      border-radius: .5rem;
       background: hsl(var(--surface));
-      color: hsl(var(--text-primary));
-      font-size: 0.875rem;
-      transition: all var(--transition-fast);
-    }
-
-    .input:focus, .select:focus {
-      outline: none;
-      border-color: hsl(var(--primary));
-      box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
-    }
-
-    .input::placeholder {
-      color: hsl(var(--text-muted));
-    }
-
-    /* ===== BUTTONS ===== */
-    .btn {
-      padding: var(--spacing-sm) var(--spacing-lg);
-      border: none;
-      border-radius: var(--radius-md);
-      font-weight: 500;
-      font-size: 0.875rem;
-      cursor: pointer;
-      transition: all var(--transition-fast);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: var(--spacing-xs);
-      text-decoration: none;
-      min-height: 2.5rem;
-    }
-
-    .btn-primary {
-      background: var(--gradient-primary);
       color: white;
-      box-shadow: var(--shadow-sm);
     }
 
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-md), 0 0 20px hsl(var(--primary) / 0.4);
-    }
+    /* Buttons */
+    .btn { padding: .5rem 1rem; border: none; border-radius: .5rem; cursor: pointer; display: inline-flex; align-items: center; gap: .25rem; }
+    .btn-primary { background: var(--gradient-primary); color: white; }
+    .btn-secondary { background: hsl(var(--surface-hover)); color: white; }
+    .btn-edit { background: hsl(var(--accent)); color: white; }
+    .btn-delete { background: hsl(var(--destructive)); color: white; }
+    .btn-small { font-size: .75rem; padding: .25rem .5rem; }
 
-    .btn-secondary {
-      background: hsl(var(--surface-hover));
-      color: hsl(var(--text-primary));
-      border: 1px solid hsl(var(--border-light));
-    }
+    /* Table */
+    .table-container { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: .5rem; border-bottom: 1px solid hsl(var(--border)); }
+    th { background: hsl(var(--surface-hover)); text-align: left; }
 
-    .btn-secondary:hover {
-      background: hsl(var(--border-light));
-      transform: translateY(-1px);
-    }
+    /* Chart */
+    .chart-container { height: 400px; }
 
-    /* ===== STATS GRID ===== */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: var(--spacing-md);
-      margin-bottom: var(--spacing-xl);
-    }
+    /* ===== DASHBOARD (corrigido) ===== */
 
-    .stat-card {
-      background: hsl(var(--surface-hover));
-      border: 1px solid hsl(var(--border));
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-lg);
-      text-align: center;
-      transition: all var(--transition-fast);
-    }
+/* grid que organiza os cards das métricas */
+.stats-grid{
+  display:grid;
+  grid-template-columns: repeat(4, minmax(180px,1fr));
+  gap: 1rem;                 /* espaço entre os cards */
+  margin-bottom: 1.25rem;
+}
 
-    .stat-card:hover {
-      transform: translateY(-2px);
-      border-color: hsl(var(--primary) / 0.3);
-    }
+/* responsivo */
+@media (max-width: 1200px){
+  .stats-grid{ grid-template-columns: repeat(3,1fr); }
+}
+@media (max-width: 900px){
+  .stats-grid{ grid-template-columns: repeat(2,1fr); }
+}
+@media (max-width: 520px){
+  .stats-grid{ grid-template-columns: 1fr; }
+}
 
-    .stat-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: hsl(var(--primary));
-      margin-bottom: var(--spacing-xs);
-    }
+/* cada cartão da métrica */
+.stat-card{
+  background: hsl(var(--surface-hover));
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: var(--shadow-sm);
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.stat-card:hover{
+  transform: translateY(-2px);
+  border-color: hsl(var(--primary) / .35);
+  box-shadow: var(--shadow-md), 0 0 0 3px hsl(var(--primary) / .08);
+}
 
-    .stat-label {
-      font-size: 0.875rem;
-      color: hsl(var(--text-secondary));
-    }
+/* valor em destaque */
+.stat-value{
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 700;
+  color: hsl(var(--primary));
+  line-height: 1.2;
+}
 
-    /* ===== CHART CONTAINER ===== */
-    .chart-container {
-      position: relative;
-      height: 400px;
-      margin-top: var(--spacing-lg);
-    }
+/* legenda abaixo do valor */
+.stat-label{
+  margin-top: 4px;
+  font-size: .875rem;
+  color: hsl(var(--text-secondary));
+  letter-spacing: .2px;
+}
 
-    .chart-container canvas {
-      max-width: 100%;
-      max-height: 100%;
-    }
-
-    /* ===== RESULT BOX ===== */
-    .result-box {
-      margin-top: var(--spacing-lg);
-      padding: var(--spacing-md);
-      background: hsl(var(--surface-hover));
-      border: 1px solid hsl(var(--border));
-      border-radius: var(--radius-md);
-      color: hsl(var(--text-secondary));
-      font-size: 0.875rem;
-      text-align: center;
-    }
-
-    .result-box.has-data {
-      background: hsl(var(--primary) / 0.1);
-      border-color: hsl(var(--primary) / 0.3);
-      color: hsl(var(--text-primary));
-    }
-
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 768px) {
-      .main {
-        grid-template-columns: 1fr;
-        padding: var(--spacing-md);
-        gap: var(--spacing-lg);
-      }
-
-      .card {
-        padding: var(--spacing-lg);
-      }
-
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--spacing-sm);
-      }
-
-      .chart-container {
-        height: 300px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .header {
-        padding: var(--spacing-md);
-      }
-
-      .card {
-        padding: var(--spacing-md);
-      }
-    }
-
-    /* ===== ANIMATIONS ===== */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .fade-in {
-      animation: fadeIn var(--transition-normal) ease-out;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    .loading {
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-
-    /* ===== UTILITIES ===== */
-    .text-center { text-align: center; }
-    .text-sm { font-size: 0.875rem; }
-    .text-muted { color: hsl(var(--text-muted)); }
-    .hidden { display: none; }
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
-    }
   </style>
 </head>
 <body>
-  <!-- ===== HEADER ===== -->
   <header class="header">
-    <h1>
-      <i data-lucide="wallet"></i>
-      ExpenseWise
-    </h1>
+    <h1><i data-lucide="wallet"></i> ExpenseWise</h1>
   </header>
 
   <main class="main">
-    <!-- ===== DASHBOARD STATS ===== -->
-    <section class="card" style="grid-column: 1 / -1;">
-      <h2 class="card-title">
-        <i data-lucide="bar-chart-3"></i>
-        Dashboard
-      </h2>
-      <div class="stats-grid" id="statsGrid">
-        <div class="stat-card">
-          <div class="stat-value" id="totalGastos">R$ 0,00</div>
-          <div class="stat-label">Total de Gastos</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="totalCategorias">0</div>
-          <div class="stat-label">Categorias</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="gastosEsteMes">R$ 0,00</div>
-          <div class="stat-label">Gastos Este Mês</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="maiorGasto">R$ 0,00</div>
-          <div class="stat-label">Maior Gasto</div>
-        </div>
-      </div>
-    </section>
 
-    <!-- ===== ADICIONAR DESPESA ===== -->
+      <!-- ===== DASHBOARD STATS ===== -->
+      <section class="card" style="grid-column: 1 / -1;">
+        <h2 class="card-title">
+          <i data-lucide="bar-chart-3"></i>
+          Dashboard
+        </h2>
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card">
+            <div class="stat-value" id="totalGastos">R$ 0,00</div>
+            <div class="stat-label">Total de Gastos</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="totalCategorias">0</div>
+            <div class="stat-label">Categorias</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="gastosEsteMes">R$ 0,00</div>
+            <div class="stat-label">Gastos Este Mês</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="maiorGasto">R$ 0,00</div>
+            <div class="stat-label">Maior Gasto</div>
+          </div>
+        </div>
+      </section>
+
+
+
+    <!-- Adicionar Despesa -->
     <section class="card">
-      <h2 class="card-title">
-        <i data-lucide="plus-circle"></i>
-        Adicionar Despesa
-      </h2>
+      <h2 class="card-title"><i data-lucide="plus-circle"></i> Adicionar Despesa</h2>
       <form id="formDespesas" class="form">
-        <div class="form-group">
-          <label class="label" for="data">Data:</label>
-          <input type="date" id="data" class="input" required>
+        <div class="form-group"><label class="label">Data</label><input type="date" id="data" class="input" required></div>
+        <div class="form-group"><label class="label">Categoria</label><select id="categoria" class="select" required></select></div>
+        <div class="form-group"><label class="label">Valor</label><input type="number" id="valor" class="input" step="0.01" required></div>
+        <div class="form-group"><label class="label">Observação</label><input type="text" id="obs" class="input"></div>
+        <div class="form-group"><label class="label">Status</label>
+          <select id="pago" class="select"><option value="true">✅ Pago</option><option value="false">⏳ Pendente</option></select>
         </div>
-
-        <div class="form-group">
-          <label class="label" for="categoria">Categoria:</label>
-          <select id="categoria" class="select" required>
-            <option value="">Selecione uma categoria...</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="label" for="valor">Valor (R$):</label>
-          <input type="number" id="valor" class="input" step="0.01" placeholder="0,00" required>
-        </div>
-
-        <div class="form-group">
-          <label class="label" for="obs">Observação:</label>
-          <input type="text" id="obs" class="input" placeholder="Descrição da despesa (opcional)">
-        </div>
-
-        <div class="form-group">
-          <label class="label" for="pago">Status:</label>
-          <select id="pago" class="select">
-            <option value="true">✅ Pago</option>
-            <option value="false">⏳ Pendente</option>
-          </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary">
-          <i data-lucide="plus"></i>
-          Adicionar Despesa
-        </button>
+        <button type="submit" class="btn btn-primary"><i data-lucide="plus"></i> Salvar</button>
       </form>
     </section>
 
-    <!-- ===== ADICIONAR CATEGORIA ===== -->
+    <!-- Nova Categoria -->
     <section class="card">
-      <h2 class="card-title">
-        <i data-lucide="tag"></i>
-        Nova Categoria
-      </h2>
+      <h2 class="card-title"><i data-lucide="tag"></i> Nova Categoria</h2>
       <form id="formCategorias" class="form">
-        <div class="form-group">
-          <label class="label" for="nomeCategoria">Nome da Categoria:</label>
-          <input type="text" id="nomeCategoria" class="input" placeholder="Ex: Alimentação, Transporte..." required>
-        </div>
-        <button type="submit" class="btn btn-primary">
-          <i data-lucide="tag"></i>
-          Criar Categoria
-        </button>
+        <div class="form-group"><input type="text" id="nomeCategoria" class="input" placeholder="Ex: Transporte" required></div>
+        <button type="submit" class="btn btn-primary"><i data-lucide="tag"></i> Criar</button>
       </form>
     </section>
 
-    <!-- ===== RELATÓRIO ===== -->
+    <!-- Relatórios -->
     <section class="card">
-      <h2 class="card-title">
-        <i data-lucide="file-text"></i>
-        Relatórios
-      </h2>
+      <h2 class="card-title"><i data-lucide="file-text"></i> Relatórios</h2>
       <form class="form">
-        <div class="form-group">
-          <label class="label" for="relatorioCategoria">Categoria:</label>
-          <select id="relatorioCategoria" class="select">
-            <option value="">Selecione uma categoria...</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="label" for="relatorioAno">Ano:</label>
-          <select id="relatorioAno" class="select">
-            <option value="">Todos os anos</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="label" for="relatorioMes">Mês:</label>
+        <div class="form-group"><label>Categoria</label><select id="relatorioCategoria" class="select"></select></div>
+        <div class="form-group"><label>Ano</label><select id="relatorioAno" class="select"><option value="">Todos</option></select></div>
+        <div class="form-group"><label>Mês</label>
           <select id="relatorioMes" class="select">
-            <option value="">Todos os meses</option>
-            <option value="1">Janeiro</option>
-            <option value="2">Fevereiro</option>
-            <option value="3">Março</option>
-            <option value="4">Abril</option>
-            <option value="5">Maio</option>
-            <option value="6">Junho</option>
-            <option value="7">Julho</option>
-            <option value="8">Agosto</option>
-            <option value="9">Setembro</option>
-            <option value="10">Outubro</option>
-            <option value="11">Novembro</option>
-            <option value="12">Dezembro</option>
+            <option value="">Todos</option><option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option>
+            <option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option>
+            <option value="8">Agosto</option><option value="9">Setembro</option><option value="10">Outubro</option>
+            <option value="11">Novembro</option><option value="12">Dezembro</option>
           </select>
         </div>
-
-        <button type="button" id="btnRelatorio" class="btn btn-secondary">
-          <i data-lucide="search"></i>
-          Gerar Relatório
-        </button>
+        <button type="button" id="btnRelatorio" class="btn btn-secondary"><i data-lucide="search"></i> Gerar</button>
       </form>
-
-      <div id="resultadoRelatorio" class="result-box">
-        Selecione os filtros e clique em "Gerar Relatório" para ver os resultados.
-      </div>
+      <div id="resultadoRelatorio" style="margin-top:1rem; font-size:.9rem; color:hsl(var(--text-secondary));"></div>
     </section>
 
-    <!-- ===== GRÁFICO ===== -->
+    <!-- Gráfico -->
     <section class="card" style="grid-column: 1 / -1;">
-      <h2 class="card-title">
-        <i data-lucide="pie-chart"></i>
-        Distribuição de Gastos por Categoria
-      </h2>
-
-      <div class="form-group">
-        <label class="label" for="tipoGrafico">Tipo de Gráfico:</label>
-        <select id="tipoGrafico" class="select">
-          <option value="doughnut">🍩 Rosca</option>
-          <option value="pie">🥧 Pizza</option>
-          <option value="bar">📊 Barras</option>
-        </select>
+      <h2 class="card-title"><i data-lucide="pie-chart"></i> Gastos por Categoria</h2>
+      <div class="form-group"><label>Tipo de Gráfico</label>
+        <select id="tipoGrafico" class="select"><option value="doughnut">Rosca</option><option value="pie">Pizza</option><option value="bar">Barras</option></select>
       </div>
+      <div class="chart-container"><canvas id="graficoGastos"></canvas></div>
+    </section>
 
-      <div class="chart-container">
-        <canvas id="graficoGastos"></canvas>
-      </div>
 
-      <div class="text-center text-sm text-muted" style="margin-top: var(--spacing-md);">
-        <i data-lucide="info"></i>
-        Passe o mouse sobre o gráfico para ver os valores detalhados
+    <!-- ===== FILTRO DE DESPESAS ===== -->
+<section class="card" style="grid-column: 1 / -1;">
+  <h2 class="card-title">
+    <i data-lucide="filter"></i>
+    Filtrar Despesas
+  </h2>
+  <form id="formFiltro" class="form">
+    <div class="form-group">
+      <label class="label" for="filtroCategoria">Categoria:</label>
+      <select id="filtroCategoria" class="select">
+        <option value="">Todas</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="label" for="filtroAno">Ano:</label>
+      <select id="filtroAno" class="select">
+        <option value="">Todos</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="label" for="filtroMes">Mês:</label>
+      <select id="filtroMes" class="select">
+        <option value="">Todos</option>
+        <option value="1">Janeiro</option>
+        <option value="2">Fevereiro</option>
+        <option value="3">Março</option>
+        <option value="4">Abril</option>
+        <option value="5">Maio</option>
+        <option value="6">Junho</option>
+        <option value="7">Julho</option>
+        <option value="8">Agosto</option>
+        <option value="9">Setembro</option>
+        <option value="10">Outubro</option>
+        <option value="11">Novembro</option>
+        <option value="12">Dezembro</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+      <i data-lucide="search"></i> Buscar
+    </button>
+  </form>
+</section>
+
+    <!-- Lista -->
+    <section class="card" style="grid-column: 1 / -1;">
+      <h2 class="card-title"><i data-lucide="list"></i> Minhas Despesas</h2>
+      <div class="table-container">
+        <table><thead><tr><th>Data</th><th>Categoria</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="listaDespesas"></tbody>
+        </table>
       </div>
     </section>
   </main>
-
-  <!-- ===== JAVASCRIPT ===== -->
-  <script type="module">
+<script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// Configuração Supabase
-const SUPABASE_URL = "https://dylziaqkyavkfwjepqkp.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM"; // Mantido
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// ================== SUPABASE ==================
+const supabase = createClient(
+  "https://dylziaqkyavkfwjepqkp.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM"
+);
 
-// Elements
+// ================== ELEMENTOS ==================
 const formDespesas = document.getElementById("formDespesas");
 const formCategorias = document.getElementById("formCategorias");
 const categoriaSelect = document.getElementById("categoria");
 const relatorioCategoria = document.getElementById("relatorioCategoria");
+const relatorioAno = document.getElementById("relatorioAno");
+const relatorioMes = document.getElementById("relatorioMes");
 const resultadoRelatorio = document.getElementById("resultadoRelatorio");
-let chart;
+const listaDespesas = document.getElementById("listaDespesas");
+const formFiltro = document.getElementById("formFiltro");
+const tabelaSection = document.getElementById("tabelaSection");
+let chart, editandoId = null;
 
-// Formatação de moeda
-const BRL = (value) => new Intl.NumberFormat('pt-BR', {
-  style: 'currency',
-  currency: 'BRL'
-}).format(value);
+// ================== HELPERS ==================
+const BRL = v => new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v);
+function initIcons(){ if(window.lucide) lucide.createIcons(); }
 
-// Lucide
-function initIcons() {
-  if (window.lucide) lucide.createIcons();
-}
-
-// === CATEGORIAS ===
-async function carregarCategorias() {
+// ================== CATEGORIAS ==================
+async function carregarCategorias(){
   const { data, error } = await supabase.from("tipo_despesas").select("*");
-  if (error) return console.error('Erro ao carregar categorias:', error);
+  if(error) return console.error(error);
+  const options = data.map(c=>`<option value="${c.id}">${c.nome}</option>`).join("");
+  categoriaSelect.innerHTML = '<option value="">Selecione...</option>'+options;
+  relatorioCategoria.innerHTML = '<option value="">Todas</option>'+options;
 
-  const options = data.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
-  categoriaSelect.innerHTML = '<option value="">Selecione uma categoria...</option>' + options;
-  relatorioCategoria.innerHTML = '<option value="">Selecione uma categoria...</option>' + options;
+  // Também preencher o filtro
+  const filtroCat = document.getElementById("filtroCategoria");
+  if (filtroCat) {
+    filtroCat.innerHTML = '<option value="">Todas</option>'+options;
+  }
 }
 
-// === ESTATÍSTICAS ===
-async function carregarEstatisticas() {
-  const { data: despesas, error } = await supabase
-    .from("despesas_pessoais")
-    .select("valor, data, tipo_despesas ( nome )");
-
-  if (error) return console.error('Erro ao carregar estatísticas:', error);
-
-  const { data: categorias } = await supabase.from("tipo_despesas").select("*");
-
-  const total = despesas.reduce((sum, d) => sum + d.valor, 0);
-  const agora = new Date();
-  const esteMes = despesas.filter(d => {
-    const data = new Date(d.data);
-    return data.getMonth() === agora.getMonth() && data.getFullYear() === agora.getFullYear();
-  }).reduce((sum, d) => sum + d.valor, 0);
-  const maiorGasto = despesas.length > 0 ? Math.max(...despesas.map(d => d.valor)) : 0;
-
-  updateStatWithAnimation('totalGastos', BRL(total));
-  updateStatWithAnimation('totalCategorias', categorias?.length || 0);
-  updateStatWithAnimation('gastosEsteMes', BRL(esteMes));
-  updateStatWithAnimation('maiorGasto', BRL(maiorGasto));
+// ================== ESTATÍSTICAS ==================
+async function carregarEstatisticas(){
+  const { data, error } = await supabase.from("despesas_pessoais").select("valor,data");
+  if(error) return;
+  const total = data.reduce((s,d)=>s+d.valor,0);
+  const hoje=new Date();
+  const esteMes=data.filter(d=>{
+    const dt=new Date(d.data);
+    return dt.getMonth()===hoje.getMonth()&&dt.getFullYear()===hoje.getFullYear()
+  }).reduce((s,d)=>s+d.valor,0);
+  const maior=data.length?Math.max(...data.map(d=>d.valor)):0;
+  document.getElementById("totalGastos").textContent=BRL(total);
+  document.getElementById("gastosEsteMes").textContent=BRL(esteMes);
+  document.getElementById("maiorGasto").textContent=BRL(maior);
+  const {data:cats}=await supabase.from("tipo_despesas").select("*");
+  document.getElementById("totalCategorias").textContent=cats?.length||0;
 }
 
-function updateStatWithAnimation(id, value) {
-  const el = document.getElementById(id);
-  el.classList.add('loading');
-  setTimeout(() => {
-    el.textContent = value;
-    el.classList.remove('loading');
-    el.classList.add('fade-in');
-  }, 300);
-}
-
-// === CRIAR CATEGORIA ===
-formCategorias.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const nome = document.getElementById("nomeCategoria").value.trim();
-  if (!nome) return alert("Digite um nome válido para a categoria.");
-
-  const { error } = await supabase.from("tipo_despesas").insert([{ nome }]);
-  if (error) return alert("Erro ao criar categoria: " + error.message);
-
-  formCategorias.reset();
-  await carregarCategorias();
-  await carregarEstatisticas();
-
-  const btn = formCategorias.querySelector('button');
-  const originalText = btn.innerHTML;
-  btn.innerHTML = '<i data-lucide="check"></i> Criada!';
-  btn.style.background = 'hsl(142 71% 45%)';
-  setTimeout(() => {
-    btn.innerHTML = originalText;
-    btn.style.background = '';
-    lucide.createIcons();
-  }, 2000);
+// ================== RELATÓRIO ==================
+document.getElementById("btnRelatorio").addEventListener("click", async()=>{
+  const idCat=relatorioCategoria.value, ano=relatorioAno.value, mes=relatorioMes.value;
+  let query=supabase.from("despesas_pessoais").select("valor,data,tipo_despesas(nome)");
+  if(idCat) query=query.eq("tipo_id",idCat);
+  if(ano) query=query.gte("data",`${ano}-01-01`).lte("data",`${ano}-12-31`);
+  if(mes){
+    const a=ano||new Date().getFullYear();
+    const m=mes.padStart(2,"0");
+    const ultimo=new Date(a,mes,0).getDate();
+    query=query.gte("data",`${a}-${m}-01`).lte("data",`${a}-${m}-${ultimo}`);
+  }
+  const {data,error}=await query; if(error) return;
+  const total=data.reduce((s,d)=>s+d.valor,0);
+  resultadoRelatorio.innerHTML=`<b>Total:</b> ${BRL(total)} (${data.length} despesas)`;
 });
 
-// === ADICIONAR DESPESA ===
-formDespesas.addEventListener("submit", async (e) => {
-  e.preventDefault();
+// ================== CARREGAR ANOS ==================
+async function carregarAnos() {
+  const { data, error } = await supabase.from("despesas_pessoais").select("data");
+  if (error) return console.error(error);
+  const anos = [...new Set(data.map(d => new Date(d.data).getFullYear()))].sort((a, b) => b - a);
 
-  const categoriaId = parseInt(categoriaSelect.value, 10);
-  if (!categoriaId) return alert("Selecione uma categoria válida!");
+  relatorioAno.innerHTML = '<option value="">Todos os anos</option>';
+  anos.forEach(ano => relatorioAno.innerHTML += `<option value="${ano}">${ano}</option>`);
 
-  const despesa = {
-    data: document.getElementById("data").value, // << CORRIGIDO (era 'dados')
-    valor: Number(document.getElementById("valor").value),
-    obs: document.getElementById("obs").value,
-    pago: document.getElementById("pago").value === "true",
-    tipo_id: categoriaId
-  };
+  const filtroAno = document.getElementById("filtroAno");
+  if (filtroAno) {
+    filtroAno.innerHTML = '<option value="">Todos</option>';
+    anos.forEach(ano => filtroAno.innerHTML += `<option value="${ano}">${ano}</option>`);
+  }
+}
 
-  const { error } = await supabase.from("despesas_pessoais").insert([despesa]);
-  if (error) return alert("Erro ao adicionar despesa: " + error.message);
-
-  formDespesas.reset();
-  await Promise.all([carregarEstatisticas(), montarGraficoGeral()]);
-
-  const btn = formDespesas.querySelector('button');
-  const originalText = btn.innerHTML;
-  btn.innerHTML = '<i data-lucide="check"></i> Adicionada!';
-  btn.style.background = 'hsl(142 71% 45%)';
-  setTimeout(() => {
-    btn.innerHTML = originalText;
-    btn.style.background = '';
-    lucide.createIcons();
-  }, 2000);
-});
-
-// === RELATÓRIO ===
-document.getElementById("btnRelatorio").addEventListener("click", async () => {
-  const idCat = relatorioCategoria.value;
-  const ano = document.getElementById("relatorioAno").value;
-  const mes = document.getElementById("relatorioMes").value;
-  if (!idCat) return alert("Selecione uma categoria!");
-
+// ================== LISTAR DESPESAS ==================
+async function carregarDespesas(filtro = {}) {
   let query = supabase
     .from("despesas_pessoais")
-    .select("valor, data, tipo_id, tipo_despesas ( nome )")
-    .eq("tipo_id", idCat);
+    .select("id,data,valor,obs,pago,tipo_id,tipo_despesas(nome)")
+    .order("data", { ascending: false });
 
-  if (ano) query = query.gte("data", `${ano}-01-01`).lte("data", `${ano}-12-31`);
-  if (mes) {
-    const anoFiltro = ano || new Date().getFullYear();
-    const mesFormatado = mes.padStart(2, "0");
-    const ultimoDia = new Date(anoFiltro, mes, 0).getDate();
+  if (filtro.cat) query = query.eq("tipo_id", filtro.cat);
+  if (filtro.ano) query = query.gte("data", `${filtro.ano}-01-01`).lte("data", `${filtro.ano}-12-31`);
+  if (filtro.mes) {
+    const anoFiltro = filtro.ano || new Date().getFullYear();
+    const mesFormatado = filtro.mes.padStart(2, "0");
+    const ultimoDia = new Date(anoFiltro, filtro.mes, 0).getDate();
     query = query
       .gte("data", `${anoFiltro}-${mesFormatado}-01`)
       .lte("data", `${anoFiltro}-${mesFormatado}-${ultimoDia}`);
   }
 
   const { data, error } = await query;
-  if (error) return console.error('Erro no relatório:', error);
+  if (error) return console.error(error);
 
-  const total = data.reduce((sum, d) => sum + d.valor, 0);
-  const nomeCategoria = data[0]?.tipo_despesas?.nome || "Categoria";
-  const quantidade = data.length;
-
-  const periodoTexto = [];
-  if (ano) periodoTexto.push(`Ano: ${ano}`);
-  if (mes) {
-    const meses = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-    periodoTexto.push(`Mês: ${meses[parseInt(mes)]}`);
+  listaDespesas.innerHTML = "";
+  if (!data.length) {
+    listaDespesas.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:10px;">Nenhuma despesa encontrada</td></tr>`;
+    return;
   }
-  if (!ano && !mes) periodoTexto.push('Período: Todos');
 
-  resultadoRelatorio.innerHTML = `
-    <strong>📊 Resultado do Relatório</strong><br>
-    <strong>Categoria:</strong> ${nomeCategoria}<br>
-    <strong>Período:</strong> ${periodoTexto.join(' | ')}<br>
-    <strong>Quantidade:</strong> ${quantidade} despesa${quantidade !== 1 ? 's' : ''}<br>
-    <strong>Total:</strong> <span style="color: hsl(var(--primary)); font-weight: 600;">${BRL(total)}</span>
-  `;
-  resultadoRelatorio.classList.add('has-data', 'fade-in');
+  data.forEach(d => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${new Date(d.data).toLocaleDateString()}</td>
+      <td>${d.tipo_despesas?.nome || "—"}</td>
+      <td>${BRL(d.valor)}</td>
+      <td>${d.pago ? "✅ Pago" : "⏳ Pendente"}</td>
+      <td>
+        <button class="btn btn-small btn-edit" onclick="editarDespesa(${d.id},'${d.data}',${d.valor},'${d.obs}',${d.pago},${d.tipo_id})">Editar</button>
+        <button class="btn btn-small btn-delete" onclick="excluirDespesa(${d.id})">Excluir</button>
+      </td>`;
+    listaDespesas.appendChild(tr);
+  });
+}
+
+// ================== FILTRO DE DESPESAS ==================
+formFiltro.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const cat = document.getElementById("filtroCategoria").value;
+  const ano = document.getElementById("filtroAno").value;
+  const mes = document.getElementById("filtroMes").value;
+
+  await carregarDespesas({ cat, ano, mes });
+  tabelaSection.classList.remove("hidden");
 });
 
-// === GRÁFICO ===
-async function montarGraficoGeral() {
-  const { data, error } = await supabase
-    .from("despesas_pessoais")
-    .select("valor, tipo_despesas ( nome )");
+// ================== CRUD DESPESAS ==================
+formDespesas.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const desp={
+    data:document.getElementById("data").value,
+    valor:+document.getElementById("valor").value,
+    obs:document.getElementById("obs").value,
+    pago:document.getElementById("pago").value==="true",
+    tipo_id:+categoriaSelect.value
+  };
+  let r;
+  if(editandoId){
+    r=await supabase.from("despesas_pessoais").update(desp).eq("id",editandoId);
+    editandoId=null;
+  } else {
+    r=await supabase.from("despesas_pessoais").insert([desp]);
+  }
+  if(r.error) alert(r.error.message);
+  else {
+    formDespesas.reset();
+    carregarDespesas();
+    carregarEstatisticas();
+    montarGrafico();
+  }
+});
 
-  if (error) return console.error('Erro ao carregar gráfico:', error);
+// ================== CRUD CATEGORIAS ==================
+formCategorias.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const nome=document.getElementById("nomeCategoria").value.trim();
+  if(!nome) return;
+  const {error}=await supabase.from("tipo_despesas").insert([{nome}]);
+  if(error) alert(error.message);
+  else {
+    formCategorias.reset();
+    carregarCategorias();
+  }
+});
 
-  const dataset = {};
-  data.forEach(d => {
-    const nome = d.tipo_despesas?.nome || "Outros";
-    dataset[nome] = (dataset[nome] || 0) + d.valor;
+// ================== FUNÇÕES GLOBAIS ==================
+window.editarDespesa=(id,data,valor,obs,pago,tipoId)=>{
+  editandoId=id;
+  document.getElementById("data").value=data.split("T")[0];
+  document.getElementById("valor").value=valor;
+  document.getElementById("obs").value=obs;
+  document.getElementById("pago").value=pago?"true":"false";
+  document.getElementById("categoria").value=tipoId;
+};
+window.excluirDespesa=async(id)=>{
+  if(confirm("Excluir?")){
+    const{error}=await supabase.from("despesas_pessoais").delete().eq("id",id);
+    if(!error){carregarDespesas();carregarEstatisticas();montarGrafico();}
+  }
+};
+
+// ================== GRÁFICO ==================
+async function montarGrafico(){
+  const {data,error}=await supabase.from("despesas_pessoais").select("valor,tipo_despesas(nome)");
+  if(error) return;
+  const dataset={};
+  data.forEach(d=>{
+    const n=d.tipo_despesas?.nome||"Outros";
+    dataset[n]=(dataset[n]||0)+d.valor;
   });
-
-  renderizarGrafico(dataset);
-}
-
-function renderizarGrafico(dataset) {
-  const labels = Object.keys(dataset);
-  const values = Object.values(dataset);
-  const ctx = document.getElementById("graficoGastos").getContext("2d");
-  if (chart) chart.destroy();
-
-  const tipoSelecionado = document.getElementById("tipoGrafico").value;
-  const cores = ['hsl(234, 89%, 74%)','hsl(142, 71%, 45%)','hsl(38, 92%, 50%)','hsl(0, 84%, 60%)','hsl(262, 83%, 58%)','hsl(221, 83%, 53%)','hsl(142, 76%, 36%)','hsl(25, 95%, 53%)','hsl(346, 87%, 43%)','hsl(199, 89%, 48%)'];
-
-  chart = new Chart(ctx, {
-    type: tipoSelecionado,
-    data: {
-      labels,
-      datasets: [{
-        data: values,
-        backgroundColor: cores.slice(0, labels.length),
-        borderWidth: 2,
-        borderColor: 'hsl(240, 10%, 3.9%)',
-        hoverBorderWidth: 3,
-        hoverBorderColor: 'hsl(234, 89%, 74%)'
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: (ctx) => {
-              const valor = BRL(ctx.parsed);
-              const porcentagem = ((ctx.parsed / values.reduce((a, b) => a + b, 0)) * 100).toFixed(1);
-              return `${ctx.label}: ${valor} (${porcentagem}%)`;
-            }
-          }
-        }
-      },
-      scales: tipoSelecionado === 'bar' ? {
-        y: { beginAtZero: true, ticks: { callback: v => BRL(v) } },
-        x: {}
-      } : {}
-    }
+  const ctx=document.getElementById("graficoGastos").getContext("2d");
+  if(chart) chart.destroy();
+  const tipo=document.getElementById("tipoGrafico").value;
+  chart=new Chart(ctx,{
+    type:tipo,
+    data:{labels:Object.keys(dataset),datasets:[{data:Object.values(dataset)}]},
+    options:{responsive:true}
   });
 }
+document.getElementById("tipoGrafico").addEventListener("change",montarGrafico);
 
-// Eventos
-document.getElementById("tipoGrafico").addEventListener("change", montarGraficoGeral);
-document.getElementById("data").value = new Date().toISOString().split('T')[0];
-
-// Inicialização
-async function init() {
+// ================== INIT ==================
+document.getElementById("data").value=new Date().toISOString().split("T")[0];
+(async()=>{
   initIcons();
-  await Promise.all([
-    carregarCategorias(),
-    carregarEstatisticas(),
-    carregarAnos(),
-    montarGraficoGeral()
-  ]);
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
-    async function carregarAnos() {
-  const { data, error } = await supabase
-    .from("despesas_pessoais")
-    .select("data");
-
-  if (error) return console.error("Erro ao carregar anos:", error);
-
-  const selectAno = document.getElementById("relatorioAno");
-  const anos = [...new Set(data.map(d => new Date(d.data).getFullYear()))].sort((a, b) => b - a);
-
-  selectAno.innerHTML = '<option value="">Todos</option>';
-  anos.forEach(ano => {
-    const option = document.createElement("option");
-    option.value = ano;
-    option.textContent = ano;
-    selectAno.appendChild(option);
-  });
-}
-
+  await carregarCategorias();
+  await carregarDespesas();
+  await carregarEstatisticas();
+  await carregarAnos();
+  await montarGrafico();
+})();
 </script>
+
+
 
 </body>
 </html>
+
