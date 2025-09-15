@@ -1,4 +1,4 @@
-html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -271,14 +271,6 @@ html>
       </form>
     </section>
 
-    <!-- Nova Categoria -->
-    <section class="card">
-      <h2 class="card-title"><i data-lucide="tag"></i> Nova Categoria</h2>
-      <form id="formCategorias" class="form">
-        <div class="form-group"><input type="text" id="nomeCategoria" class="input" placeholder="Ex: Transporte" required></div>
-        <button type="submit" class="btn btn-primary"><i data-lucide="tag"></i> Criar</button>
-      </form>
-    </section>
 
     <!-- Relatórios -->
     <section class="card">
@@ -298,6 +290,20 @@ html>
      </form>
         <div id="resultadoRelatorio" class="relatorio-card"></div>
       </section>
+
+
+
+
+    <!-- Nova Categoria -->
+    <section class="card">
+      <h2 class="card-title"><i data-lucide="tag"></i> Nova Categoria</h2>
+      <form id="formCategorias" class="form">
+        <div class="form-group"><input type="text" id="nomeCategoria" class="input" placeholder="Ex: Transporte" required></div>
+        <button type="submit" class="btn btn-primary"><i data-lucide="tag"></i> Criar</button>
+      </form>
+    </section>
+
+
 
 
     <!-- Gráfico -->
@@ -366,6 +372,10 @@ html>
       </div>
     </section>
   </main>
+
+
+
+<script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
 
 
 
@@ -501,7 +511,7 @@ document.getElementById("btnRelatorio").addEventListener("click", async () => {
   resultadoRelatorio.innerHTML = `<b>Total:</b> ${BRL(total)} (${data.length} despesas)`;
 });
 
-// === GRÁFICO ===
+// === GRÁFICO REFINADO ===
 async function montarGrafico() {
   const { data, error } = await supabase
     .from("despesas_pessoais")
@@ -518,19 +528,55 @@ async function montarGrafico() {
   if (chart) chart.destroy();
   const tipo = document.getElementById("tipoGrafico").value;
 
+  // Gradiente dinâmico
+  const gradient1 = ctx.createLinearGradient(0, 0, 0, 400);
+  gradient1.addColorStop(0, "#ff00cc");
+  gradient1.addColorStop(1, "#3333ff");
+
+  const gradient2 = ctx.createLinearGradient(0, 0, 0, 400);
+  gradient2.addColorStop(0, "#00f0ff");
+  gradient2.addColorStop(1, "#00ff88");
+
+  const colors = [gradient1, gradient2, "#ffea00", "#ff6600", "#00ffcc"];
+
   chart = new Chart(ctx, {
     type: tipo,
     data: {
       labels: Object.keys(dataset),
       datasets: [
         {
-          data: Object.values(dataset)
+          data: Object.values(dataset),
+          backgroundColor: colors,
+          borderColor: "#111",
+          borderWidth: 2,
+          hoverOffset: 25, // dá sensação de "3D"
+          borderRadius: 10, // deixa arredondado
+          shadowColor: "rgba(0,0,0,0.7)",
+          shadowBlur: 20
         }
       ]
     },
-    options: { responsive: true }
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          labels: {
+            color: "#fff",
+            font: { size: 14, weight: "bold" }
+          }
+        },
+        tooltip: {
+          backgroundColor: "rgba(0,0,0,0.8)",
+          titleColor: "#ffea00",
+          bodyColor: "#fff",
+          borderColor: "#ff00cc",
+          borderWidth: 1
+        }
+      }
+    }
   });
 }
+
 document
   .getElementById("tipoGrafico")
   .addEventListener("change", montarGrafico);
@@ -688,5 +734,3 @@ document.getElementById("data").value = new Date().toISOString().split("T")[0];
 
 </body>
 </html>
-
-
