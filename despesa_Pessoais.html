@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro de Despesas</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #eef2f7;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 30px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 450px;
+    }
+
+    form {
+      background: #fff;
+      padding: 25px 30px;
+      border-radius: 15px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 22px;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-size: 14px;
+      color: #444;
+      font-weight: 500;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 14px;
+      background: #f9f9f9;
+      transition: all 0.2s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #007bff;
+      background: #fff;
+      box-shadow: 0 0 4px rgba(0,123,255,0.3);
+    }
+
+    button {
+      margin-top: 20px;
+      background: linear-gradient(135deg, #007bff, #0056d6);
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #0056d6, #003c99);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Formulário de despesas -->
+    <form id="formDespesas">
+      <h2>Adicionar Despesa</h2>
+      <label for="data">Data:</label>
+      <input type="date" id="data" required>
+
+      <label for="tipo">Tipo de Despesa:</label>
+      <select id="tipo" required></select>
+
+      <label for="valor">Valor (R$):</label>
+      <input type="number" id="valor" step="0.01" required>
+
+      <label for="obs">Observação:</label>
+      <input type="text" id="obs">
+
+      <label for="pago">Pago:</label>
+      <select id="pago">
+        <option value="Sim">Sim</option>
+        <option value="Não">Não</option>
+      </select>
+
+      <button type="submit">➕ Adicionar Despesa</button>
+    </form>
+
+    <!-- Formulário de tipos de despesas -->
+    <form id="formTipo">
+      <h2>Adicionar Tipo de Despesa</h2>
+      <label for="novoTipo">Nome do Tipo:</label>
+      <input type="text" id="novoTipo" required>
+      <button type="submit">➕ Adicionar Tipo</button>
+    </form>
+  </div>
+
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+    const SUPABASE_URL = "https://dylziaqkyavkfwjepqkp.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const formDespesas = document.getElementById("formDespesas");
+    const formTipo = document.getElementById("formTipo");
+    const tipoSelect = document.getElementById("tipo");
+
+    // carregar tipos
+    async function carregarTipos() {
+      const { data, error } = await supabase
+        .from("tipo_despesas")
+        .select("*")
+        .order("nome", { ascending: true });
+
+      if (error) {
+        console.error("Erro ao carregar tipos:", error.message);
+        return;
+      }
+
+      tipoSelect.innerHTML = '<option value="">Selecione...</option>';
+      data.forEach(t => {
+        const option = document.createElement("option");
+        option.value = t.id;  // salva o ID
+        option.textContent = t.nome;
+        tipoSelect.appendChild(option);
+      });
+    }
+
+    // adicionar tipo
+    formTipo.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nome = document.getElementById("novoTipo").value;
+
+      const { error } = await supabase.from("tipo_despesas").insert([{ nome }]);
+      if (error) {
+        alert("Erro ao adicionar tipo: " + error.message);
+        return;
+      }
+
+      formTipo.reset();
+      carregarTipos();
+    });
+
+    // adicionar despesa
+    formDespesas.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = document.getElementById("data").value;
+      const tipo_id = document.getElementById("tipo").value;
+      const valor = document.getElementById("valor").value;
+      const obs = document.getElementById("obs").value;
+      const pago = document.getElementById("pago").value === "Sim";
+
+      const { error } = await supabase
+        .from("despesas")
+        .insert([{ data, tipo_id, valor, obs, pago }]);
+
+      if (error) {
+        alert("Erro ao salvar despesa: " + error.message);
+        return;
+      }
+
+      formDespesas.reset();
+      alert("Despesa cadastrada com sucesso!");
+    });
+
+    carregarTipos();
+  </script>
+</body>
+</html>
