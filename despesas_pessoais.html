@@ -548,423 +548,281 @@
 
   <!-- ===== JAVASCRIPT ===== -->
   <script type="module">
-    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-    // Configuração Supabase
-    const SUPABASE_URL = "https://dylziaqkyavkfwjepqkp.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM";
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Configuração Supabase
+const SUPABASE_URL = "https://dylziaqkyavkfwjepqkp.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM"; // Mantido
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Elements
-    const formDespesas = document.getElementById("formDespesas");
-    const formCategorias = document.getElementById("formCategorias");
-    const categoriaSelect = document.getElementById("categoria");
-    const relatorioCategoria = document.getElementById("relatorioCategoria");
-    const resultadoRelatorio = document.getElementById("resultadoRelatorio");
-    let chart;
+// Elements
+const formDespesas = document.getElementById("formDespesas");
+const formCategorias = document.getElementById("formCategorias");
+const categoriaSelect = document.getElementById("categoria");
+const relatorioCategoria = document.getElementById("relatorioCategoria");
+const resultadoRelatorio = document.getElementById("resultadoRelatorio");
+let chart;
 
-    // Formatação de moeda
-    const BRL = (value) => new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value);
+// Formatação de moeda
+const BRL = (value) => new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL'
+}).format(value);
 
-    // Inicializar Lucide icons
-    function initIcons() {
-      if (window.lucide) {
-        lucide.createIcons();
-      }
-    }
+// Lucide
+function initIcons() {
+  if (window.lucide) lucide.createIcons();
+}
 
-    // Carregar estatísticas do dashboard
-    async function carregarEstatisticas() {
-      try {
-        const { data: despesas, error } = await supabase
-          .from("despesas_pessoais")
-          .select("valor, data, categorias_despesas_pessoais ( nome )");
+// === CATEGORIAS ===
+async function carregarCategorias() {
+  const { data, error } = await supabase.from("tipo_despesas").select("*");
+  if (error) return console.error('Erro ao carregar categorias:', error);
 
-        if (error) {
-          console.error('Erro ao carregar estatísticas:', error);
-          return;
-        }
+  const options = data.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+  categoriaSelect.innerHTML = '<option value="">Selecione uma categoria...</option>' + options;
+  relatorioCategoria.innerHTML = '<option value="">Selecione uma categoria...</option>' + options;
+}
 
-        const { data: categorias } = await supabase
-          .from("categorias_despesas_pessoais")
-          .select("*");
+// === ESTATÍSTICAS ===
+async function carregarEstatisticas() {
+  const { data: despesas, error } = await supabase
+    .from("despesas_pessoais")
+    .select("valor, data, tipo_despesas ( nome )");
 
-        const total = despesas.reduce((sum, d) => sum + d.valor, 0);
-        const agora = new Date();
-        const esteMes = despesas.filter(d => {
-          const data = new Date(d.data);
-          return data.getMonth() === agora.getMonth() && data.getFullYear() === agora.getFullYear();
-        }).reduce((sum, d) => sum + d.valor, 0);
+  if (error) return console.error('Erro ao carregar estatísticas:', error);
 
-        const maiorGasto = despesas.length > 0 ? Math.max(...despesas.map(d => d.valor)) : 0;
+  const { data: categorias } = await supabase.from("tipo_despesas").select("*");
 
-        // Atualizar elementos com animação
-        updateStatWithAnimation('totalGastos', BRL(total));
-        updateStatWithAnimation('totalCategorias', categorias?.length || 0);
-        updateStatWithAnimation('gastosEsteMes', BRL(esteMes));
-        updateStatWithAnimation('maiorGasto', BRL(maiorGasto));
+  const total = despesas.reduce((sum, d) => sum + d.valor, 0);
+  const agora = new Date();
+  const esteMes = despesas.filter(d => {
+    const data = new Date(d.data);
+    return data.getMonth() === agora.getMonth() && data.getFullYear() === agora.getFullYear();
+  }).reduce((sum, d) => sum + d.valor, 0);
+  const maiorGasto = despesas.length > 0 ? Math.max(...despesas.map(d => d.valor)) : 0;
 
-      } catch (error) {
-        console.error('Erro ao carregar estatísticas:', error);
-      }
-    }
+  updateStatWithAnimation('totalGastos', BRL(total));
+  updateStatWithAnimation('totalCategorias', categorias?.length || 0);
+  updateStatWithAnimation('gastosEsteMes', BRL(esteMes));
+  updateStatWithAnimation('maiorGasto', BRL(maiorGasto));
+}
 
-    function updateStatWithAnimation(elementId, value) {
-      const element = document.getElementById(elementId);
-      element.classList.add('loading');
-      setTimeout(() => {
-        element.textContent = value;
-        element.classList.remove('loading');
-        element.classList.add('fade-in');
-      }, 300);
-    }
+function updateStatWithAnimation(id, value) {
+  const el = document.getElementById(id);
+  el.classList.add('loading');
+  setTimeout(() => {
+    el.textContent = value;
+    el.classList.remove('loading');
+    el.classList.add('fade-in');
+  }, 300);
+}
 
-    // Carregar categorias
-    async function carregarCategorias() {
-      try {
-        const { data, error } = await supabase
-          .from("categorias_despesas_pessoais")
-          .select("*");
+// === CRIAR CATEGORIA ===
+formCategorias.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const nome = document.getElementById("nomeCategoria").value.trim();
+  if (!nome) return alert("Digite um nome válido para a categoria.");
 
-        if (error) {
-          console.error('Erro ao carregar categorias:', error);
-          return;
-        }
+  const { error } = await supabase.from("tipo_despesas").insert([{ nome }]);
+  if (error) return alert("Erro ao criar categoria: " + error.message);
 
-        const options = data.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+  formCategorias.reset();
+  await carregarCategorias();
+  await carregarEstatisticas();
 
-        categoriaSelect.innerHTML = '<option value="">Selecione uma categoria...</option>' + options;
-        relatorioCategoria.innerHTML = '<option value="">Selecione uma categoria...</option>' + options;
+  const btn = formCategorias.querySelector('button');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i data-lucide="check"></i> Criada!';
+  btn.style.background = 'hsl(142 71% 45%)';
+  setTimeout(() => {
+    btn.innerHTML = originalText;
+    btn.style.background = '';
+    lucide.createIcons();
+  }, 2000);
+});
 
-      } catch (error) {
-        console.error('Erro ao carregar categorias:', error);
-      }
-    }
+// === ADICIONAR DESPESA ===
+formDespesas.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    // Carregar anos disponíveis
-    async function carregarAnos() {
-      try {
-        const { data, error } = await supabase
-          .from("despesas_pessoais")
-          .select("data");
+  const categoriaId = parseInt(categoriaSelect.value, 10);
+  if (!categoriaId) return alert("Selecione uma categoria válida!");
 
-        if (error) return;
+  const despesa = {
+    data: document.getElementById("data").value, // << CORRIGIDO (era 'dados')
+    valor: Number(document.getElementById("valor").value),
+    obs: document.getElementById("obs").value,
+    pago: document.getElementById("pago").value === "true",
+    tipo_id: categoriaId
+  };
 
-        const anos = [...new Set(data.map(d => new Date(d.data).getFullYear()))].sort((a, b) => b - a);
-        const relatorioAno = document.getElementById("relatorioAno");
+  const { error } = await supabase.from("despesas_pessoais").insert([despesa]);
+  if (error) return alert("Erro ao adicionar despesa: " + error.message);
 
-        const anosOptions = anos.map(ano => `<option value="${ano}">${ano}</option>`).join('');
-        relatorioAno.innerHTML = '<option value="">Todos os anos</option>' + anosOptions;
+  formDespesas.reset();
+  await Promise.all([carregarEstatisticas(), montarGraficoGeral()]);
 
-      } catch (error) {
-        console.error('Erro ao carregar anos:', error);
-      }
-    }
+  const btn = formDespesas.querySelector('button');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i data-lucide="check"></i> Adicionada!';
+  btn.style.background = 'hsl(142 71% 45%)';
+  setTimeout(() => {
+    btn.innerHTML = originalText;
+    btn.style.background = '';
+    lucide.createIcons();
+  }, 2000);
+});
 
-    // Adicionar categoria
-    formCategorias.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const nome = document.getElementById("nomeCategoria").value.trim();
+// === RELATÓRIO ===
+document.getElementById("btnRelatorio").addEventListener("click", async () => {
+  const idCat = relatorioCategoria.value;
+  const ano = document.getElementById("relatorioAno").value;
+  const mes = document.getElementById("relatorioMes").value;
+  if (!idCat) return alert("Selecione uma categoria!");
 
-      if (!nome) {
-        alert("Digite um nome válido para a categoria.");
-        return;
-      }
+  let query = supabase
+    .from("despesas_pessoais")
+    .select("valor, data, tipo_id, tipo_despesas ( nome )")
+    .eq("tipo_id", idCat);
 
-      try {
-        const { error } = await supabase
-          .from("categorias_despesas_pessoais")
-          .insert([{ nome }]);
+  if (ano) query = query.gte("data", `${ano}-01-01`).lte("data", `${ano}-12-31`);
+  if (mes) {
+    const anoFiltro = ano || new Date().getFullYear();
+    const mesFormatado = mes.padStart(2, "0");
+    const ultimoDia = new Date(anoFiltro, mes, 0).getDate();
+    query = query
+      .gte("data", `${anoFiltro}-${mesFormatado}-01`)
+      .lte("data", `${anoFiltro}-${mesFormatado}-${ultimoDia}`);
+  }
 
-        if (error) {
-          alert("Erro ao criar categoria: " + error.message);
-          return;
-        }
+  const { data, error } = await query;
+  if (error) return console.error('Erro no relatório:', error);
 
-        formCategorias.reset();
-        await carregarCategorias();
-        await carregarEstatisticas();
+  const total = data.reduce((sum, d) => sum + d.valor, 0);
+  const nomeCategoria = data[0]?.tipo_despesas?.nome || "Categoria";
+  const quantidade = data.length;
 
-        // Feedback visual
-        const btn = formCategorias.querySelector('button');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i data-lucide="check"></i> Criada!';
-        btn.style.background = 'hsl(142 71% 45%)';
+  const periodoTexto = [];
+  if (ano) periodoTexto.push(`Ano: ${ano}`);
+  if (mes) {
+    const meses = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    periodoTexto.push(`Mês: ${meses[parseInt(mes)]}`);
+  }
+  if (!ano && !mes) periodoTexto.push('Período: Todos');
 
-        setTimeout(() => {
-          btn.innerHTML = originalText;
-          btn.style.background = '';
-          lucide.createIcons();
-        }, 2000);
+  resultadoRelatorio.innerHTML = `
+    <strong>📊 Resultado do Relatório</strong><br>
+    <strong>Categoria:</strong> ${nomeCategoria}<br>
+    <strong>Período:</strong> ${periodoTexto.join(' | ')}<br>
+    <strong>Quantidade:</strong> ${quantidade} despesa${quantidade !== 1 ? 's' : ''}<br>
+    <strong>Total:</strong> <span style="color: hsl(var(--primary)); font-weight: 600;">${BRL(total)}</span>
+  `;
+  resultadoRelatorio.classList.add('has-data', 'fade-in');
+});
 
-      } catch (error) {
-        alert("Erro ao criar categoria: " + error.message);
-      }
-    });
+// === GRÁFICO ===
+async function montarGraficoGeral() {
+  const { data, error } = await supabase
+    .from("despesas_pessoais")
+    .select("valor, tipo_despesas ( nome )");
 
-    // Adicionar despesa
-    formDespesas.addEventListener("submit", async (e) => {
-      e.preventDefault();
+  if (error) return console.error('Erro ao carregar gráfico:', error);
 
-      const categoriaId = Number(document.getElementById("categoria").value);
-      if (!categoriaId) {
-        alert("Selecione uma categoria válida!");
-        return;
-      }
+  const dataset = {};
+  data.forEach(d => {
+    const nome = d.tipo_despesas?.nome || "Outros";
+    dataset[nome] = (dataset[nome] || 0) + d.valor;
+  });
 
-      const despesa = {
-        data: document.getElementById("data").value,
-        valor: Number(document.getElementById("valor").value),
-        obs: document.getElementById("obs").value,
-        pago: document.getElementById("pago").value === "true",
-        tipo_id: categoriaId
-      };
+  renderizarGrafico(dataset);
+}
 
-      try {
-        const { error } = await supabase
-          .from("despesas_pessoais")
-          .insert([despesa]);
+function renderizarGrafico(dataset) {
+  const labels = Object.keys(dataset);
+  const values = Object.values(dataset);
+  const ctx = document.getElementById("graficoGastos").getContext("2d");
+  if (chart) chart.destroy();
 
-        if (error) {
-          alert("Erro ao adicionar despesa: " + error.message);
-          return;
-        }
+  const tipoSelecionado = document.getElementById("tipoGrafico").value;
+  const cores = ['hsl(234, 89%, 74%)','hsl(142, 71%, 45%)','hsl(38, 92%, 50%)','hsl(0, 84%, 60%)','hsl(262, 83%, 58%)','hsl(221, 83%, 53%)','hsl(142, 76%, 36%)','hsl(25, 95%, 53%)','hsl(346, 87%, 43%)','hsl(199, 89%, 48%)'];
 
-        formDespesas.reset();
-
-        // Recarregar dados
-        await Promise.all([
-          carregarEstatisticas(),
-          montarGraficoGeral()
-        ]);
-
-        // Feedback visual
-        const btn = formDespesas.querySelector('button');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i data-lucide="check"></i> Adicionada!';
-        btn.style.background = 'hsl(142 71% 45%)';
-
-        setTimeout(() => {
-          btn.innerHTML = originalText;
-          btn.style.background = '';
-          lucide.createIcons();
-        }, 2000);
-
-      } catch (error) {
-        alert("Erro ao adicionar despesa: " + error.message);
-      }
-    });
-
-    // Relatório com filtros
-    document.getElementById("btnRelatorio").addEventListener("click", async () => {
-      const idCat = relatorioCategoria.value;
-      const ano = document.getElementById("relatorioAno").value;
-      const mes = document.getElementById("relatorioMes").value;
-
-      if (!idCat) {
-        alert("Selecione uma categoria!");
-        return;
-      }
-
-      try {
-        let query = supabase
-          .from("despesas_pessoais")
-          .select("valor, data, tipo_id, categorias_despesas_pessoais ( nome )")
-          .eq("tipo_id", idCat);
-
-        if (ano) {
-          query = query.gte("data", `${ano}-01-01`).lte("data", `${ano}-12-31`);
-        }
-
-        if (mes) {
-          const anoFiltro = ano || new Date().getFullYear();
-          const mesFormatado = mes.padStart(2, "0");
-          const ultimoDia = new Date(anoFiltro, mes, 0).getDate();
-          query = query.gte("data", `${anoFiltro}-${mesFormatado}-01`)
-                       .lte("data", `${anoFiltro}-${mesFormatado}-${ultimoDia}`);
-        }
-
-        const { data, error } = await query;
-
-        if (error) {
-          console.error('Erro no relatório:', error);
-          return;
-        }
-
-        const total = data.reduce((sum, d) => sum + d.valor, 0);
-        const nomeCategoria = data[0]?.categorias_despesas_pessoais?.nome || "Categoria";
-        const quantidade = data.length;
-
-        const periodoTexto = [];
-        if (ano) periodoTexto.push(`Ano: ${ano}`);
-        if (mes) {
-          const meses = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-                        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-          periodoTexto.push(`Mês: ${meses[parseInt(mes)]}`);
-        }
-        if (!ano && !mes) periodoTexto.push('Período: Todos');
-
-        resultadoRelatorio.innerHTML = `
-          <strong>📊 Resultado do Relatório</strong><br>
-          <strong>Categoria:</strong> ${nomeCategoria}<br>
-          <strong>Período:</strong> ${periodoTexto.join(' | ')}<br>
-          <strong>Quantidade:</strong> ${quantidade} despesa${quantidade !== 1 ? 's' : ''}<br>
-          <strong>Total:</strong> <span style="color: hsl(var(--primary)); font-weight: 600;">${BRL(total)}</span>
-        `;
-
-        resultadoRelatorio.classList.add('has-data', 'fade-in');
-
-      } catch (error) {
-        console.error('Erro no relatório:', error);
-        resultadoRelatorio.textContent = 'Erro ao gerar relatório. Tente novamente.';
-      }
-    });
-
-    // Montar gráfico geral
-    async function montarGraficoGeral() {
-      try {
-        const { data, error } = await supabase
-          .from("despesas_pessoais")
-          .select("valor, categorias_despesas_pessoais ( nome )");
-
-        if (error) {
-          console.error('Erro ao carregar dados do gráfico:', error);
-          return;
-        }
-
-        const dataset = {};
-        data.forEach(d => {
-          const nome = d.categorias_despesas_pessoais?.nome || "Outros";
-          dataset[nome] = (dataset[nome] || 0) + d.valor;
-        });
-
-        renderizarGrafico(dataset);
-      } catch (error) {
-        console.error('Erro no gráfico:', error);
-      }
-    }
-
-    function renderizarGrafico(dataset) {
-      const labels = Object.keys(dataset);
-      const values = Object.values(dataset);
-      const ctx = document.getElementById("graficoGastos").getContext("2d");
-
-      if (chart) {
-        chart.destroy();
-      }
-
-      const tipoSelecionado = document.getElementById("tipoGrafico").value;
-
-      const cores = [
-        'hsl(234, 89%, 74%)',  // primary
-        'hsl(142, 71%, 45%)',  // accent
-        'hsl(38, 92%, 50%)',   // warning
-        'hsl(0, 84%, 60%)',    // destructive
-        'hsl(262, 83%, 58%)',  // purple
-        'hsl(221, 83%, 53%)',  // blue
-        'hsl(142, 76%, 36%)',  // green
-        'hsl(25, 95%, 53%)',   // orange
-        'hsl(346, 87%, 43%)',  // pink
-        'hsl(199, 89%, 48%)'   // cyan
-      ];
-
-      chart = new Chart(ctx, {
-        type: tipoSelecionado,
-        data: {
-          labels,
-          datasets: [{
-            data: values,
-            backgroundColor: cores.slice(0, labels.length),
-            borderWidth: 2,
-            borderColor: 'hsl(240, 10%, 3.9%)',
-            hoverBorderWidth: 3,
-            hoverBorderColor: 'hsl(234, 89%, 74%)'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            tooltip: {
-              backgroundColor: 'hsl(240, 5.9%, 10%)',
-              titleColor: 'hsl(0, 0%, 98%)',
-              bodyColor: 'hsl(240, 5%, 64.9%)',
-              borderColor: 'hsl(240, 3.7%, 15.9%)',
-              borderWidth: 1,
-              cornerRadius: 8,
-              callbacks: {
-                label: (context) => {
-                  const valor = BRL(context.parsed);
-                  const porcentagem = ((context.parsed / values.reduce((a, b) => a + b, 0)) * 100).toFixed(1);
-                  return `${context.label}: ${valor} (${porcentagem}%)`;
-                }
-              }
-            },
-            legend: {
-              position: 'bottom',
-              labels: {
-                color: 'hsl(240, 5%, 64.9%)',
-                padding: 20,
-                usePointStyle: true,
-                pointStyle: 'circle'
-              }
+  chart = new Chart(ctx, {
+    type: tipoSelecionado,
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: cores.slice(0, labels.length),
+        borderWidth: 2,
+        borderColor: 'hsl(240, 10%, 3.9%)',
+        hoverBorderWidth: 3,
+        hoverBorderColor: 'hsl(234, 89%, 74%)'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const valor = BRL(ctx.parsed);
+              const porcentagem = ((ctx.parsed / values.reduce((a, b) => a + b, 0)) * 100).toFixed(1);
+              return `${ctx.label}: ${valor} (${porcentagem}%)`;
             }
-          },
-          scales: tipoSelecionado === 'bar' ? {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                callback: (value) => BRL(value),
-                color: 'hsl(240, 5%, 64.9%)'
-              },
-              grid: {
-                color: 'hsl(240, 3.7%, 15.9%)'
-              }
-            },
-            x: {
-              ticks: {
-                color: 'hsl(240, 5%, 64.9%)'
-              },
-              grid: {
-                color: 'hsl(240, 3.7%, 15.9%)'
-              }
-            }
-          } : {},
-          animation: {
-            duration: 1000,
-            easing: 'easeInOutCubic'
           }
         }
-      });
+      },
+      scales: tipoSelecionado === 'bar' ? {
+        y: { beginAtZero: true, ticks: { callback: v => BRL(v) } },
+        x: {}
+      } : {}
     }
+  });
+}
 
-    // Event listeners
-    document.getElementById("tipoGrafico").addEventListener("change", montarGraficoGeral);
+// Eventos
+document.getElementById("tipoGrafico").addEventListener("change", montarGraficoGeral);
+document.getElementById("data").value = new Date().toISOString().split('T')[0];
 
-    // Auto-fill data atual
-    document.getElementById("data").value = new Date().toISOString().split('T')[0];
+// Inicialização
+async function init() {
+  initIcons();
+  await Promise.all([
+    carregarCategorias(),
+    carregarEstatisticas(),
+    carregarAnos(),
+    montarGraficoGeral()
+  ]);
+}
 
-    // Inicialização
-    async function init() {
-      initIcons();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+    async function carregarAnos() {
+  const { data, error } = await supabase
+    .from("despesas_pessoais")
+    .select("data");
 
-      await Promise.all([
-        carregarCategorias(),
-        carregarAnos(),
-        carregarEstatisticas(),
-        montarGraficoGeral()
-      ]);
-    }
+  if (error) return console.error("Erro ao carregar anos:", error);
 
-    // Inicializar quando a página carregar
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
-    }
-  </script>
+  const selectAno = document.getElementById("relatorioAno");
+  const anos = [...new Set(data.map(d => new Date(d.data).getFullYear()))].sort((a, b) => b - a);
+
+  selectAno.innerHTML = '<option value="">Todos</option>';
+  anos.forEach(ano => {
+    const option = document.createElement("option");
+    option.value = ano;
+    option.textContent = ano;
+    selectAno.appendChild(option);
+  });
+}
+
+</script>
+
 </body>
 </html>
