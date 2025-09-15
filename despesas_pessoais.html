@@ -217,6 +217,48 @@
   to { opacity: 1; transform: scale(1); }
 }
 
+/* Relatório em linha */
+.form-relatorio {
+  display: flex;
+  flex-wrap: wrap;       /* quebra em telas pequenas */
+  gap: 1rem;             /* espaçamento entre campos */
+  align-items: flex-end; /* alinha labels e selects ao botão */
+}
+
+.form-relatorio .form-group {
+  flex: 1;               /* cada campo cresce igualmente */
+  min-width: 180px;      /* largura mínima para não colapsar */
+}
+
+.form-relatorio button {
+  padding: .6rem 1.2rem;
+  border-radius: .5rem;
+  flex-shrink: 0;        /* botão não encolhe */
+}
+
+    /* Filtro despesas em linha */
+.form-filtro {
+  display: flex;
+  flex-wrap: wrap;       /* quebra em telas pequenas */
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.form-filtro .form-group {
+  flex: 1;
+  min-width: 180px;
+}
+
+.form-filtro button {
+  padding: .6rem 1.2rem;
+  border-radius: .5rem;
+  flex-shrink: 0;
+}
+/* Garante que todos os headers fiquem brancos */
+th {
+  color: #fff !important;
+}
+
 
 
   </style>
@@ -273,23 +315,45 @@
 
 
     <!-- Relatórios -->
-    <section class="card">
-      <h2 class="card-title"><i data-lucide="file-text"></i> Relatórios</h2>
-      <form class="form">
-        <div class="form-group"><label>Categoria</label><select id="relatorioCategoria" class="select"></select></div>
-        <div class="form-group"><label>Ano</label><select id="relatorioAno" class="select"><option value="">Todos</option></select></div>
-        <div class="form-group"><label>Mês</label>
-          <select id="relatorioMes" class="select">
-            <option value="">Todos</option><option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option>
-            <option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option>
-            <option value="8">Agosto</option><option value="9">Setembro</option><option value="10">Outubro</option>
-            <option value="11">Novembro</option><option value="12">Dezembro</option>
-          </select>
-        </div>
-        <button type="button" id="btnRelatorio" class="btn btn-secondary"><i data-lucide="search"></i> Gerar</button>
-     </form>
-        <div id="resultadoRelatorio" class="relatorio-card"></div>
-      </section>
+<section class="card">
+  <h2 class="card-title"><i data-lucide="file-text"></i> Relatórios</h2>
+  <form class="form-relatorio">
+    <div class="form-group">
+      <label>Categoria</label>
+      <select id="relatorioCategoria" class="select"></select>
+    </div>
+    <div class="form-group">
+      <label>Ano</label>
+      <select id="relatorioAno" class="select">
+        <option value="">Todos</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Mês</label>
+      <select id="relatorioMes" class="select">
+        <option value="">Todos</option>
+        <option value="1">Janeiro</option>
+        <option value="2">Fevereiro</option>
+        <option value="3">Março</option>
+        <option value="4">Abril</option>
+        <option value="5">Maio</option>
+        <option value="6">Junho</option>
+        <option value="7">Julho</option>
+        <option value="8">Agosto</option>
+        <option value="9">Setembro</option>
+        <option value="10">Outubro</option>
+        <option value="11">Novembro</option>
+        <option value="12">Dezembro</option>
+      </select>
+    </div>
+    <button type="button" id="btnRelatorio" class="btn btn-secondary">
+      <i data-lucide="search"></i> Gerar
+    </button>
+  </form>
+
+  <div id="resultadoRelatorio" class="relatorio-card"></div>
+</section>
+
 
 
 
@@ -316,13 +380,14 @@
     </section>
 
 
-    <!-- ===== FILTRO DE DESPESAS ===== -->
+  <!-- ===== FILTRO DE DESPESAS ===== -->
 <section class="card" style="grid-column: 1 / -1;">
   <h2 class="card-title">
     <i data-lucide="filter"></i>
     Filtrar Despesas
   </h2>
-  <form id="formFiltro" class="form">
+
+  <form id="formFiltro" class="form-filtro">
     <div class="form-group">
       <label class="label" for="filtroCategoria">Categoria:</label>
       <select id="filtroCategoria" class="select">
@@ -375,93 +440,74 @@
 
 
 
-<script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
-
 
 
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// Supabase
+// === SUPABASE ===
 const supabase = createClient(
   "https://dylziaqkyavkfwjepqkp.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM"
 );
 
-// Elements
+// === ELEMENTOS ===
 const formDespesas = document.getElementById("formDespesas");
 const formCategorias = document.getElementById("formCategorias");
 const categoriaSelect = document.getElementById("categoria");
+
 const relatorioCategoria = document.getElementById("relatorioCategoria");
 const relatorioAno = document.getElementById("relatorioAno");
 const relatorioMes = document.getElementById("relatorioMes");
+const tipoGraficoSel = document.getElementById("tipoGrafico");
+
 const resultadoRelatorio = document.getElementById("resultadoRelatorio");
 const listaDespesas = document.getElementById("listaDespesas");
+
 const filtroCategoria = document.getElementById("filtroCategoria");
 const filtroAno = document.getElementById("filtroAno");
 const filtroMes = document.getElementById("filtroMes");
-let chart, editandoId = null;
 
-// Formatador BRL
-const BRL = v =>
-  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
-    v
-  );
+let chart = null;
+let editandoId = null;
 
-function initIcons() {
-  if (window.lucide) lucide.createIcons();
-}
+// === HELPERS ===
+const BRL = v => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
+const debounce = (fn, d=200) => { let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), d); }; };
+function initIcons(){ if (window.lucide) lucide.createIcons(); }
 
 // === CATEGORIAS ===
 async function carregarCategorias() {
   const { data, error } = await supabase.from("tipo_despesas").select("*");
-  if (error) return console.error(error);
+  if (error) { console.error(error); return; }
 
-  const options = data
-    .map(c => `<option value="${c.id}">${c.nome}</option>`)
-    .join("");
+  const options = data.map(c => `<option value="${c.id}">${c.nome}</option>`).join("");
 
-  categoriaSelect.innerHTML = '<option value="">Selecione...</option>' + options;
-  relatorioCategoria.innerHTML = '<option value="">Todas</option>' + options;
-  if (filtroCategoria)
-    filtroCategoria.innerHTML = '<option value="">Todas</option>' + options;
+  if (categoriaSelect) categoriaSelect.innerHTML = '<option value="">Selecione...</option>' + options;
+  if (relatorioCategoria) relatorioCategoria.innerHTML = '<option value="">Todas</option>' + options;
+  if (filtroCategoria) filtroCategoria.innerHTML = '<option value="">Todas</option>' + options;
 }
 
 // === ANOS ===
 async function carregarAnos() {
   const { data, error } = await supabase.from("despesas_pessoais").select("data");
-  if (error) return console.error("Erro ao carregar anos:", error);
+  if (error) { console.error("Erro ao carregar anos:", error); return; }
 
-  const anos = [...new Set(data.map(d => d.data.split("T")[0].split("-")[0]))].sort(
-    (a, b) => b - a
-  );
+  const anos = [...new Set(data.map(d => d.data?.split("T")[0].slice(0,4)))].sort((a,b)=>b-a);
 
-  // Relatório
-  relatorioAno.innerHTML = '<option value="">Todos</option>';
-  anos.forEach(ano => {
-    const option = document.createElement("option");
-    option.value = ano;
-    option.textContent = ano;
-    relatorioAno.appendChild(option);
-  });
-
-  // Filtro tabela
+  if (relatorioAno) {
+    relatorioAno.innerHTML = '<option value="">Todos</option>';
+    anos.forEach(ano => relatorioAno.insertAdjacentHTML("beforeend", `<option value="${ano}">${ano}</option>`));
+  }
   if (filtroAno) {
     filtroAno.innerHTML = '<option value="">Todos</option>';
-    anos.forEach(ano => {
-      const option = document.createElement("option");
-      option.value = ano;
-      option.textContent = ano;
-      filtroAno.appendChild(option);
-    });
+    anos.forEach(ano => filtroAno.insertAdjacentHTML("beforeend", `<option value="${ano}">${ano}</option>`));
   }
 }
 
 // === ESTATÍSTICAS ===
 async function carregarEstatisticas() {
-  const { data, error } = await supabase
-    .from("despesas_pessoais")
-    .select("valor,data");
+  const { data, error } = await supabase.from("despesas_pessoais").select("valor,data");
   if (error) return;
 
   const total = data.reduce((s, d) => s + d.valor, 0);
@@ -469,10 +515,7 @@ async function carregarEstatisticas() {
   const esteMes = data
     .filter(d => {
       const dt = new Date(d.data);
-      return (
-        dt.getMonth() === hoje.getMonth() &&
-        dt.getFullYear() === hoje.getFullYear()
-      );
+      return dt.getMonth() === hoje.getMonth() && dt.getFullYear() === hoje.getFullYear();
     })
     .reduce((s, d) => s + d.valor, 0);
   const maior = data.length ? Math.max(...data.map(d => d.valor)) : 0;
@@ -485,22 +528,20 @@ async function carregarEstatisticas() {
   document.getElementById("totalCategorias").textContent = cats?.length || 0;
 }
 
-// === RELATÓRIO ===
-document.getElementById("btnRelatorio").addEventListener("click", async () => {
-  const idCat = relatorioCategoria.value,
-    ano = relatorioAno.value,
-    mes = relatorioMes.value;
+// === RELATÓRIO (texto) ===
+document.getElementById("btnRelatorio")?.addEventListener("click", async () => {
+  const idCat = relatorioCategoria?.value || "";
+  const ano = relatorioAno?.value || "";
+  const mes = relatorioMes?.value || "";
 
-  let query = supabase
-    .from("despesas_pessoais")
-    .select("valor,data,tipo_despesas(nome)");
+  let query = supabase.from("despesas_pessoais").select("valor,data,tipo_despesas(nome)");
 
   if (idCat) query = query.eq("tipo_id", idCat);
   if (ano) query = query.gte("data", `${ano}-01-01`).lte("data", `${ano}-12-31`);
   if (mes) {
     const a = ano || new Date().getFullYear();
-    const m = mes.padStart(2, "0");
-    const ultimo = new Date(a, mes, 0).getDate();
+    const m = mes.toString().padStart(2,"0");
+    const ultimo = new Date(a, Number(mes), 0).getDate();
     query = query.gte("data", `${a}-${m}-01`).lte("data", `${a}-${m}-${ultimo}`);
   }
 
@@ -511,77 +552,74 @@ document.getElementById("btnRelatorio").addEventListener("click", async () => {
   resultadoRelatorio.innerHTML = `<b>Total:</b> ${BRL(total)} (${data.length} despesas)`;
 });
 
-// === GRÁFICO REFINADO ===
+// === GRÁFICO ===
 async function montarGrafico() {
-  const { data, error } = await supabase
-    .from("despesas_pessoais")
-    .select("valor,tipo_despesas(nome)");
-  if (error) return;
+  let query = supabase.from("despesas_pessoais").select("valor,data,tipo_id,tipo_despesas(nome)");
+
+  const cat = relatorioCategoria?.value || "";
+  const ano = relatorioAno?.value || "";
+  const mes = relatorioMes?.value || "";
+
+  if (cat) query = query.eq("tipo_id", cat);
+  if (ano) query = query.gte("data", `${ano}-01-01`).lte("data", `${ano}-12-31`);
+  if (mes) {
+    const a = ano || new Date().getFullYear();
+    const m = mes.toString().padStart(2,"0");
+    const ultimo = new Date(a, Number(mes), 0).getDate();
+    query = query.gte("data", `${a}-${m}-01`).lte("data", `${a}-${m}-${ultimo}`);
+  }
+
+  const { data, error } = await query;
+  if (error) { console.error("Erro ao carregar gráfico:", error); return; }
 
   const dataset = {};
   data.forEach(d => {
-    const n = d.tipo_despesas?.nome || "Outros";
-    dataset[n] = (dataset[n] || 0) + d.valor;
+    const n = d?.tipo_despesas?.nome || "Outros";
+    dataset[n] = (dataset[n] || 0) + (Number(d.valor) || 0);
   });
 
-  const ctx = document.getElementById("graficoGastos").getContext("2d");
+  const labels = Object.keys(dataset);
+  const values = Object.values(dataset);
+
+  const ctx = document.getElementById("graficoGastos")?.getContext("2d");
+  if (!ctx) return;
+
   if (chart) chart.destroy();
-  const tipo = document.getElementById("tipoGrafico").value;
 
-  // Gradiente dinâmico
-  const gradient1 = ctx.createLinearGradient(0, 0, 0, 400);
-  gradient1.addColorStop(0, "#ff00cc");
-  gradient1.addColorStop(1, "#3333ff");
+  const palette = ["#4f46e5","#16a34a","#dc2626","#facc15","#06b6d4","#a855f7","#f97316","#22d3ee","#84cc16","#e11d48"];
+  const bg = labels.map((_,i)=> palette[i % palette.length]);
 
-  const gradient2 = ctx.createLinearGradient(0, 0, 0, 400);
-  gradient2.addColorStop(0, "#00f0ff");
-  gradient2.addColorStop(1, "#00ff88");
-
-  const colors = [gradient1, gradient2, "#ffea00", "#ff6600", "#00ffcc"];
+  const tipo = tipoGraficoSel ? tipoGraficoSel.value || "bar" : "bar";
 
   chart = new Chart(ctx, {
     type: tipo,
     data: {
-      labels: Object.keys(dataset),
-      datasets: [
-        {
-          data: Object.values(dataset),
-          backgroundColor: colors,
-          borderColor: "#111",
-          borderWidth: 2,
-          hoverOffset: 25, // dá sensação de "3D"
-          borderRadius: 10, // deixa arredondado
-          shadowColor: "rgba(0,0,0,0.7)",
-          shadowBlur: 20
-        }
-      ]
+      labels,
+      datasets: [{
+        label: "Gastos",
+        data: values,
+        backgroundColor: bg,
+        borderWidth: 1
+      }]
     },
     options: {
       responsive: true,
       plugins: {
-        legend: {
-          labels: {
-            color: "#fff",
-            font: { size: 14, weight: "bold" }
-          }
-        },
+        legend: { display: tipo !== "bar" ? true : false },
         tooltip: {
-          backgroundColor: "rgba(0,0,0,0.8)",
-          titleColor: "#ffea00",
-          bodyColor: "#fff",
-          borderColor: "#ff00cc",
-          borderWidth: 1
+          callbacks: {
+            label: ctx => `${ctx.label}: ${BRL(ctx.parsed)}`
+          }
         }
-      }
+      },
+      scales: tipo === "bar" ? {
+        y: { beginAtZero: true, ticks: { callback: v => BRL(v) } }
+      } : {}
     }
   });
 }
 
-document
-  .getElementById("tipoGrafico")
-  .addEventListener("change", montarGrafico);
-
-// === LISTAR DESPESAS ===
+// === LISTAR DESPESAS (tabela geral) ===
 async function carregarDespesas() {
   const { data, error } = await supabase
     .from("despesas_pessoais")
@@ -593,12 +631,12 @@ async function carregarDespesas() {
   data.forEach(d => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${d.data.split("T")[0].split("-").reverse().join("/")}</td>
+      <td>${d.data?.split("T")[0].split("-").reverse().join("/")}</td>
       <td>${d.tipo_despesas?.nome || "—"}</td>
       <td>${BRL(d.valor)}</td>
       <td>${d.pago ? "✅ Pago" : "⏳ Pendente"}</td>
       <td>
-        <button class="btn btn-small btn-edit" onclick="editarDespesa(${d.id},'${d.data}',${d.valor},'${d.obs}',${d.pago},${d.tipo_id})">Editar</button>
+        <button class="btn btn-small btn-edit" onclick="editarDespesa(${d.id},'${d.data}',${d.valor},'${(d.obs||"").replace(/'/g,"&#39;")}',${d.pago},${d.tipo_id})">Editar</button>
         <button class="btn btn-small btn-delete" onclick="excluirDespesa(${d.id})">Excluir</button>
       </td>`;
     listaDespesas.appendChild(tr);
@@ -606,7 +644,7 @@ async function carregarDespesas() {
 }
 
 // === CRUD DESPESAS ===
-formDespesas.addEventListener("submit", async e => {
+formDespesas?.addEventListener("submit", async e => {
   e.preventDefault();
   const desp = {
     data: document.getElementById("data").value,
@@ -625,14 +663,14 @@ formDespesas.addEventListener("submit", async e => {
   if (r.error) alert(r.error.message);
   else {
     formDespesas.reset();
-    carregarDespesas();
-    carregarEstatisticas();
-    montarGrafico();
+    await carregarDespesas();
+    await carregarEstatisticas();
+    await montarGrafico();
   }
 });
 
 // === CRUD CATEGORIAS ===
-formCategorias.addEventListener("submit", async e => {
+formCategorias?.addEventListener("submit", async e => {
   e.preventDefault();
   const nome = document.getElementById("nomeCategoria").value.trim();
   if (!nome) return;
@@ -640,16 +678,17 @@ formCategorias.addEventListener("submit", async e => {
   if (error) alert(error.message);
   else {
     formCategorias.reset();
-    carregarCategorias();
+    await carregarCategorias();
+    await montarGrafico(); // atualiza o gráfico depois de nova categoria
   }
 });
 
-// === FUNÇÕES GLOBAIS ===
+// === FUNÇÕES GLOBAIS (editar/excluir) ===
 window.editarDespesa = (id, data, valor, obs, pago, tipoId) => {
   editandoId = id;
-  document.getElementById("data").value = data.split("T")[0];
+  document.getElementById("data").value = (data||"").split("T")[0];
   document.getElementById("valor").value = valor;
-  document.getElementById("obs").value = obs;
+  document.getElementById("obs").value = obs || "";
   document.getElementById("pago").value = pago ? "true" : "false";
   document.getElementById("categoria").value = tipoId;
   window.scrollTo({ top: formDespesas.offsetTop - 100, behavior: "smooth" });
@@ -659,78 +698,83 @@ window.excluirDespesa = async id => {
   if (confirm("Excluir?")) {
     const { error } = await supabase.from("despesas_pessoais").delete().eq("id", id);
     if (!error) {
-      carregarDespesas();
-      carregarEstatisticas();
-      montarGrafico();
+      await carregarDespesas();
+      await carregarEstatisticas();
+      await montarGrafico();
     }
   }
 };
 
-// === FILTRO TABELA ===
-const formFiltro = document.getElementById("formFiltro");
-if (formFiltro) {
-  formFiltro.addEventListener("submit", async e => {
-    e.preventDefault();
-    const cat = filtroCategoria.value;
-    const ano = filtroAno.value;
-    const mes = filtroMes.value;
+// === FILTRO DA TABELA (card "Filtrar Despesas") ===
+document.getElementById("formFiltro")?.addEventListener("submit", async e => {
+  e.preventDefault();
+  const cat = filtroCategoria?.value || "";
+  const ano = filtroAno?.value || "";
+  const mes = filtroMes?.value || "";
 
-    let query = supabase
-      .from("despesas_pessoais")
-      .select("id,data,valor,obs,pago,tipo_id,tipo_despesas(nome)")
-      .order("data", { ascending: false });
+  let query = supabase
+    .from("despesas_pessoais")
+    .select("id,data,valor,obs,pago,tipo_id,tipo_despesas(nome)")
+    .order("data", { ascending: false });
 
-    if (cat) query = query.eq("tipo_id", cat);
-    if (ano) query = query.gte("data", `${ano}-01-01`).lte("data", `${ano}-12-31`);
-    if (mes) {
-      const anoFiltro = ano || new Date().getFullYear();
-      const mesFormatado = mes.padStart(2, "0");
-      const ultimoDia = new Date(anoFiltro, mes, 0).getDate();
-      query = query
-        .gte("data", `${anoFiltro}-${mesFormatado}-01`)
-        .lte("data", `${anoFiltro}-${mesFormatado}-${ultimoDia}`);
-    }
+  if (cat) query = query.eq("tipo_id", cat);
+  if (ano) query = query.gte("data", `${ano}-01-01`).lte("data", `${ano}-12-31`);
+  if (mes) {
+    const a = ano || new Date().getFullYear();
+    const m = mes.toString().padStart(2,"0");
+    const ultimo = new Date(a, Number(mes), 0).getDate();
+    query = query.gte("data", `${a}-${m}-01`).lte("data", `${a}-${m}-${ultimo}`);
+  }
 
-    const { data, error } = await query;
-    if (error) {
-      alert("Erro ao buscar despesas: " + error.message);
-      return;
-    }
+  const { data, error } = await query;
+  if (error) { alert("Erro ao buscar despesas: " + error.message); return; }
 
-    listaDespesas.innerHTML = "";
-    if (data.length === 0) {
-      listaDespesas.innerHTML =
-        `<tr><td colspan="5" style="text-align:center; padding:10px;">Nenhuma despesa encontrada</td></tr>`;
-    } else {
-      data.forEach(d => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${d.data.split("T")[0].split("-").reverse().join("/")}</td>
-          <td>${d.tipo_despesas?.nome || "—"}</td>
-          <td>${BRL(d.valor)}</td>
-          <td>${d.pago ? "✅ Pago" : "⏳ Pendente"}</td>
-          <td>
-            <button class="btn btn-small btn-edit" onclick="editarDespesa(${d.id}, '${d.data}', ${d.valor}, '${d.obs}', ${d.pago}, ${d.tipo_id})">Editar</button>
-            <button class="btn btn-small btn-delete" onclick="excluirDespesa(${d.id})">Excluir</button>
-          </td>`;
-        listaDespesas.appendChild(tr);
-      });
-    }
+  listaDespesas.innerHTML = "";
+  if (!data.length) {
+    listaDespesas.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:10px;">Nenhuma despesa encontrada</td></tr>`;
+    return;
+  }
+  data.forEach(d => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${d.data?.split("T")[0].split("-").reverse().join("/")}</td>
+      <td>${d.tipo_despesas?.nome || "—"}</td>
+      <td>${BRL(d.valor)}</td>
+      <td>${d.pago ? "✅ Pago" : "⏳ Pendente"}</td>
+      <td>
+        <button class="btn btn-small btn-edit" onclick="editarDespesa(${d.id}, '${d.data}', ${d.valor}, '${(d.obs||"").replace(/'/g,"&#39;")}', ${d.pago}, ${d.tipo_id})">Editar</button>
+        <button class="btn btn-small btn-delete" onclick="excluirDespesa(${d.id})">Excluir</button>
+      </td>`;
+    listaDespesas.appendChild(tr);
   });
-}
+});
+
+// === LISTENERS PARA ATUALIZAR O GRÁFICO QUANDO OS FILTROS MUDAM ===
+const updateGrafico = debounce(montarGrafico, 150);
+relatorioAno?.addEventListener("change", updateGrafico);
+relatorioCategoria?.addEventListener("change", updateGrafico);
+relatorioMes?.addEventListener("change", updateGrafico);
+tipoGraficoSel?.addEventListener("change", updateGrafico);
 
 // === INIT ===
 document.getElementById("data").value = new Date().toISOString().split("T")[0];
+
 (async () => {
   initIcons();
   await carregarCategorias();
   await carregarAnos();
   await carregarDespesas();
   await carregarEstatisticas();
+
+  // força o tipo inicial para barras
+  if (tipoGraficoSel) tipoGraficoSel.value = "bar";
   await montarGrafico();
 })();
 </script>
 
 
+
+
 </body>
 </html>
+
