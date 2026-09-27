@@ -1,75 +1,227 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <title>Gerenciador de Investimentos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- FontAwesome para ícones -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(to bottom, #e6f0ff 20%, #ffffff 100%);
     }
-    .app-container { 
-      max-width: 800px; 
-      margin: auto; 
-      padding: 1rem; 
-      padding-bottom: 80px; /* espaço para a navbar */
+
+    .app-container {
+      max-width: 800px;
+      margin: auto;
+      padding: 1rem;
+      padding-bottom: 80px;
     }
 
-    /* Header */
+    /* LOGIN */
+    #tela-login {
+      display: none;
+      max-width: 400px;
+      margin: 60px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.12);
+    }
+
+    #tela-login h2 {
+      text-align: center;
+      color: #007bff;
+      margin-top: 0;
+    }
+
+    #tela-login input {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    #tela-login button {
+      width: 100%;
+      padding: 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #tela-login button:hover {
+      background: #0056b3;
+    }
+
+    #mensagem {
+      margin-top: 1rem;
+      text-align: center;
+      color: #dc2626;
+      min-height: 20px;
+    }
+
+    /* HEADER */
     .header {
       position: relative;
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 1rem;
     }
-    .user-info { display: flex; align-items: center; gap: .5rem; }
-    .avatar-top { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; object-fit: cover; }
-    .menu { font-size: 1.5rem; cursor: pointer; padding:.25rem; border-radius:8px; }
-    .menu:active { transform: scale(.98); }
 
-    /* Sidebar */
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .avatar-top {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      object-fit: cover;
+    }
+
+    .menu {
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: .25rem;
+      border-radius: 8px;
+    }
+
+    .menu:active {
+      transform: scale(.98);
+    }
+
+    /* SIDEBAR */
     .sidebar {
-      position: absolute; top: calc(100% + 8px); right: 0; width: 220px;
-      background:#fff; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,.15);
-      padding:12px; display:none; z-index:500;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 220px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.15);
+      padding: 12px;
+      display: none;
+      z-index: 500;
     }
-    .sidebar.open { display:block; }
-    .sidebar h3 { margin:0 0 8px; font-size:1rem; color:#007bff; }
-    .sidebar ul { list-style:none; margin:0; padding:0; }
-    .sidebar ul li { padding:0; }
-    .sidebar ul li a{
-      display:flex; align-items:center; gap:.6rem;
-      padding:10px; border-radius:8px; text-decoration:none; color:inherit;
+
+    .sidebar.open {
+      display: block;
     }
-    .sidebar ul li a i{ width:18px; text-align:center; }
-    .sidebar ul li a:hover{ background:#f1f5f9; }
 
-    /* Saldo */
-    .saldo { text-align:center; margin-bottom:1rem; }
-    .saldo p { margin:0; color:#666; }
-    .saldo h1 { color:#0044cc; font-size:2.2rem; font-weight:bold; margin:.2rem 0; }
+    .sidebar h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      color: #007bff;
+    }
 
-    /* Atalhos */
-    .atalhos { display:flex; justify-content:center; gap:2rem; margin:1.5rem 0; }
-    .atalho { text-align:center; cursor:pointer; }
+    .sidebar ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sidebar ul li {
+      padding: 0;
+    }
+
+    .sidebar ul li a {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      padding: 10px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .sidebar ul li a i {
+      width: 18px;
+      text-align: center;
+    }
+
+    .sidebar ul li a:hover {
+      background: #f1f5f9;
+    }
+
+    /* SALDO */
+    .saldo {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .saldo p {
+      margin: 0;
+      color: #666;
+    }
+
+    .saldo h1 {
+      color: #0044cc;
+      font-size: 2.2rem;
+      font-weight: bold;
+      margin: .2rem 0;
+    }
+
+    /* ATALHOS */
+    .atalhos {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin: 1.5rem 0;
+    }
+
+    .atalho {
+      text-align: center;
+      cursor: pointer;
+    }
+
     .atalho .icon {
-      width:65px; height:65px; border-radius:50%;
-      background:#f1f5f9; color:#007bff; font-size:1.5rem;
-      display:flex; align-items:center; justify-content:center;
-      margin:auto; transition:all .2s;
-    }
-    .atalho span { font-size:.9rem; color:#333; margin-top:.4rem; display:block; }
-    .atalho.active .icon {
-      background:#007bff; color:#fff; transform:scale(1.1);
-      box-shadow:0 0 10px rgba(0,123,255,.5);
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      color: #007bff;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: auto;
+      transition: all .2s;
     }
 
-    /* Balão */
+    .atalho span {
+      font-size: .9rem;
+      color: #333;
+      margin-top: .4rem;
+      display: block;
+    }
+
+    .atalho.active .icon {
+      background: #007bff;
+      color: #fff;
+      transform: scale(1.1);
+      box-shadow: 0 0 10px rgba(0,123,255,.5);
+    }
+
+    /* DESCRIÇÃO */
     #descricao-atalho {
-      display:none;
+      display: none;
       margin: 1rem auto;
       max-width: 640px;
       font-size: .95rem;
@@ -82,66 +234,220 @@
       position: relative;
       text-align: left;
     }
+
     #descricao-atalho::before {
-      content:"";
-      position:absolute;
-      top:-10px; left:20px;
-      border-width:0 10px 10px 10px;
-      border-style:solid;
-      border-color:transparent transparent #f9f9f9 transparent;
+      content: "";
+      position: absolute;
+      top: -10px;
+      left: 20px;
+      border-width: 0 10px 10px 10px;
+      border-style: solid;
+      border-color: transparent transparent #f9f9f9 transparent;
       filter: drop-shadow(0 -2px 2px rgba(0,0,0,.1));
     }
 
-    /* Summary */
-    .summary-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin-bottom:1rem; }
-    .summary-card { background:#fff; border-radius:12px; padding:1rem; text-align:center; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
-    .summary-card .icon { font-size:1.4rem; margin-bottom:.3rem; }
-    .summary-card .label { font-size:.9rem; color:#666; }
-    .summary-card .value { font-weight:bold; font-size:1.1rem; margin-top:.3rem; }
-
-    /* Botão */
-    #add-button {
-      display:block; margin:20px auto; padding:12px 20px;
-      background:#007bff; color:#fff; border:none; border-radius:25px;
-      font-size:16px; font-weight:bold; cursor:pointer; transition:background .3s;
-      box-shadow:0 4px 10px rgba(0,0,0,.15);
+    /* RESUMO */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1rem;
     }
-    #add-button:hover { background:#0056b3; }
 
-    /* Cards */
-    #card-container { margin-top:1rem; display:grid; gap:1rem; }
-    .card { background:#fff; border-radius:16px; padding:1rem; box-shadow:0 4px 10px rgba(0,0,0,0.1); position:relative; }
-    .delete-btn { position:absolute; top:8px; right:8px; background:transparent; border:none; font-size:18px; color:#444; cursor:pointer; }
-    .card-header { display:flex; align-items:center; gap:10px; margin-bottom:.6rem; cursor:pointer; }
-    .avatar { width:48px; height:48px; border-radius:50%; background:#f1f5f9; display:flex; align-items:center; justify-content:center; font-weight:700; color:#007bff; overflow:hidden; border:2px solid #fff; box-shadow:0 1px 3px rgba(0,0,0,.08); font-size:1.1rem; }
-    .avatar img { width:100%; height:100%; object-fit:cover; }
-    .name { font-weight:700; font-size:1.05rem; }
-    .kvs { margin-top:.4rem; }
-    .pill { font-weight:700; }
-    .pos { color:#22c55e; }
-    .neg { color:#ef4444; }
+    .summary-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
 
-    /* Modal */
-    .modal { position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; justify-content:center; align-items:center; z-index:100; }
-    .modal.open { display:flex; }
-    .modal-content { background:#fff; border-radius:16px; padding:2rem; width:320px; box-shadow:0 10px 25px rgba(0,0,0,.25); text-align:left; }
-    .modal-content h2 { margin:0 0 .8rem; color:#007bff; }
-    .modal-content input { width:100%; padding:.5rem; margin:.4rem 0; border-radius:8px; border:1px solid #ccc; }
-    .modal-content button { margin-top:1rem; width:100%; padding:.6rem; border:none; border-radius:8px; background:#007bff; color:#fff; font-weight:bold; cursor:pointer; }
-    .helper { font-size:.85rem; color:#666; margin-top:.5rem; }
+    .summary-card .icon {
+      font-size: 1.4rem;
+      margin-bottom: .3rem;
+    }
 
-    /* Barra de navegação inferior */
+    .summary-card .label {
+      font-size: .9rem;
+      color: #666;
+    }
+
+    .summary-card .value {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-top: .3rem;
+    }
+
+    /* BOTÃO */
+    #add-button {
+      display: block;
+      margin: 20px auto;
+      padding: 12px 20px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background .3s;
+      box-shadow: 0 4px 10px rgba(0,0,0,.15);
+    }
+
+    #add-button:hover {
+      background: #0056b3;
+    }
+
+    /* CARDS */
+    #card-container {
+      margin-top: 1rem;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      color: #444;
+      cursor: pointer;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: .6rem;
+      cursor: pointer;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #007bff;
+      overflow: hidden;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .name {
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .kvs {
+      margin-top: .4rem;
+    }
+
+    .pill {
+      font-weight: 700;
+    }
+
+    .pos {
+      color: #22c55e;
+    }
+
+    .neg {
+      color: #ef4444;
+    }
+
+    /* MODAL */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #fff;
+      border-radius: 16px;
+      padding: 2rem;
+      width: 320px;
+      max-width: calc(100% - 40px);
+      box-shadow: 0 10px 25px rgba(0,0,0,.25);
+      text-align: left;
+    }
+
+    .modal-content h2 {
+      margin: 0 0 .8rem;
+      color: #007bff;
+    }
+
+    .modal-content input {
+      box-sizing: border-box;
+      width: 100%;
+      padding: .6rem;
+      margin: .4rem 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .modal-content button {
+      margin-top: 1rem;
+      width: 100%;
+      padding: .6rem;
+      border: none;
+      border-radius: 8px;
+      background: #007bff;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .helper {
+      font-size: .85rem;
+      color: #666;
+      margin-top: .5rem;
+    }
+
+    /* NAVBAR */
     .navbar {
       position: fixed;
-      bottom: 0; left: 0; right: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
       background: #fff;
-      display: flex;
+      display: none;
       justify-content: space-around;
       align-items: center;
       border-top: 1px solid #ddd;
       padding: .5rem 0;
       z-index: 1000;
     }
+
     .navbar a {
       text-decoration: none;
       color: #666;
@@ -150,19 +456,23 @@
       flex-direction: column;
       align-items: center;
     }
+
     .navbar a i {
       font-size: 1.3rem;
       margin-bottom: 4px;
     }
+
     .navbar a.active {
       color: #007bff;
       font-weight: bold;
     }
+
     .navbar .pix-btn {
       background: #007bff;
       color: #fff;
       font-size: 1.5rem;
-      width: 58px; height: 58px;
+      width: 58px;
+      height: 58px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -170,451 +480,2197 @@
       margin-top: -30px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
+
+    /* MAIS */
     #mais-menu .mais-menu-content {
-  background: #fff;
-  padding: 2rem;
-  border-radius: 16px;
-  max-width: 300px;
-  width: 90%;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
+      background: #fff;
+      padding: 2rem;
+      border-radius: 16px;
+      max-width: 300px;
+      width: 90%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
 
-#mais-menu a {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1rem;
-  text-decoration: none;
-  color: #007bff;
-  font-weight: 500;
-}
+    #mais-menu a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1rem;
+      text-decoration: none;
+      color: #007bff;
+      font-weight: 500;
+    }
 
-#mais-menu a i {
-  font-size: 1.2rem;
-  width: 24px;
-  text-align: center;
-}
+    #mais-menu a i {
+      font-size: 1.2rem;
+      width: 24px;
+      text-align: center;
+    }
 
-#mais-menu button {
-  padding: .6rem 1rem;
-  background: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-}
+    #mais-menu button {
+      padding: .6rem 1rem;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
 
+    @media (max-width: 600px) {
+      .app-container {
+        padding: .8rem;
+        padding-bottom: 90px;
+      }
+
+      .atalhos {
+        gap: .8rem;
+        justify-content: space-between;
+      }
+
+      .atalho .icon {
+        width: 55px;
+        height: 55px;
+        font-size: 1.3rem;
+      }
+
+      .atalho span {
+        font-size: .78rem;
+      }
+
+      .summary-grid {
+        gap: .7rem;
+      }
+
+      .summary-card {
+        padding: .8rem;
+      }
+
+      .saldo h1 {
+        font-size: 2rem;
+      }
+    }
   </style>
+
 </head>
+
 <body>
-<!-- Submenu do botão MAIS -->
-<div id="mais-menu" class="modal" onclick="fecharMaisMenu()">
-  <div class="modal-content mais-menu-content" onclick="event.stopPropagation()">
-    <h2>Mais Opções</h2>
-    <a href="simulador.html"><i class="fas fa-calculator"></i> Simulador</a>
-    <a href="dicas.html"><i class="fas fa-lightbulb"></i> Dicas</a>
-    <a href="historico.html"><i class="fas fa-clock"></i> Histórico</a>
-    <a href="despesas_pessoais.html"><i class="fas fa-headset"></i> Codastro de Despesas</a>
-    <a href="index_salario.html"><i class="fas fa-file-upload"></i> Salario</a>
-    <a href="controle_financeiro.html"><i class="fas fa-headset"></i> Controle Financeiro</a>
-    <button onclick="fecharMaisMenu()">Fechar</button>
+
+  <!-- MENU MAIS -->
+
+  <div id="mais-menu" class="modal" onclick="fecharMaisMenu()">
+    <div class="modal-content mais-menu-content"
+         onclick="event.stopPropagation()">
+
+```
+  <h2>Mais Opções</h2>
+
+  <a href="simulador.html">
+    <i class="fas fa-calculator"></i>
+    Simulador
+  </a>
+
+  <a href="dicas.html">
+    <i class="fas fa-lightbulb"></i>
+    Dicas
+  </a>
+
+  <a href="historico.html">
+    <i class="fas fa-clock"></i>
+    Histórico
+  </a>
+
+  <a href="despesas_pessoais.html">
+    <i class="fas fa-headset"></i>
+    Cadastro de Despesas
+  </a>
+
+  <a href="index_salario.html">
+    <i class="fas fa-file-upload"></i>
+    Salário
+  </a>
+
+  <a href="controle_financeiro.html">
+    <i class="fas fa-headset"></i>
+    Controle Financeiro
+  </a>
+
+  <button onclick="fecharMaisMenu()">Fechar</button>
+</div>
+```
+
   </div>
-</div>
-<!-- Tela de Login embutida -->
-<div id="tela-login" style="display:none; max-width:400px; margin:60px auto; background:#fff; padding:30px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
-  <h2 style="text-align:center;">🔐 Acesso Restrito</h2>
-  <input type="email" id="email" placeholder="Digite seu e-mail" style="width:100%; padding:10px; margin-bottom:10px;" />
-  <input type="password" id="senha" placeholder="Digite sua senha" style="width:100%; padding:10px; margin-bottom:20px;" />
-  <button onclick="fazerLogin()" style="width:100%; padding:10px; background:#007bff; color:white; border:none; border-radius:6px;">Entrar</button>
-  <p id="mensagem" style="margin-top: 1rem; text-align:center; color: red;"></p>
-</div>
 
+  <!-- LOGIN -->
 
+  <div id="tela-login">
 
+```
+<h2>🔐 Acesso Restrito</h2>
+
+<input
+  type="text"
+  id="email"
+  placeholder="Digite seu usuário"
+  autocomplete="username"
+/>
+
+<input
+  type="password"
+  id="senha"
+  placeholder="Digite sua senha"
+  autocomplete="current-password"
+/>
+
+<button onclick="fazerLogin()">
+  Entrar
+</button>
+
+<p id="mensagem"></p>
+```
+
+  </div>
+
+  <!-- APLICAÇÃO -->
 
   <div class="app-container">
-    <!-- Header -->
-    <header class="header">
-      <div class="user-info">
-        <img id="user-avatar"
-          src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
-          class="avatar-top"
-          alt="user"
-          title="Clique para trocar a imagem"
-          onclick="alterarAvatarTopo()" />
-        <input type="file" id="file-avatar-topo" accept="image/*" style="display:none" onchange="handleAvatarTopo(event)"/>
-        <span>Olá, Investidor</span>
-      </div>
-      <div class="menu" title="Menu" onclick="toggleSidebar(event)">
-        <i class="fas fa-bars"></i>
-      </div>
 
-      <!-- Sidebar -->
-      <div id="sidebar" class="sidebar">
-        <h3>Menu</h3>
-        <ul>
-          <li><a class="menu-link" href="perfil.html"><i class="fa-regular fa-user"></i> Perfil</a></li>
-          <li><a class="menu-link" href="configuracoes.html"><i class="fa-solid fa-gear"></i> Configurações</a></li>
-          <li><a class="menu-link" href="relatorios.html"><i class="fa-solid fa-chart-column"></i> Relatórios</a></li>
-          <li><a class="menu-link" href="login.html"><i class="fa-regular fa-circle-question"></i> Login</a></li>
-          <li><a class="menu-link" href="logout.html"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
-        </ul>
-      </div>
-    </header>
+```
+<!-- HEADER -->
+<header class="header">
 
-    <!-- Saldo -->
-    <section class="saldo">
-      <p>Patrimônio Total</p>
-      <h1 id="patrimonioTotal">R$ 0,00</h1>
-    </section>
+  <div class="user-info">
 
-    <!-- Atalhos -->
-    <section class="atalhos">
-      <div class="atalho" onclick="mostrarDescricao('renda', event)">
-        <div class="icon"><i class="fas fa-coins"></i></div>
-        <span>Renda Fixa</span>
-      </div>
-      <div class="atalho" onclick="mostrarDescricao('acoes', event)">
-        <div class="icon"><i class="fas fa-chart-line"></i></div>
-        <span>Ações</span>
-      </div>
-      <div class="atalho" onclick="mostrarDescricao('cripto', event)">
-        <div class="icon"><i class="fab fa-bitcoin"></i></div>
-        <span>Cripto</span>
-      </div>
-      <div class="atalho" onclick="mostrarDescricao('poupanca', event)">
-        <div class="icon"><i class="fas fa-piggy-bank"></i></div>
-        <span>Poupança</span>
-      </div>
-    </section>
+    <img
+      id="user-avatar"
+      src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
+      class="avatar-top"
+      alt="Usuário"
+      title="Clique para trocar a imagem"
+      onclick="alterarAvatarTopo()"
+    />
 
-    <!-- Balão -->
-    <div id="descricao-atalho"></div>
+    <input
+      type="file"
+      id="file-avatar-topo"
+      accept="image/*"
+      style="display:none"
+      onchange="handleAvatarTopo(event)"
+    />
 
-    <!-- Resumo -->
-    <div class="summary-grid">
-      <div class="summary-card card-investido">
-        <div class="icon">💰</div>
-        <div class="label">Total Investido</div>
-        <div id="total-aplicado" class="value">R$ 0,00</div>
-      </div>
-      <div class="summary-card card-atual">
-        <div class="icon">💼</div>
-        <div class="label">Valor Atual</div>
-        <div id="total-atual" class="value">R$ 0,00</div>
-      </div>
-      <div class="summary-card card-lucro">
-        <div class="icon">📈</div>
-        <div class="label">Lucro / Prejuízo</div>
-        <div id="lucro" class="value">R$ 0,00</div>
-      </div>
-      <div class="summary-card card-rendimento">
-        <div class="icon">📊</div>
-        <div class="label">% Rendimento</div>
-        <div id="rendimento" class="value">0%</div>
-      </div>
+    <span id="saudacao-usuario">
+      Olá, Investidor
+    </span>
+
+  </div>
+
+  <div
+    class="menu"
+    title="Menu"
+    onclick="toggleSidebar(event)"
+  >
+    <i class="fas fa-bars"></i>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div id="sidebar" class="sidebar">
+
+    <h3>Menu</h3>
+
+    <ul>
+
+      <li>
+        <a class="menu-link" href="perfil.html">
+          <i class="fa-regular fa-user"></i>
+          Perfil
+        </a>
+      </li>
+
+      <li>
+        <a class="menu-link" href="configuracoes.html">
+          <i class="fa-solid fa-gear"></i>
+          Configurações
+        </a>
+      </li>
+
+      <li>
+        <a class="menu-link" href="relatorios.html">
+          <i class="fa-solid fa-chart-column"></i>
+          Relatórios
+        </a>
+      </li>
+
+      <li>
+        <a class="menu-link" href="#">
+          <i class="fa-regular fa-circle-question"></i>
+          Usuário
+        </a>
+      </li>
+
+      <li>
+        <a
+          class="menu-link"
+          href="#"
+          onclick="logout(); return false;"
+        >
+          <i class="fa-solid fa-right-from-bracket"></i>
+          Sair
+        </a>
+      </li>
+
+    </ul>
+
+  </div>
+</header>
+
+<!-- SALDO -->
+<section class="saldo">
+
+  <p>Patrimônio Total</p>
+
+  <h1 id="patrimonioTotal">
+    R$ 0,00
+  </h1>
+
+</section>
+
+<!-- ATALHOS -->
+<section class="atalhos">
+
+  <div
+    class="atalho"
+    onclick="mostrarDescricao('renda', event)"
+  >
+    <div class="icon">
+      <i class="fas fa-coins"></i>
     </div>
 
+    <span>Renda Fixa</span>
+  </div>
 
-    <!-- Cards -->
-    <div id="card-container" class="grid">Carregando...</div>
-  </div>	
-    <!-- Botão -->
-    <button id="add-button" onclick="abrirModal()">+ Adicionar Ativo</button>
+  <div
+    class="atalho"
+    onclick="mostrarDescricao('acoes', event)"
+  >
+    <div class="icon">
+      <i class="fas fa-chart-line"></i>
+    </div>
 
-  <!-- Barra de navegação -->
+    <span>Ações</span>
+  </div>
+
+  <div
+    class="atalho"
+    onclick="mostrarDescricao('cripto', event)"
+  >
+    <div class="icon">
+      <i class="fab fa-bitcoin"></i>
+    </div>
+
+    <span>Cripto</span>
+  </div>
+
+  <div
+    class="atalho"
+    onclick="mostrarDescricao('poupanca', event)"
+  >
+    <div class="icon">
+      <i class="fas fa-piggy-bank"></i>
+    </div>
+
+    <span>Poupança</span>
+  </div>
+
+</section>
+
+<!-- DESCRIÇÃO -->
+<div id="descricao-atalho"></div>
+
+<!-- RESUMO -->
+<div class="summary-grid">
+
+  <div class="summary-card card-investido">
+
+    <div class="icon">💰</div>
+
+    <div class="label">
+      Total Investido
+    </div>
+
+    <div
+      id="total-aplicado"
+      class="value"
+    >
+      R$ 0,00
+    </div>
+
+  </div>
+
+  <div class="summary-card card-atual">
+
+    <div class="icon">💼</div>
+
+    <div class="label">
+      Valor Atual
+    </div>
+
+    <div
+      id="total-atual"
+      class="value"
+    >
+      R$ 0,00
+    </div>
+
+  </div>
+
+  <div class="summary-card card-lucro">
+
+    <div class="icon">📈</div>
+
+    <div class="label">
+      Lucro / Prejuízo
+    </div>
+
+    <div
+      id="lucro"
+      class="value"
+    >
+      R$ 0,00
+    </div>
+
+  </div>
+
+  <div class="summary-card card-rendimento">
+
+    <div class="icon">📊</div>
+
+    <div class="label">
+      % Rendimento
+    </div>
+
+    <div
+      id="rendimento"
+      class="value"
+    >
+      0%
+    </div>
+
+  </div>
+
+</div>
+
+<!-- CARDS -->
+<div id="card-container">
+  Carregando...
+</div>
+
+<!-- BOTÃO -->
+<button
+  id="add-button"
+  onclick="abrirModal()"
+>
+  + Adicionar Ativo
+</button>
+```
+
+  </div>
+
+  <!-- NAVBAR -->
+
   <nav class="navbar">
-    <a href="#" class="active">
-      <i class="fas fa-home"></i>
-      <span>Início</span>
-    </a>
-    <a href="#">
-      <i class="fas fa-list"></i>
-      <span>Atividade</span>
-    </a>
-    <a href="#" class="pix-btn">
-      <i class="fas fa-qrcode"></i>
-    </a>
-    <a href="#">
-      <i class="fas fa-ticket-alt"></i>
-      <span>Benefícios</span>
-    </a>
-    <a href="#">
-      <i class="fas fa-bars"></i>
-      <span>Mais</span>
-    </a>
+
+```
+<a href="#" class="active">
+
+  <i class="fas fa-home"></i>
+
+  <span>Início</span>
+
+</a>
+
+<a href="#">
+
+  <i class="fas fa-list"></i>
+
+  <span>Atividade</span>
+
+</a>
+
+<a
+  href="#"
+  class="pix-btn"
+>
+
+  <i class="fas fa-qrcode"></i>
+
+</a>
+
+<a href="#">
+
+  <i class="fas fa-ticket-alt"></i>
+
+  <span>Benefícios</span>
+
+</a>
+
+<a href="#">
+
+  <i class="fas fa-bars"></i>
+
+  <span>Mais</span>
+
+</a>
+```
+
   </nav>
 
-  <!-- Modal -->
-  <div class="modal" id="modal">
-    <div class="modal-content" role="dialog" aria-modal="true">
-      <h2 id="modal-title">Novo Ativo</h2>
-      <input type="text" id="input-nome" placeholder="Nome do ativo" />
-      <input type="number" id="input-aplicado" placeholder="Valor aplicado" step="0.01" />
-      <input type="number" id="input-atual" placeholder="Valor atual" step="0.01" />
-      <input type="text" id="input-icon" placeholder="URL do ícone (opcional)" />
-      <input type="file" id="input-file" accept="image/*" />
-      <button onclick="salvarAlteracoes()">Salvar</button>
-      <div class="helper">Dica: se não informar ícone, tento buscar o logo automaticamente (Clearbit).</div>
-    </div>
+  <!-- MODAL ATIVO -->
+
+  <div
+    class="modal"
+    id="modal"
+  >
+
+```
+<div
+  class="modal-content"
+  role="dialog"
+  aria-modal="true"
+>
+
+  <h2 id="modal-title">
+    Novo Ativo
+  </h2>
+
+  <input
+    type="text"
+    id="input-nome"
+    placeholder="Nome do ativo"
+  />
+
+  <input
+    type="number"
+    id="input-aplicado"
+    placeholder="Valor aplicado"
+    step="0.01"
+  />
+
+  <input
+    type="number"
+    id="input-atual"
+    placeholder="Valor atual"
+    step="0.01"
+  />
+
+  <input
+    type="text"
+    id="input-icon"
+    placeholder="URL do ícone (opcional)"
+  />
+
+  <input
+    type="file"
+    id="input-file"
+    accept="image/*"
+  />
+
+  <button onclick="salvarAlteracoes()">
+    Salvar
+  </button>
+
+  <div class="helper">
+    Dica: se não informar ícone, tento buscar o logo automaticamente.
+  </div>
+
+</div>
+```
+
   </div>
 
   <script>
-    // CONFIG
-    const supabaseUrl = 'https://dylziaqkyavkfwjepqkp.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5bHppYXFreWF2a2Z3amVwcWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NTc1OTgsImV4cCI6MjA2ODAzMzU5OH0.gy5jXxKOTgeCf0Rwq7ktLTz1pyoZ8dJjZOK9UB9rHCM';
-    
-    // Tela de login
-document.addEventListener('DOMContentLoaded', () => {
-  const user = localStorage.getItem('usuarioLogado');
-  if (user) {
-    document.querySelector('.app-container').style.display = 'block';
-    document.querySelector('.navbar').style.display = 'flex';
-    document.getElementById('tela-login').style.display = 'none';
-  } else {
-    document.querySelector('.app-container').style.display = 'none';
-    document.querySelector('.navbar').style.display = 'none';
-    document.getElementById('modal').style.display = 'none';
-    document.getElementById('tela-login').style.display = 'block';
-  }
 
-  const sairLink = document.querySelector('a[href="logout.html"]');
-  if (sairLink) {
-    sairLink.href = "#";
-    sairLink.addEventListener('click', function(e) {
-      e.preventDefault();
-      logout();
-    });
-  }
-});
+    /* ============================================================
+       CONFIGURAÇÃO SUPABASE
+       ============================================================ */
 
-async function fazerLogin() {
-  const email = document.getElementById("email").value.trim();
-  const senha = document.getElementById("senha").value.trim();
-  const msg = document.getElementById("mensagem");
+    const supabaseUrl =
+      'https://pajxqphtoaufldptaldh.supabase.co';
 
-  if (!email || !senha) {
-    msg.textContent = "Preencha todos os campos!";
-    return;
-  }
+    const supabaseKey =
+      'sb_publishable_kyymk01GtvAVJvWCQRJu0Q_WW8RBsKR';
 
-  try {
-    const res = await fetch(`${supabaseUrl}/rest/v1/usuarios?email=eq.${encodeURIComponent(email)}&senha=eq.${encodeURIComponent(senha)}`, {
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-        Accept: "application/json"
+
+    /* ============================================================
+       FORMATADORES
+       ============================================================ */
+
+    const BRL = new Intl.NumberFormat(
+      'pt-BR',
+      {
+        style: 'currency',
+        currency: 'BRL'
       }
-    });
-    const data = await res.json();
+    );
 
-    if (data.length > 0) {
-      localStorage.setItem("usuarioLogado", JSON.stringify(data[0]));
-      location.reload();
-    } else {
-      msg.textContent = "E-mail ou senha inválidos!";
-    }
-  } catch (err) {
-    console.error(err);
-    msg.textContent = "Erro ao conectar. Tente novamente.";
-  }
-}
+    const PCT = new Intl.NumberFormat(
+      'pt-BR',
+      {
+        maximumFractionDigits: 2
+      }
+    );
 
-function logout() {
-  localStorage.removeItem("usuarioLogado");
-  location.reload();
-}
 
-    
-    
-    const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-    const PCT = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 });
+    /* ============================================================
+       VARIÁVEIS
+       ============================================================ */
 
-    const domainByName = { neon:'neon.com.br', nubank:'nubank.com.br', pagseguro:'pagseguro.com.br',
-      itau:'itau.com.br', bradesco:'bradesco.com.br', santander:'santander.com.br', inter:'inter.co' };
+    let bancoEditando = null;
+    let todos = [];
 
-    let bancoEditando = null, todos = [];
 
-    // Helpers
-    function getLogo(nome, icone_url) {
-      if (icone_url) return icone_url;
-      if (!nome) return null;
-      const key = nome.toLowerCase();
-      let domain = domainByName[key];
-      if (!domain) for (const k in domainByName) if (key.includes(k)) domain = domainByName[k];
-      return domain ? `https://logo.clearbit.com/${domain}` : null;
-    }
-    function avatarHTML(nome, icone_url) {
-      const logo = getLogo(nome, icone_url);
-      return logo ? `<img src="${logo}" alt="${nome}" onerror="this.closest('.avatar').textContent='${(nome||'?')[0].toUpperCase()}'; this.remove();">`
-                  : (nome ? nome[0].toUpperCase() : '?');
-    }
-    function lerImagemBase64(file) {
-      return new Promise((res, rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});
-    }
+    /* ============================================================
+       USUÁRIO LOGADO
+       ============================================================ */
 
-    // Perfil
-    async function carregarPerfil() {
+    function obterUsuarioLogado() {
+
       try {
-        const res = await fetch(`${supabaseUrl}/rest/v1/bancos?select=avatar_topo&nome=eq.__perfil__&limit=1`,
-          { headers: { apikey:supabaseKey, Authorization:`Bearer ${supabaseKey}` } });
-        const rows = await res.json();
-        if (rows?.length && rows[0].avatar_topo) document.getElementById('user-avatar').src = rows[0].avatar_topo;
-      } catch {}
-    }
-    async function salvarAvatarPerfil(base64) {
-      await fetch(`${supabaseUrl}/rest/v1/bancos?nome=eq.__perfil__`, {
-        method:'PATCH', headers:{apikey:supabaseKey,Authorization:`Bearer ${supabaseKey}`,'Content-Type':'application/json'},
-        body:JSON.stringify({avatar_topo:base64})
-      });
-    }
-    function alterarAvatarTopo(){ document.getElementById('file-avatar-topo').click(); }
-    async function handleAvatarTopo(e){
-      const f=e.target.files[0]; if(!f) return;
-      const base64=await lerImagemBase64(f);
-      document.getElementById('user-avatar').src=base64;
-      await salvarAvatarPerfil(base64);
-      e.target.value='';
-    }
 
-    // Render
-  
-function renderCard({id, nome, valor_aplicado, valor_atual, icone_url, ultima_atualizacao}) {
-  const dif = (valor_atual || 0) - (valor_aplicado || 0);
-  const rend = (valor_aplicado || 0) > 0 ? (dif / valor_aplicado) * 100 : 0;
-  const dataTexto = ultima_atualizacao
-    ? new Date(ultima_atualizacao).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : "Atualização desconhecida";
+        const dados =
+          localStorage.getItem('usuarioLogado');
 
-  return `<div class="card">
-    <button class="delete-btn" onclick="excluirBanco(${id})">&times;</button>
-    <div class="card-header" onclick="abrirModal(${id},'${nome}',${valor_aplicado || 0},${valor_atual || 0},'${icone_url || ''}')">
-      <div class="avatar">${avatarHTML(nome, icone_url)}</div>
-      <div class="name">${nome || '-'}</div>
-    </div>
-    <div class="kvs">
-      <p>Aplicado: <strong>${BRL.format(valor_aplicado || 0)}</strong></p>
-      <p>Atual: <strong>${BRL.format(valor_atual || 0)}</strong></p>
-      <p>Diferença: <span class="pill ${dif >= 0 ? 'pos' : 'neg'}">${BRL.format(dif)}</span></p>
-      <p>Rendimento: <strong>${PCT.format(rend)}%</strong></p>
-      <p style="text-align: right; font-size: 0.8rem; color: #888; margin-top: 8px;">
-        Última atualização: ${dataTexto}
-      </p>
-    </div>
-  </div>`;
+        if (!dados) {
+          return null;
+        }
 
-    }
-    function atualizarResumo(lista) {
-      const tA=lista.reduce((s,x)=>s+(x.valor_aplicado||0),0);
-      const tB=lista.reduce((s,x)=>s+(x.valor_atual||0),0);
-      const lucro=tB-tA, r=tA?(lucro/tA*100):0;
-      document.getElementById('total-aplicado').innerText=BRL.format(tA);
-      document.getElementById('total-atual').innerText=BRL.format(tB);
-      document.getElementById('lucro').innerText=BRL.format(lucro);
-      document.getElementById('rendimento').innerText=PCT.format(r)+'%';
-      document.getElementById('patrimonioTotal').innerText=BRL.format(tB);
-    }
+        return JSON.parse(dados);
 
-    // CRUD
-    async function carregarTodosOsCards() {
-      const res = await fetch(`${supabaseUrl}/rest/v1/bancos?select=*&nome=neq.__perfil__`,
-        { headers:{apikey:supabaseKey,Authorization:`Bearer ${supabaseKey}`} });
-      todos=await res.json();
-      const c=document.getElementById('card-container');
-      if(!todos.length){c.innerHTML='<div class="card">Nenhum ativo encontrado.</div>';atualizarResumo([]);return;}
-      c.innerHTML=todos.map(renderCard).join(''); atualizarResumo(todos);
-    }
-    function abrirModal(id=null,nome='',aplicado='',atual='',icon=''){
-      bancoEditando=id;
-      document.getElementById('modal-title').innerText=id?'Editar Ativo':'Novo Ativo';
-      document.getElementById('input-nome').value=nome;
-      document.getElementById('input-aplicado').value=aplicado;
-      document.getElementById('input-atual').value=atual;
-      document.getElementById('input-icon').value=icon;
-      document.getElementById('input-file').value='';
-      document.getElementById('modal').classList.add('open');
-    }
-    function fecharModal(){document.getElementById('modal').classList.remove('open');}
-    
-    
-    async function salvarAlteracoes(){
-      const nome=document.getElementById('input-nome').value.trim();
-      const aplicado=parseFloat(document.getElementById('input-aplicado').value)||0;
-      const atual=parseFloat(document.getElementById('input-atual').value)||0;
-      let icone=document.getElementById('input-icon').value.trim();
-      if(!nome){alert('Informe o nome do ativo');return;}
-      const file=document.getElementById('input-file').files[0];
-      
-      if(file) icone=await lerImagemBase64(file);
-       const payload = {
-    nome,
-    valor_aplicado: aplicado,
-    valor_atual: atual,
-    icone_url: icone || null,
-    ultima_atualizacao: new Date().toISOString()  // ✅ Adicionado
-  };
+      } catch (erro) {
 
-      
-      if(bancoEditando==null){
-        await fetch(`${supabaseUrl}/rest/v1/bancos`,{method:'POST',headers:{apikey:supabaseKey,Authorization:`Bearer ${supabaseKey}`,'Content-Type':'application/json'},body:JSON.stringify(payload)});
-      } else {
-        await fetch(`${supabaseUrl}/rest/v1/bancos?id=eq.${bancoEditando}`,{method:'PATCH',headers:{apikey:supabaseKey,Authorization:`Bearer ${supabaseKey}`,'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        console.error(
+          'Erro ao ler usuário:',
+          erro
+        );
+
+        return null;
       }
-      fecharModal(); carregarTodosOsCards();
     }
-    async function excluirBanco(id){
-      if(!confirm('Excluir este ativo?'))return;
-      await fetch(`${supabaseUrl}/rest/v1/bancos?id=eq.${id}`,{method:'DELETE',headers:{apikey:supabaseKey,Authorization:`Bearer ${supabaseKey}`}});
-      carregarTodosOsCards();
+
+
+    function atualizarNomeUsuario() {
+
+      const usuario =
+        obterUsuarioLogado();
+
+      const elemento =
+        document.getElementById(
+          'saudacao-usuario'
+        );
+
+      if (!elemento) {
+        return;
+      }
+
+      if (
+        usuario &&
+        usuario.nome
+      ) {
+
+        elemento.textContent =
+          `Olá, ${usuario.nome}`;
+
+      } else if (
+        usuario &&
+        usuario.usuario
+      ) {
+
+        elemento.textContent =
+          `Olá, ${usuario.usuario}`;
+
+      } else {
+
+        elemento.textContent =
+          'Olá, Investidor';
+      }
     }
-    
-    // Abrir menu MAIS
-document.addEventListener('DOMContentLoaded', () => {
-  const links = document.querySelectorAll('.navbar a');
-  links[links.length - 1].addEventListener('click', function (e) {
-    e.preventDefault();
-    abrirMaisMenu();
-  });
-});
-
-function abrirMaisMenu() {
-  document.getElementById('mais-menu').classList.add('open');
-}
-
-function fecharMaisMenu() {
-  document.getElementById('mais-menu').classList.remove('open');
-}
 
 
-    // Sidebar toggle
-    function toggleSidebar(e){e.stopPropagation();document.getElementById('sidebar').classList.toggle('open');}
-    document.addEventListener('click',e=>{const s=document.getElementById('sidebar');const b=document.querySelector('.menu');if(!s.contains(e.target)&&!b.contains(e.target))s.classList.remove('open');});
-    document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.menu-link').forEach(a=>a.addEventListener('click',()=>document.getElementById('sidebar').classList.remove('open')));});
+    /* ============================================================
+       CONTROLE DA TELA
+       ============================================================ */
 
-    // Atalhos
-    const descricoes={renda:"💰 <b>Renda Fixa</b>: investimentos seguros.",acoes:"📈 <b>Ações</b>: participação em empresas.",cripto:"₿ <b>Cripto</b>: moedas digitais.",poupanca:"🐷 <b>Poupança</b>: liquidez diária, baixo rendimento."};
-    function mostrarDescricao(tipo,ev){document.querySelectorAll('.atalho').forEach(a=>a.classList.remove('active'));ev.currentTarget.classList.add('active');const b=document.getElementById('descricao-atalho');b.innerHTML=descricoes[tipo];b.style.display='block';}
+    function mostrarAplicacao() {
 
-    // Navbar - ativar item selecionado
-    document.addEventListener('DOMContentLoaded',()=>{
-      carregarPerfil();carregarTodosOsCards();
-      document.querySelectorAll('.navbar a').forEach(link=>{
-        link.addEventListener('click',function(){
-          document.querySelectorAll('.navbar a').forEach(l=>l.classList.remove('active'));
-          this.classList.add('active');
-        });
-      });
-    });
+      const app =
+        document.querySelector(
+          '.app-container'
+        );
+
+      const navbar =
+        document.querySelector(
+          '.navbar'
+        );
+
+      const login =
+        document.getElementById(
+          'tela-login'
+        );
+
+      const modal =
+        document.getElementById(
+          'modal'
+        );
+
+      if (app) {
+        app.style.display = 'block';
+      }
+
+      if (navbar) {
+        navbar.style.display = 'flex';
+      }
+
+      if (login) {
+        login.style.display = 'none';
+      }
+
+      if (modal) {
+        modal.style.display = 'none';
+      }
+
+      atualizarNomeUsuario();
+    }
+
+
+    function mostrarLogin() {
+
+      const app =
+        document.querySelector(
+          '.app-container'
+        );
+
+      const navbar =
+        document.querySelector(
+          '.navbar'
+        );
+
+      const login =
+        document.getElementById(
+          'tela-login'
+        );
+
+      const modal =
+        document.getElementById(
+          'modal'
+        );
+
+      if (app) {
+        app.style.display = 'none';
+      }
+
+      if (navbar) {
+        navbar.style.display = 'none';
+      }
+
+      if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('open');
+      }
+
+      if (login) {
+        login.style.display = 'block';
+      }
+    }
+
+
+    /* ============================================================
+       LOGIN
+       ============================================================ */
+
+    async function fazerLogin() {
+
+      const usuario =
+        document
+          .getElementById('email')
+          .value
+          .trim();
+
+      const senha =
+        document
+          .getElementById('senha')
+          .value
+          .trim();
+
+      const msg =
+        document.getElementById(
+          'mensagem'
+        );
+
+      msg.textContent = '';
+      msg.style.color = '#dc2626';
+
+      if (!usuario || !senha) {
+
+        msg.textContent =
+          'Preencha usuário e senha.';
+
+        return;
+      }
+
+      try {
+
+        const url =
+          `${supabaseUrl}/rest/v1/usuarios` +
+          `?select=id,usuario,nome,ativo` +
+          `&usuario=eq.${encodeURIComponent(usuario)}` +
+          `&senha=eq.${encodeURIComponent(senha)}` +
+          `&ativo=eq.true` +
+          `&limit=1`;
+
+        console.log(
+          'Consultando usuário no Supabase...'
+        );
+
+        const res =
+          await fetch(
+            url,
+            {
+              method: 'GET',
+
+              headers: {
+                'apikey': supabaseKey,
+                'Authorization':
+                  `Bearer ${supabaseKey}`,
+                'Accept':
+                  'application/json'
+              }
+            }
+          );
+
+        const texto =
+          await res.text();
+
+        console.log(
+          'Status Supabase:',
+          res.status
+        );
+
+        console.log(
+          'Resposta Supabase:',
+          texto
+        );
+
+        if (!res.ok) {
+
+          let erro = {};
+
+          try {
+            erro =
+              JSON.parse(texto);
+          } catch {}
+
+          console.error(
+            'Erro Supabase:',
+            erro
+          );
+
+          if (
+            res.status === 401 ||
+            res.status === 403
+          ) {
+
+            msg.textContent =
+              'O Supabase não permitiu consultar o cadastro de usuários. Verifique a política RLS da tabela usuarios.';
+
+          } else if (
+            res.status === 404
+          ) {
+
+            msg.textContent =
+              'A tabela usuarios não foi encontrada no Supabase.';
+
+          } else {
+
+            msg.textContent =
+              'Não foi possível consultar o cadastro de usuários.';
+          }
+
+          return;
+        }
+
+        const data =
+          texto
+            ? JSON.parse(texto)
+            : [];
+
+        if (
+          Array.isArray(data) &&
+          data.length > 0
+        ) {
+
+          const usuarioLogado = {
+
+            id:
+              data[0].id,
+
+            usuario:
+              data[0].usuario,
+
+            nome:
+              data[0].nome,
+
+            ativo:
+              data[0].ativo
+
+          };
+
+          localStorage.setItem(
+            'usuarioLogado',
+            JSON.stringify(
+              usuarioLogado
+            )
+          );
+
+          msg.style.color =
+            '#16a34a';
+
+          msg.textContent =
+            'Login realizado com sucesso!';
+
+          setTimeout(
+            () => {
+              location.reload();
+            },
+            300
+          );
+
+        } else {
+
+          msg.textContent =
+            'Usuário ou senha inválidos.';
+        }
+
+      } catch (erro) {
+
+        console.error(
+          'Erro de conexão:',
+          erro
+        );
+
+        msg.textContent =
+          'Erro ao conectar ao banco de dados. Verifique sua conexão.';
+      }
+    }
+
+
+    /* ============================================================
+       LOGOUT
+       ============================================================ */
+
+    function logout() {
+
+      localStorage.removeItem(
+        'usuarioLogado'
+      );
+
+      location.reload();
+    }
+
+
+    /* ============================================================
+       ENTER NO LOGIN
+       ============================================================ */
+
+    document.addEventListener(
+      'keydown',
+      function(event) {
+
+        if (
+          event.key === 'Enter'
+        ) {
+
+          const login =
+            document.getElementById(
+              'tela-login'
+            );
+
+          if (
+            login &&
+            login.style.display !== 'none'
+          ) {
+
+            fazerLogin();
+          }
+        }
+
+      }
+    );
+
+
+    /* ============================================================
+       LOGOS
+       ============================================================ */
+
+    const domainByName = {
+
+      neon:
+        'neon.com.br',
+
+      nubank:
+        'nubank.com.br',
+
+      pagseguro:
+        'pagseguro.com.br',
+
+      itau:
+        'itau.com.br',
+
+      bradesco:
+        'bradesco.com.br',
+
+      santander:
+        'santander.com.br',
+
+      inter:
+        'inter.co'
+    };
+
+
+    function getLogo(
+      nome,
+      icone_url
+    ) {
+
+      if (icone_url) {
+        return icone_url;
+      }
+
+      if (!nome) {
+        return null;
+      }
+
+      const key =
+        nome.toLowerCase();
+
+      let domain =
+        domainByName[key];
+
+      if (!domain) {
+
+        for (
+          const k in domainByName
+        ) {
+
+          if (
+            key.includes(k)
+          ) {
+
+            domain =
+              domainByName[k];
+
+            break;
+          }
+        }
+      }
+
+      return domain
+        ? `https://logo.clearbit.com/${domain}`
+        : null;
+    }
+
+
+    function avatarHTML(
+      nome,
+      icone_url
+    ) {
+
+      const logo =
+        getLogo(
+          nome,
+          icone_url
+        );
+
+      const primeiraLetra =
+        nome
+          ? nome[0].toUpperCase()
+          : '?';
+
+      if (!logo) {
+        return primeiraLetra;
+      }
+
+      return `
+        <img
+          src="${logo}"
+          alt="${nome || ''}"
+          onerror="
+            this.closest('.avatar').textContent='${primeiraLetra}';
+            this.remove();
+          "
+        >
+      `;
+    }
+
+
+    /* ============================================================
+       IMAGEM BASE64
+       ============================================================ */
+
+    function lerImagemBase64(
+      file
+    ) {
+
+      return new Promise(
+        (resolve, reject) => {
+
+          const reader =
+            new FileReader();
+
+          reader.onload =
+            () => resolve(
+              reader.result
+            );
+
+          reader.onerror =
+            reject;
+
+          reader.readAsDataURL(
+            file
+          );
+        }
+      );
+    }
+
+
+    /* ============================================================
+       PERFIL
+       ============================================================ */
+
+    async function carregarPerfil() {
+
+      try {
+
+        const res =
+          await fetch(
+            `${supabaseUrl}/rest/v1/bancos?select=avatar_topo&nome=eq.__perfil__&limit=1`,
+            {
+              headers: {
+                'apikey':
+                  supabaseKey,
+
+                'Authorization':
+                  `Bearer ${supabaseKey}`
+              }
+            }
+          );
+
+        if (!res.ok) {
+          return;
+        }
+
+        const rows =
+          await res.json();
+
+        if (
+          rows?.length &&
+          rows[0].avatar_topo
+        ) {
+
+          document
+            .getElementById(
+              'user-avatar'
+            )
+            .src =
+            rows[0].avatar_topo;
+        }
+
+      } catch (erro) {
+
+        console.error(
+          'Erro ao carregar perfil:',
+          erro
+        );
+      }
+    }
+
+
+    async function salvarAvatarPerfil(
+      base64
+    ) {
+
+      try {
+
+        await fetch(
+          `${supabaseUrl}/rest/v1/bancos?nome=eq.__perfil__`,
+          {
+            method: 'PATCH',
+
+            headers: {
+              'apikey':
+                supabaseKey,
+
+              'Authorization':
+                `Bearer ${supabaseKey}`,
+
+              'Content-Type':
+                'application/json',
+
+              'Prefer':
+                'return=minimal'
+            },
+
+            body:
+              JSON.stringify({
+                avatar_topo:
+                  base64
+              })
+          }
+        );
+
+      } catch (erro) {
+
+        console.error(
+          'Erro ao salvar avatar:',
+          erro
+        );
+      }
+    }
+
+
+    function alterarAvatarTopo() {
+
+      document
+        .getElementById(
+          'file-avatar-topo'
+        )
+        .click();
+    }
+
+
+    async function handleAvatarTopo(
+      event
+    ) {
+
+      const file =
+        event.target.files[0];
+
+      if (!file) {
+        return;
+      }
+
+      try {
+
+        const base64 =
+          await lerImagemBase64(
+            file
+          );
+
+        document
+          .getElementById(
+            'user-avatar'
+          )
+          .src =
+          base64;
+
+        await salvarAvatarPerfil(
+          base64
+        );
+
+      } catch (erro) {
+
+        console.error(
+          'Erro ao alterar avatar:',
+          erro
+        );
+
+      } finally {
+
+        event.target.value = '';
+      }
+    }
+
+
+    /* ============================================================
+       RENDERIZAÇÃO DOS CARDS
+       ============================================================ */
+
+    function renderCard({
+      id,
+      nome,
+      valor_aplicado,
+      valor_atual,
+      icone_url,
+      ultima_atualizacao
+    }) {
+
+      const aplicado =
+        Number(
+          valor_aplicado
+        ) || 0;
+
+      const atual =
+        Number(
+          valor_atual
+        ) || 0;
+
+      const dif =
+        atual - aplicado;
+
+      const rend =
+        aplicado > 0
+          ? (
+              dif /
+              aplicado
+            ) * 100
+          : 0;
+
+      const dataTexto =
+        ultima_atualizacao
+
+          ? new Date(
+              ultima_atualizacao
+            ).toLocaleDateString(
+              'pt-BR',
+              {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              }
+            )
+
+          : 'Atualização desconhecida';
+
+      const nomeSeguro =
+        String(
+          nome || ''
+        )
+        .replace(
+          /'/g,
+          "\\'"
+        );
+
+      const iconeSeguro =
+        String(
+          icone_url || ''
+        )
+        .replace(
+          /'/g,
+          "\\'"
+        );
+
+      return `
+
+        <div class="card">
+
+          <button
+            class="delete-btn"
+            onclick="excluirBanco(${id})"
+            title="Excluir"
+          >
+            &times;
+          </button>
+
+          <div
+            class="card-header"
+            onclick="abrirModal(
+              ${id},
+              '${nomeSeguro}',
+              ${aplicado},
+              ${atual},
+              '${iconeSeguro}'
+            )"
+          >
+
+            <div class="avatar">
+              ${avatarHTML(
+                nome,
+                icone_url
+              )}
+            </div>
+
+            <div class="name">
+              ${nome || '-'}
+            </div>
+
+          </div>
+
+          <div class="kvs">
+
+            <p>
+              Aplicado:
+              <strong>
+                ${BRL.format(aplicado)}
+              </strong>
+            </p>
+
+            <p>
+              Atual:
+              <strong>
+                ${BRL.format(atual)}
+              </strong>
+            </p>
+
+            <p>
+              Diferença:
+              <span
+                class="pill ${
+                  dif >= 0
+                    ? 'pos'
+                    : 'neg'
+                }"
+              >
+                ${BRL.format(dif)}
+              </span>
+            </p>
+
+            <p>
+              Rendimento:
+              <strong>
+                ${PCT.format(rend)}%
+              </strong>
+            </p>
+
+            <p
+              style="
+                text-align:right;
+                font-size:.8rem;
+                color:#888;
+                margin-top:8px;
+              "
+            >
+              Última atualização:
+              ${dataTexto}
+            </p>
+
+          </div>
+
+        </div>
+      `;
+    }
+
+
+    /* ============================================================
+       RESUMO
+       ============================================================ */
+
+    function atualizarResumo(
+      lista
+    ) {
+
+      const totalAplicado =
+        lista.reduce(
+          (
+            soma,
+            item
+          ) =>
+            soma +
+            (
+              Number(
+                item.valor_aplicado
+              ) || 0
+            ),
+          0
+        );
+
+      const totalAtual =
+        lista.reduce(
+          (
+            soma,
+            item
+          ) =>
+            soma +
+            (
+              Number(
+                item.valor_atual
+              ) || 0
+            ),
+          0
+        );
+
+      const lucro =
+        totalAtual -
+        totalAplicado;
+
+      const rendimento =
+        totalAplicado
+          ? (
+              lucro /
+              totalAplicado
+            ) * 100
+          : 0;
+
+      document
+        .getElementById(
+          'total-aplicado'
+        )
+        .innerText =
+        BRL.format(
+          totalAplicado
+        );
+
+      document
+        .getElementById(
+          'total-atual'
+        )
+        .innerText =
+        BRL.format(
+          totalAtual
+        );
+
+      document
+        .getElementById(
+          'lucro'
+        )
+        .innerText =
+        BRL.format(
+          lucro
+        );
+
+      document
+        .getElementById(
+          'rendimento'
+        )
+        .innerText =
+        PCT.format(
+          rendimento
+        ) + '%';
+
+      document
+        .getElementById(
+          'patrimonioTotal'
+        )
+        .innerText =
+        BRL.format(
+          totalAtual
+        );
+    }
+
+
+    /* ============================================================
+       CARREGAR INVESTIMENTOS
+       ============================================================ */
+
+    async function carregarTodosOsCards() {
+
+      const container =
+        document.getElementById(
+          'card-container'
+        );
+
+      container.innerHTML =
+        '<div class="card">Carregando investimentos...</div>';
+
+      try {
+
+        const res =
+          await fetch(
+            `${supabaseUrl}/rest/v1/bancos?select=*&nome=neq.__perfil__`,
+            {
+              method: 'GET',
+
+              headers: {
+                'apikey':
+                  supabaseKey,
+
+                'Authorization':
+                  `Bearer ${supabaseKey}`,
+
+                'Accept':
+                  'application/json'
+              }
+            }
+          );
+
+        const texto =
+          await res.text();
+
+        if (!res.ok) {
+
+          console.error(
+            'Erro ao consultar bancos:',
+            res.status,
+            texto
+          );
+
+          container.innerHTML = `
+            <div class="card">
+              Não foi possível carregar os investimentos.
+            </div>
+          `;
+
+          atualizarResumo([]);
+
+          return;
+        }
+
+        todos =
+          texto
+            ? JSON.parse(texto)
+            : [];
+
+        if (
+          !Array.isArray(todos) ||
+          !todos.length
+        ) {
+
+          container.innerHTML = `
+            <div class="card">
+              Nenhum ativo encontrado.
+            </div>
+          `;
+
+          atualizarResumo([]);
+
+          return;
+        }
+
+        container.innerHTML =
+          todos
+            .map(
+              renderCard
+            )
+            .join('');
+
+        atualizarResumo(
+          todos
+        );
+
+      } catch (erro) {
+
+        console.error(
+          'Erro ao carregar investimentos:',
+          erro
+        );
+
+        container.innerHTML = `
+          <div class="card">
+            Erro ao carregar os investimentos.
+          </div>
+        `;
+
+        atualizarResumo([]);
+      }
+    }
+
+
+    /* ============================================================
+       MODAL
+       ============================================================ */
+
+    function abrirModal(
+      id = null,
+      nome = '',
+      aplicado = '',
+      atual = '',
+      icon = ''
+    ) {
+
+      bancoEditando =
+        id;
+
+      document
+        .getElementById(
+          'modal-title'
+        )
+        .innerText =
+        id
+          ? 'Editar Ativo'
+          : 'Novo Ativo';
+
+      document
+        .getElementById(
+          'input-nome'
+        )
+        .value =
+        nome;
+
+      document
+        .getElementById(
+          'input-aplicado'
+        )
+        .value =
+        aplicado;
+
+      document
+        .getElementById(
+          'input-atual'
+        )
+        .value =
+        atual;
+
+      document
+        .getElementById(
+          'input-icon'
+        )
+        .value =
+        icon;
+
+      document
+        .getElementById(
+          'input-file'
+        )
+        .value =
+        '';
+
+      document
+        .getElementById(
+          'modal'
+        )
+        .classList
+        .add('open');
+    }
+
+
+    function fecharModal() {
+
+      document
+        .getElementById(
+          'modal'
+        )
+        .classList
+        .remove('open');
+    }
+
+
+    /* ============================================================
+       SALVAR ATIVO
+       ============================================================ */
+
+    async function salvarAlteracoes() {
+
+      const nome =
+        document
+          .getElementById(
+            'input-nome'
+          )
+          .value
+          .trim();
+
+      const aplicado =
+        parseFloat(
+          document
+            .getElementById(
+              'input-aplicado'
+            )
+            .value
+        ) || 0;
+
+      const atual =
+        parseFloat(
+          document
+            .getElementById(
+              'input-atual'
+            )
+            .value
+        ) || 0;
+
+      let icone =
+        document
+          .getElementById(
+            'input-icon'
+          )
+          .value
+          .trim();
+
+      if (!nome) {
+
+        alert(
+          'Informe o nome do ativo.'
+        );
+
+        return;
+      }
+
+      try {
+
+        const file =
+          document
+            .getElementById(
+              'input-file'
+            )
+            .files[0];
+
+        if (file) {
+
+          icone =
+            await lerImagemBase64(
+              file
+            );
+        }
+
+        const payload = {
+
+          nome,
+
+          valor_aplicado:
+            aplicado,
+
+          valor_atual:
+            atual,
+
+          icone_url:
+            icone || null,
+
+          ultima_atualizacao:
+            new Date().toISOString()
+        };
+
+
+        let res;
+
+        if (
+          bancoEditando === null
+        ) {
+
+          res =
+            await fetch(
+              `${supabaseUrl}/rest/v1/bancos`,
+              {
+                method: 'POST',
+
+                headers: {
+                  'apikey':
+                    supabaseKey,
+
+                  'Authorization':
+                    `Bearer ${supabaseKey}`,
+
+                  'Content-Type':
+                    'application/json',
+
+                  'Prefer':
+                    'return=minimal'
+                },
+
+                body:
+                  JSON.stringify(
+                    payload
+                  )
+              }
+            );
+
+        } else {
+
+          res =
+            await fetch(
+              `${supabaseUrl}/rest/v1/bancos?id=eq.${bancoEditando}`,
+              {
+                method: 'PATCH',
+
+                headers: {
+                  'apikey':
+                    supabaseKey,
+
+                  'Authorization':
+                    `Bearer ${supabaseKey}`,
+
+                  'Content-Type':
+                    'application/json',
+
+                  'Prefer':
+                    'return=minimal'
+                },
+
+                body:
+                  JSON.stringify(
+                    payload
+                  )
+              }
+            );
+        }
+
+        if (!res.ok) {
+
+          const erro =
+            await res.text();
+
+          console.error(
+            'Erro ao salvar:',
+            erro
+          );
+
+          alert(
+            'Não foi possível salvar o ativo.'
+          );
+
+          return;
+        }
+
+        fecharModal();
+
+        await carregarTodosOsCards();
+
+      } catch (erro) {
+
+        console.error(
+          'Erro ao salvar ativo:',
+          erro
+        );
+
+        alert(
+          'Erro ao salvar o ativo.'
+        );
+      }
+    }
+
+
+    /* ============================================================
+       EXCLUIR
+       ============================================================ */
+
+    async function excluirBanco(
+      id
+    ) {
+
+      if (
+        !confirm(
+          'Excluir este ativo?'
+        )
+      ) {
+
+        return;
+      }
+
+      try {
+
+        const res =
+          await fetch(
+            `${supabaseUrl}/rest/v1/bancos?id=eq.${id}`,
+            {
+              method: 'DELETE',
+
+              headers: {
+                'apikey':
+                  supabaseKey,
+
+                'Authorization':
+                  `Bearer ${supabaseKey}`,
+
+                'Prefer':
+                  'return=minimal'
+              }
+            }
+          );
+
+        if (!res.ok) {
+
+          const erro =
+            await res.text();
+
+          console.error(
+            'Erro ao excluir:',
+            erro
+          );
+
+          alert(
+            'Não foi possível excluir o ativo.'
+          );
+
+          return;
+        }
+
+        await carregarTodosOsCards();
+
+      } catch (erro) {
+
+        console.error(
+          'Erro ao excluir ativo:',
+          erro
+        );
+
+        alert(
+          'Erro ao excluir o ativo.'
+        );
+      }
+    }
+
+
+    /* ============================================================
+       MENU MAIS
+       ============================================================ */
+
+    function abrirMaisMenu() {
+
+      document
+        .getElementById(
+          'mais-menu'
+        )
+        .classList
+        .add('open');
+    }
+
+
+    function fecharMaisMenu() {
+
+      document
+        .getElementById(
+          'mais-menu'
+        )
+        .classList
+        .remove('open');
+    }
+
+
+    /* ============================================================
+       SIDEBAR
+       ============================================================ */
+
+    function toggleSidebar(
+      event
+    ) {
+
+      event.stopPropagation();
+
+      document
+        .getElementById(
+          'sidebar'
+        )
+        .classList
+        .toggle('open');
+    }
+
+
+    document.addEventListener(
+      'click',
+      function(event) {
+
+        const sidebar =
+          document.getElementById(
+            'sidebar'
+          );
+
+        const button =
+          document.querySelector(
+            '.menu'
+          );
+
+        if (
+          sidebar &&
+          button &&
+          !sidebar.contains(
+            event.target
+          ) &&
+          !button.contains(
+            event.target
+          )
+        ) {
+
+          sidebar.classList.remove(
+            'open'
+          );
+        }
+
+      }
+    );
+
+
+    /* ============================================================
+       ATALHOS
+       ============================================================ */
+
+    const descricoes = {
+
+      renda:
+        '💰 <b>Renda Fixa</b>: investimentos de renda fixa.',
+
+      acoes:
+        '📈 <b>Ações</b>: participação em empresas.',
+
+      cripto:
+        '₿ <b>Cripto</b>: moedas digitais.',
+
+      poupanca:
+        '🐷 <b>Poupança</b>: liquidez diária e baixo risco.'
+    };
+
+
+    function mostrarDescricao(
+      tipo,
+      event
+    ) {
+
+      document
+        .querySelectorAll(
+          '.atalho'
+        )
+        .forEach(
+          item =>
+            item.classList.remove(
+              'active'
+            )
+        );
+
+      event
+        .currentTarget
+        .classList
+        .add('active');
+
+      const balao =
+        document.getElementById(
+          'descricao-atalho'
+        );
+
+      balao.innerHTML =
+        descricoes[tipo];
+
+      balao.style.display =
+        'block';
+    }
+
+
+    /* ============================================================
+       INICIALIZAÇÃO
+       ============================================================ */
+
+    document.addEventListener(
+      'DOMContentLoaded',
+      async function() {
+
+        const usuario =
+          obterUsuarioLogado();
+
+        if (!usuario) {
+
+          mostrarLogin();
+
+          return;
+        }
+
+        if (
+          usuario.ativo === false
+        ) {
+
+          localStorage.removeItem(
+            'usuarioLogado'
+          );
+
+          mostrarLogin();
+
+          return;
+        }
+
+        mostrarAplicacao();
+
+        /* Perfil */
+        await carregarPerfil();
+
+        /* Investimentos */
+        await carregarTodosOsCards();
+
+        /* Menu Mais */
+        const linksNavbar =
+          document.querySelectorAll(
+            '.navbar a'
+          );
+
+        const linkMais =
+          linksNavbar[
+            linksNavbar.length - 1
+          ];
+
+        if (linkMais) {
+
+          linkMais.addEventListener(
+            'click',
+            function(event) {
+
+              event.preventDefault();
+
+              abrirMaisMenu();
+            }
+          );
+        }
+
+        /* Navbar */
+        document
+          .querySelectorAll(
+            '.navbar a'
+          )
+          .forEach(
+            link => {
+
+              link.addEventListener(
+                'click',
+                function() {
+
+                  document
+                    .querySelectorAll(
+                      '.navbar a'
+                    )
+                    .forEach(
+                      item =>
+                        item.classList.remove(
+                          'active'
+                        )
+                    );
+
+                  this.classList.add(
+                    'active'
+                  );
+                }
+              );
+
+            }
+          );
+
+        /* Sidebar */
+        document
+          .querySelectorAll(
+            '.menu-link'
+          )
+          .forEach(
+            link => {
+
+              link.addEventListener(
+                'click',
+                function() {
+
+                  document
+                    .getElementById(
+                      'sidebar'
+                    )
+                    .classList
+                    .remove(
+                      'open'
+                    );
+                }
+              );
+
+            }
+          );
+
+      }
+    );
+
+
+    /* ============================================================
+       FECHAR MODAL CLICANDO FORA
+       ============================================================ */
+
+    document.addEventListener(
+      'click',
+      function(event) {
+
+        const modal =
+          document.getElementById(
+            'modal'
+          );
+
+        if (
+          event.target === modal
+        ) {
+
+          fecharModal();
+        }
+
+      }
+    );
+
   </script>
+
 </body>
 </html>
